@@ -515,7 +515,7 @@
 	
 	\begin{definition}[Functor]
 		\label{def: functor}
-		A \emph{(covariant) functor} $\functor{F}: \category{C} \rightarrow \category{D} $ between two categories $\category{C}$ and $\category{D} $ is a function mapping each object $A \in  \Obj(\category{C}) $ to an object $F(A) \in \Obj(D) $ and each morphism $f \in \Hom(A,B) $ to a morphism $f \in \Hom(\functor{F}(A), \functor{F}(B))$ such that identity and composition are preserved:
+		A \emph{(covariant) functor} $\functor{F}: \category{C} \rightarrow \category{D} $ between two categories $\category{C}$ and $\category{D} $ is a function mapping each object $A \in  \Obj(\category{C}) $ to an object $F(A) \in \Obj(D) $ and each morphism $ f \in \Hom(A,B) $ to a morphism $\functor{F}(f) \in \Hom(\functor{F}(A), \functor{F}(B))$ such that identity and composition are preserved:
 		\begin{align*}
 			\functor{F}(\id_A) = \id_{\functor{F}(A)},
 			\quad
@@ -730,17 +730,19 @@
 		\label{def: closedMonoCat}
 		\todo{lengthy, rambling... muss eleganter gehen}
 		A monoidal category $\category{C} $ is called \emph{right closed}, resp. \emph{left closed}, iff there is a functor 
-		$- \multimap -: \category{C}^\opp \times \category{C} \rightarrow \category{C} $
-		, resp. 
-		$- \multimapinv -: \category{C} \times \category{C}^\opp \rightarrow \category{C} $
-		, such that there is a natural isomorphism 
-		$\Hom(A \otimes B, C) \cong \Hom(B, A\multimap C)$
-		, resp. 
-		$\Hom(A \otimes B, C) \cong \Hom(A, C\multimapinv B)$
-		, i.e. iff the functor $- \otimes B$, resp. $A \otimes - $, has a right adjoint.
+		$- \multimap -: \category{C}^\opp \times \category{C} \rightarrow \category{C} $, 
+		resp. 
+		$- \multimapinv -: \category{C} \times \category{C}^\opp \rightarrow \category{C} $, 
+		such that there is a natural isomorphism 
+		$\Hom(A \otimes B, C) \cong \Hom(B, A\multimap C)$, 
+		resp. 
+		$\Hom(A \otimes B, C) \cong \Hom(A, C\multimapinv B)$,
+		i.e. iff the functor $- \otimes B$, resp. $A \otimes - $, has a right adjoint.
 		A monoidal $\category{C} $ is called \emph{biclosed} iff it is both left and right closed.
 		
-		If $\category{C} $ is symmetric, these functors coincide we call the category \emph{closed}.
+		\todo[inline]{definitely  mixed up the right and left homs there}
+		
+		If $\category{C} $ is symmetric, these functors coincide and we call the category \emph{closed}.
 		
 		The functors 
 		$- \multimap -: \category{C}^\opp \times \category{C} \rightarrow \category{C} $ 
@@ -1132,8 +1134,8 @@
 		{ }
 		\begin{enumerate}
 			\item In an LDC: if 
-			$B \dashV A $ and $C \dashV A $
-			, then $B$ and $C$ are isomorphic
+			$B \dashV A $ and $C \dashV A $, 
+			then $B$ and $C$ are isomorphic.
 			\item In a symmetric LDC: 
 			$(\eta, \varepsilon): B \dashV A 
 			\Longleftrightarrow 
@@ -1145,11 +1147,10 @@
 	%(BCS: "Feedback for linearly distributive categories: traces and fixpoints)
 	%comment..............................................................................................................................
 	
-	\todo[inline]{Srinivasan Lemma 2.9 (iii)?}
-	\todo[inline]{definition (iso)mix cat?}
+	\todo[inline]{\cite{srinavsan-thesis} Lemma 2.9 (iii)?}
 	%comment.............................................................................................................................
 	
-	\begin{definition}[*-autonomous categories (Srinivasan)]
+	\begin{definition}[*-autonomous categories (Srinivasan \cite{srinavsan-thesis})]
 		\label{def: autoCatSrinivasan}
 		\notimportantnote{is Srinivasan the origin of this version?}
 		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\eta*, \varepsilon*): A^* \dashV A $ and $(*\eta, *\varepsilon): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
@@ -1157,13 +1158,13 @@
 	
 	
 	
-	\begin{definition}[*-autonomous categories (Barr (95), A)]
+	\begin{definition}[*-autonomous categories (Barr \cite{barr95}, A)]
 		\label{def: autoCatBarrA}
 		\notimportantnote{find a way to make letter part of definition numbering?}
 		A *-autonomous category is a biclosed monoidal category $\category{C} $ with a closed functor $(-)^*: \category{C} \rightarrow \category{C}^\opp $, which is a strong equivalence of categories.     
 	\end{definition}
 	%Barr, 95
-	\todo[inline]{necessary? meaning of "closed" (functor between C-enriched categories)}
+	\todo[inline]{definition closed functor, strong equivalence. (strong closed functor?)}
 	
 	\begin{definition}[Dualizing object]
 		\label{def: dualizingObj}
@@ -1199,26 +1200,36 @@
 		where $A \multimapinv B := A^* \multimap B^* $.
 	\end{definition}
 	\questionnote[inline]{unnötig? C impliziert offensichtlich D, von D nach C sind drei Zeilen.}
-	
-	
-	\todo[inline]{Äquivalenz von Barrs Definitionen:}
+
 	
 	\begin{theorem}
 		\label{thrm: BarrEqui}
 		Barr's definitions are equivalent.
 	\end{theorem}
 	
-	\todo[inline]{Folgerung Barr A $\Rightarrow$ Barr B} 
-	
 	\begin{proof}
-		\formatnote{define useful control sequence}
+%		\formatnote{define useful control sequence}
 %		\implication{Barr A}{Barr B}
-		Suppose the category $\category{C} $ and the functor $(-)^\bot: \category{C} \rightarrow \category{C}^\opp $ fulfill the conditions of 
-		Definition \ref{def: autoCatBarrA} (Barr A)
+		\todo[inline]{to be added (\cite{barr95})}
 	\end{proof}
 	
-	\todo[inline]{Folgerung Barr B $\Rightarrow$ Barr c}
-	\todo[inline]{Folgerung Barr C $\Rightarrow$ Barr A}
+	\begin{theorem}
+		Srinivasan's definition is equivalent to Barr's definitions.
+	\end{theorem}
+	
+	\begin{proof}
+		Let $\category{A} $ be a symmetric LDC satisfying definition \ref{def: autoCatSrinivasan}.\\
+		The mapping $A \mapsto A^* $ is an isomorphism $\Obj(\category{A}) \rightarrow \Obj(\category{A}^\opp) $ between objects and defines a Functor by extending it to morphisms:
+		
+		\begin{align*}
+			\Hom_\category{A}(A, B) \ni f \mapsto f^* \in \Hom_{\category{A}^\opp }(A^*, B^*)= \Hom_{\category{A} }(B^*, A^*)
+			\\
+			huh
+		\end{align*}
+		
+		
+	\end{proof}
+	\todo[inline]{non-symmetric case to be added}
 	
 	\questionnote[inline]{what did I need Barr's definition for, again?}
 	
