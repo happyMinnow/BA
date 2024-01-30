@@ -1224,9 +1224,44 @@
 		\begin{align*}
 			\Hom_\category{A}(A, B) \ni f \mapsto f^* \in \Hom_{\category{A}^\opp }(A^*, B^*)= \Hom_{\category{A} }(B^*, A^*)
 			\\
-			huh
+			f^*:= 
+			B^* 
+			\xrightarrow{\lambda_\otimes^{-1}} 
+			1\otimes B^* 
+			\xrightarrow{\eta_A \otimes \id} 
+			(A^* \parr A ) \otimes B^* 
+			\xrightarrow{\partial_R} 
+			A^* \parr (A \otimes B^*)
+			\\
+			\xrightarrow{\id \parr (f \otimes \id)}  
+			A^* \parr (B \otimes B^*)
+			\xrightarrow{\id \parr \varepsilon_B}
+			A^* \parr \bot
+			\xrightarrow{\rho_\parr}
+			A^* 
 		\end{align*}
+		\formatnote[]{format...}
 		
+		This mapping of morphisms is also an isomorphism:
+		
+		\begin{align*}
+			f = 
+			A 
+			\xrightarrow{\rho_\otimes^{-1}}
+			A \otimes 1
+			\xrightarrow{\id \otimes \eta_B}
+			A \otimes (B^* \parr B)
+			\xrightarrow{\partial_L}
+			(A \otimes B^*) \parr B
+			\\
+			\xrightarrow{(\id \otimes f^*) \parr \id }
+			(A \otimes A^*) \parr B
+			\xrightarrow{\varepsilon_A \parr \id}
+			\bot \parr B
+			\xrightarrow{\lambda_\parr}
+			B
+		\end{align*}
+		\todo{proof dass obiges tatsächlich f ist...}
 		
 	\end{proof}
 	\todo[inline]{non-symmetric case to be added}
