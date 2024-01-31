@@ -751,6 +751,7 @@
 		are called \emph{internal hom} functors.
 	\end{definition}
 	
+	\todo[inline]{following definitions prolly unnötig:}
 	
 	\begin{definition}[Enriched category]
 		\label{def: enrichment}
@@ -1088,10 +1089,10 @@
 				\arrow[r, equal, "\id" ]
 				&
 				B
-				\arrow[d, "l_\otimes^{-1} " ]
+				\arrow[d, "\lambda_\otimes^{-1} " ]
 				\\
 				B \parr \bot
-				\arrow[u, "r_\parr " ]
+				\arrow[u, "\rho_\parr " ]
 				&
 				1 \otimes B
 				\arrow[d, "\eta \otimes \id " ]
@@ -1107,18 +1108,18 @@
 				\arrow[r, equal, "\id " ]
 				&
 				A
-				\arrow[d, "r_\otimes^{-1} " ]
+				\arrow[d, "\rho_\otimes^{-1} " ]
 				\\
 				\bot \parr A
-				\arrow[u, "l_\parr " ]
+				\arrow[u, "\lambda_\parr " ]
 				&
 				A \otimes 1
 				\arrow[d, "\id \otimes \eta " ]
 				\\
-				B\parr (A \otimes B)
+				(B\parr A) \otimes B
 				\arrow[u, "\varepsilon \parr \id " ]
 				&
-				(B \parr A) \otimes B
+				B \parr (A \otimes B)
 				\arrow[l, "\partial_L " ]
 			\end{tikzcd}
 			\formatnote[inline]{das geht schöner}
@@ -1217,36 +1218,273 @@
 		Srinivasan's definition is equivalent to Barr's definitions.
 	\end{theorem}
 	
+	
+\urgentnote[inline]{Weihnachtsbaustelle:}
 	\begin{proof}
 		Let $\category{A} $ be a symmetric LDC satisfying definition \ref{def: autoCatSrinivasan}.\\
-		The mapping $A \mapsto A^* $ is an isomorphism $\Obj(\category{A}) \rightarrow \Obj(\category{A}^\opp) $ between objects and defines a Functor by extending it to morphisms:
+		The mapping $A \mapsto A^* $ is an isomorphism $\Obj(\category{A}) \rightarrow \Obj(\category{A}^\opp) $ between objects and defines a Functor by extending it to morphisms 
+		with the following diagram:
+		\todo[inline]{change definition to diagram?}
 		
 		\begin{align*}
 			\Hom_\category{A}(A, B) \ni f \mapsto f^* \in \Hom_{\category{A}^\opp }(A^*, B^*)= \Hom_{\category{A} }(B^*, A^*)
-			\\
-			f^*:= 
-			B^* 
+		\end{align*}
+		\begin{align*}
+			f^*:
+			B^*
+			& 
 			\xrightarrow{\lambda_\otimes^{-1}} 
 			1\otimes B^* 
 			\xrightarrow{\eta_A \otimes \id} 
 			(A^* \parr A ) \otimes B^* 
-			\xrightarrow{\partial_R} 
-			A^* \parr (A \otimes B^*)
+			\xrightarrow{(\id \parr f) \otimes \id}
+			(A^* \parr B) \otimes B^*
 			\\
-			\xrightarrow{\id \parr (f \otimes \id)}  
+			&
+			\xrightarrow{\partial_R}  
 			A^* \parr (B \otimes B^*)
 			\xrightarrow{\id \parr \varepsilon_B}
 			A^* \parr \bot
 			\xrightarrow{\rho_\parr}
 			A^* 
 		\end{align*}
-		\formatnote[]{format...}
+		This mapping of morphisms is also a bijection:
 		
-		This mapping of morphisms is also an isomorphism:
+		\begin{align*} 
+			f 
+			= 
+			&
+			\lambda_{\parr, B} 
+			\circ (\varepsilon_A \parr \id_B)
+			\circ ((\id_A \otimes f^*) \parr \id_B )
+			\circ \partial_L 
+			\circ (\id_A \otimes \eta_B)
+			\circ \rho_{\otimes, A}^{-1}
+			\\
+			=
+			&
+			\lambda_{\parr, B} 
+			\circ (\varepsilon_A \parr \id_B)
+			\\
+			&
+			\circ 
+			\left(\left(\id_A( 
+			\otimes 
+				\rho_{\parr, A}
+				\circ (\id_{A^*} \parr \varepsilon_B)
+				\circ (\id_{A^*} \parr (f \otimes \id_{B^*} ))
+				\circ \partial_R
+				\circ (\eta_A \otimes \id)
+				\circ \lambda_{\otimes, B}^{-1}
+			)
+			\right) \parr 
+			\id_{B^*} 
+			\right)
+			\\
+			&
+			\circ \partial_L 
+			\circ (\id_A \otimes \eta_B)
+			\circ \rho_{\otimes, A}^{-1}
+		\end{align*}
+		
+		
+		\todo[inline, color=lightgray]{(maybe suppress brackets for stuff like $A \otimes 1 \otimes 1$ )}
+		\begin{tikzcd}
+			A
+				\arrow[r, "(\id \otimes \eta_B) \circ \rho_\otimes^{-1}" ]
+				\arrow[d, "\rho_\otimes^{-1} \circ \rho_\otimes^{-1} "]
+				\arrow[ddddr, bend left=40, "f" ]
+			&
+			A \otimes (B^* \otimes B)
+				\arrow[
+					rr, 
+					"
+					\id \otimes 
+					((\eta_A \otimes \id) 
+					\parr \id) 
+					"
+					]
+			&
+			&
+			A \otimes 
+			\left(\left(
+			(A^* \parr A) 
+			\otimes 
+			B^* 
+			\right) 
+			\parr 
+			B 
+			\right)
+				\arrow[d, "\id \otimes 
+					\left(\left(
+					(\id \parr f ) 
+					\otimes 
+					\id 
+					\right)
+					\parr
+					\id
+					\right)
+					"'
+					]
+			\\
+			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+			(A \otimes 1) \otimes 1
+				\arrow[
+					d,
+					"
+					\id 
+					\otimes 
+					\eta_A 
+					\otimes 
+					\eta_B
+					"]
+			&
+			&
+			&
+			A 
+			\otimes 
+			\left(
+			\left(
+			(A^*\parr B)
+			\otimes 
+			B^*
+			\right)
+			\parr
+			B
+			\right)
+				\arrow[
+					d, 
+					"
+					\id 
+					\otimes
+					\left( 
+					\partial_R
+					\parr 
+					\id
+					\right)
+					"']
+			\\
+			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+			\left(
+			A 
+			\otimes
+			(A^* \parr A)
+			\right)
+			\otimes
+			(B^* \parr B)
+				\arrow[
+					d, 
+					"
+					\partial_L
+					\otimes
+					\id
+					"]
+			&
+			&
+			&
+			A 
+			\otimes 
+			\left(
+			\left(
+			A^*
+			\parr 
+			(B \otimes B^*)
+			\right)
+			\parr B
+			\right)
+				\arrow[
+					d,
+					"
+					\id
+					\otimes 
+					(\partial_R \parr \id)
+					"']
+			\\
+			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+			\left(
+			(A \otimes A^*)
+			\parr
+			A
+			\right)
+			\otimes 
+			(B^* \parr B)
+				\arrow[
+					d,
+					"
+					(\lambda_\parr \otimes \id)
+					\circ
+					\left(
+					(\varepsilon_A \parr f)
+					\otimes
+					\id
+					\right)
+					"]
+			&
+			&
+			&
+			A 
+			\otimes
+			\left(
+			\left(
+			A^*
+			\parr
+			(B \otimes B^*)
+			\right)
+			\parr
+			B
+			\right)
+				\arrow[
+					d,
+					"
+					\id
+					\otimes
+					\left(
+					\rho_\parr
+					\circ
+					(\id 
+					\parr
+					\varepsilon_B
+					\parr
+					\id)
+					\right)
+					"']
+			\\
+			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+			B 
+			\otimes 
+			(B^* \parr B)
+				\arrow[
+				r,
+				"
+				\lambda_\parr
+				\circ
+				\varepsilon_B 
+				\circ
+				\partial_L
+				"']
+			&
+			B
+			&
+			&
+			A 
+			\otimes 
+			(A^* \parr B)
+				\arrow[
+				ll,
+				"
+				\lambda_\parr
+				\circ
+				\varepsilon_B 
+				\circ
+				\partial_L
+				"]
+		\end{tikzcd}
+		\todo[inline, color=lightgray]{does this commute?}
+		
 		
 		\begin{align*}
-			f = 
-			A 
+			A
+			&
 			\xrightarrow{\rho_\otimes^{-1}}
 			A \otimes 1
 			\xrightarrow{\id \otimes \eta_B}
@@ -1254,6 +1492,7 @@
 			\xrightarrow{\partial_L}
 			(A \otimes B^*) \parr B
 			\\
+			&
 			\xrightarrow{(\id \otimes f^*) \parr \id }
 			(A \otimes A^*) \parr B
 			\xrightarrow{\varepsilon_A \parr \id}
@@ -1261,18 +1500,18 @@
 			\xrightarrow{\lambda_\parr}
 			B
 		\end{align*}
-		\todo{proof dass obiges tatsächlich f ist...}
-		
+		\todo[inline, color=lightgray]{is this really f?}
+
 	\end{proof}
-	\todo[inline]{non-symmetric case to be added}
+	\notimportantnote[inline]{non-symmetric case to be added (should already be in there, never used symmetry)}
 	
 	\questionnote[inline]{what did I need Barr's definition for, again?}
 	
 	
 	\todo[inline]{Cats as LinLog semantics and LinLog syntax as cat}
 	%Cats as LinLog semantics
-	
-	\todo[inline]{bibliography }
+
+	\todo[inline]{add refs}
 	
 	\printbibliography
 	
