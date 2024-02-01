@@ -407,7 +407,8 @@
 		We will only prove the second equivalence. The first is acquired by duality.
 		
 		\begin{center}
-			\AxiomC{$\vdash A, A^\bot $}
+			\AxiomC{}
+			\UnaryInfC{$\vdash A, A^\bot $}
 			\RightLabel{$\oplus $}
 			\UnaryInfC{$A^\bot, A\oplus B$}
 			\RightLabel{$\wn_D $}
@@ -415,7 +416,8 @@
 			\RightLabel{$\oc $}
 			\UnaryInfC{$\vdash\oc (A^\bot), \wn (A\oplus B) $}
 			
-			\AxiomC{$\vdash B, B^\bot$}
+			\AxiomC{}
+			\UnaryInfC{$\vdash B, B^\bot$}
 			\RightLabel{$\oplus $}
 			\UnaryInfC{$\vdash B^\bot, A\oplus B$}
 			\RightLabel{$\wn_D $}
@@ -433,13 +435,14 @@
 			\DisplayProof
 			
 			
-			
-			\AxiomC{$\vdash A^\bot , A$}
+			\AxiomC{}
+			\UnaryInfC{$\vdash A^\bot , A$}
 			\UnaryInfC{$\vdash A^\bot, \wn A$}
 			\RightLabel{$\wn_W$}
 			\UnaryInfC{$\vdash A^\bot, \wn A, \wn B $}
 			
-			\AxiomC{$\vdash B^\bot, B$}
+			\AxiomC{}
+			\UnaryInfC{$\vdash B^\bot, B$}
 			\UnaryInfC{$\vdash B^\bot, B$}
 			\RightLabel{$\wn_W$}
 			\UnaryInfC{$\vdash B^\bot, \wn B , \wn A $}
