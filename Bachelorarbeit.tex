@@ -1085,25 +1085,25 @@
 	\begin{definition}[Dual object]
 		\label{def: dualObj}
 		%source: srinivasan
-		Let $\category{C} $ be a linearly distributive category and $A, B \in \Obj(\category{C}) $, then we call $B $ \emph{left dual} (or \emph{left linearly adjoint}) to $A$, if there are morphisms $\eta: 1 \rightarrow B \parr A$ and $\varepsilon: A \otimes B \rightarrow \bot $, called \emph{unit} and \emph{counit} resp., such that the following diagrams commute:
+		Let $\category{C} $ be a linearly distributive category and $A, A^* \in \Obj(\category{C}) $, then we call $A^* $ \emph{left dual} (or \emph{left linearly adjoint}) to $A$, if there are morphisms $\tau: 1 \rightarrow A^* \parr A$ and $\gamma: A \otimes A^* \rightarrow \bot $, called \emph{unit} and \emph{counit} resp., such that the following diagrams commute:
 		\begin{center}
 			\begin{tikzcd}
-				B
+				A^*
 				\arrow[r, equal, "\id" ]
 				&
-				B
+				A^*
 				\arrow[d, "\lambda_\otimes^{-1} " ]
 				\\
-				B \parr \bot
+				A^* \parr \bot
 				\arrow[u, "\rho_\parr " ]
 				&
-				1 \otimes B
-				\arrow[d, "\eta \otimes \id " ]
+				1 \otimes A^*
+				\arrow[d, "\tau \otimes \id " ]
 				\\
-				B\parr (A \otimes B)
-				\arrow[u, "\id \parr \varepsilon " ]
+				A^*\parr (A \otimes A^*)
+				\arrow[u, "\id \parr \gamma " ]
 				&
-				(B \parr A) \otimes B
+				(A^* \parr A) \otimes A^*
 				\arrow[l, "\partial_R " ]
 			\end{tikzcd}
 			\begin{tikzcd}
@@ -1117,33 +1117,33 @@
 				\arrow[u, "\lambda_\parr " ]
 				&
 				A \otimes 1
-				\arrow[d, "\id \otimes \eta " ]
+				\arrow[d, "\id \otimes \tau " ]
 				\\
-				(B\parr A) \otimes B
-				\arrow[u, "\varepsilon \parr \id " ]
+				(A^* \parr A) \otimes A^*
+				\arrow[u, "\gamma \parr \id " ]
 				&
-				B \parr (A \otimes B)
+				A^* \parr (A \otimes A^*)
 				\arrow[l, "\partial_L " ]
 			\end{tikzcd}
 			\formatnote[inline]{das geht schöner}
 		\end{center}
 		
-		We write $(\eta, \varepsilon): B \dashV A $ and also call $A$ \emph{right dual} to $B$. 
+		We write $(\tau, \gamma): A^* \dashV A $ and also call $A$ \emph{right dual} to $A^*$. 
 		\formatnote[inline]{mathabx incompatible with amssymb, stix absolutely broken; repalce dashV with dashv + some index?}
 	\end{definition}
-	
 	
 	\begin{lemma}
 		\label{lemma: isoLinDisCat}
 		{ }
 		\begin{enumerate}
 			\item In an LDC: if 
-			$B \dashV A $ and $C \dashV A $, 
-			then $B$ and $C$ are isomorphic.
+			$A^* \dashV A $ and $A' \dashV A $, 
+			then $A^*$ and $A'$ are isomorphic. 
+			We will from now on only talk about \emph{the} dual object, when equality up to isomorphism is sufficient.
 			\item In a symmetric LDC: 
-			$(\eta, \varepsilon): B \dashV A 
+			$(\tau, \gamma): A^* \dashV A 
 			\Longleftrightarrow 
-			(\eta s_{\parr}, s_{\otimes} \varepsilon): A \dashV B $ 
+			(\tau s_{\parr}, s_{\otimes} \gamma): A \dashV A^* $ 
 		\end{enumerate}
 	\end{lemma}
 	
@@ -1157,7 +1157,7 @@
 	\begin{definition}[*-autonomous categories (Srinivasan \cite{srinavsan-thesis})]
 		\label{def: autoCatSrinivasan}
 		\notimportantnote{is Srinivasan the origin of this version?}
-		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\eta*, \varepsilon*): A^* \dashV A $ and $(*\eta, *\varepsilon): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
+		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
 	\end{definition}
 	
 	
