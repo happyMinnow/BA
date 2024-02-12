@@ -202,7 +202,7 @@
 	\end{center}
 	\notimportantnote{permanente Lösung für empty axiom finden}
 	
-	
+	\todo{rewrite (include constants)}
 	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ split into two respectively. These can be classified as multiplicative and additive connectives. The calculus rules for the \emph{multiplicative} conjunction $\otimes$ and disjunction $\parr$ ("par") are as follows:
 	
 	\begin{center}
@@ -227,6 +227,26 @@
 		\AxiomC{$\Gamma \vdash \Delta , A, B$}
 		\RightLabel{$\parr_R$}
 		\UnaryInfC{$\Gamma \vdash \Delta , A \parr B $}
+		\DisplayProof
+		
+		\AxiomC{$\Gamma \vdash \Delta $}
+		\RightLabel{$1_L$}
+		\UnaryInfC{$\Gamma, 1 \vdash \Delta $}
+		\DisplayProof
+		\quad
+		\AxiomC{\vphantom{$\frac{a}{b}$ } }
+		\RightLabel{$1_R $}
+		\UnaryInfC{$\vdash 1$}
+		\DisplayProof
+		
+		\AxiomC{\vphantom{$\frac{a}{b}$}}
+		\RightLabel{$\bot_L$}
+		\UnaryInfC{$\bot \vdash $}
+		\DisplayProof
+		\quad
+		\AxiomC{$\Gamma \vdash \Delta $ }
+		\RightLabel{$\bot_R $}
+		\UnaryInfC{$\Gamma \vdash \bot \Delta $}
 		\DisplayProof
 	\end{center}
 	%Bedeutung
@@ -265,6 +285,7 @@
 	\end{proof}
 	\formatnote[]{proofsymbol :/ }
 	
+	\urgentnote[inline]{include constants:}
 	The calculus rules for the \emph{additive} conjunction $\with$ and disjunction $\oplus$ ("plus") are as follows:
 	
 	\begin{center}
@@ -439,10 +460,11 @@
 		\end{align*}
 	\end{center}
 	
-	\todo[inline]{move in front of negation theorem and include negation equivalencies there? }
-	
 	\notimportantnote[noline]{Definition of $\wn \Gamma $ korrekt?}
 	Here the Kontext $\wn \Gamma $ is given by applying the $\wn $-modality to every formula in the list of $\Gamma $, i.e. $\wn \Gamma = \wn q, \wn p, \ldots $ for $\Gamma = q, p \ldots $
+	
+	\todo[inline]{move in front of negation theorem and include negation equivalencies there? }
+	
 	
 	\begin{remark}
 		These modalities are called exponentials because of the
