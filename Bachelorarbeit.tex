@@ -178,12 +178,10 @@
 	\end{center}
 	
 	
-	Obviously, we have an identity and a cut rule:
-	%Erklaerung der importance von Cut?
-	%anderes Wort als obviously!....................................................................................................................
+	First, we have the identity and negation rules:
 	
 	\begin{center}
-		\AxiomC{\vphantom{$\frac{a}{b}$} } %temporäre Lösung (auch an anderen Stellen verwendet?)
+		\AxiomC{\vphantom{$\frac{a}{b}$} } %temporäre Lösung (auch an anderen Stellen verwendet!)
 		\RightLabel{id}
 		\UnaryInfC{$A \vdash A$}
 		\DisplayProof
@@ -193,6 +191,14 @@
 		\RightLabel{Cut}
 		\BinaryInfC{$\Gamma , \Gamma' \vdash \Delta , \Delta' $}
 		\DisplayProof
+		
+		\AxiomC{$\Gamma \vdash A, \Delta $}
+		\RightLabel{neg.L}
+		\UnaryInfC{$\Gamma, A^\bot \vdash \Delta $}
+		\quad
+		\AxiomC{$\Gamma, A \vdash \Delta $}
+		\RightLabel{neg.R}
+		\UnaryInfC{$\Gamma \vdash A^\bot \Delta $}
 	\end{center}
 	\notimportantnote{permanente Lösung für empty axiom finden}
 	
@@ -319,48 +325,89 @@
 	
 	\todo[inline]{above remark unnötig?}
 	
-	We now define the linear negation $(\cdot)^\bot$ as follows:
+	\begin{definition}
+		We call two formulas $A$ and $B $ \emph{(linearly) equivalent} iff $A \vdash B$ and $A \vdash B $ are provable.
+	\end{definition}
 	
-	\begin{itemize}
-		\item For the constants: 
-		\begin{align*}
-			1^\bot := \bot \quad 
-			& 
-			\bot^\bot := 1 
-			\\
-			\top^\bot := 0 \quad 
-			& 
-			0^\bot := \top
-		\end{align*}
-		\item For atomic formulas: the negation of $p$ is $p^\bot$. The negation $\left(p^\bot\right)^\bot$ of $p^\bot $ is $p$.
-		\item For non-atomic formulas we define the negation by the De Morgan equations:
-		\begin{align*}
-			\left(A \otimes B\right)^\bot := A^\bot \parr B^\bot 
-			\quad
-			&
-			\left(A \parr B\right)^\bot := A^\bot \otimes B^\bot 
-			\\
-			\left(A \with B\right)^\bot := A^\bot \oplus B^\bot 
-			\quad
-			&
-			\left(A \oplus B\right)^\bot := A^\bot \with B^\bot 
-		\end{align*}
-		\item We define linear implication with the par-operator: 
+	
+	\begin{theorem}
+		We have the following equivalencies for the linear negation:
+		\begin{itemize}
+			\item For the constants: 
+			\begin{align*}
+				1^\bot \equiv \bot \quad 
+				& 
+				\bot^\bot \equiv 1 
+				\\
+				\top^\bot \equiv \quad 
+				& 
+				0^\bot \equiv \top
+			\end{align*}
+			\item The negation is involutory: 
+			$(A^\bot)^\bot \equiv A $
+			\item The De Morgan equations hold:
+			\begin{align*}
+				\left(A \otimes B\right)^\bot \equiv A^\bot \parr B^\bot 
+				\quad
+				&
+				\left(A \parr B\right)^\bot \equiv A^\bot \otimes B^\bot 
+				\\
+				\left(A \with B\right)^\bot \equiv A^\bot \oplus B^\bot 
+				\quad
+				&
+				\left(A \oplus B\right)^\bot \equiv A^\bot \with B^\bot 
+			\end{align*}
+		\end{itemize}
+		We define linear implication with the par-operator: 
 		\begin{align*}
 			A \multimap B := A^\bot \parr B
 		\end{align*}
-		\item As with classical logic, we translate a two-sided sequent 
+		As with classical logic, we can now translate a two-sided sequent 
 		$A_1, ..., A_n \vdash B_1, ..., B_n$ 
 		into a right-sided sequent 
 		$\vdash A_1^\bot, ... A_n^\bot, B_1, ... B_n$ 
 		by negation of the left-hand side and vice versa.
 		With this it is easily seen that $\vdash A\multimap B$ iff $A \vdash B$.
+	\end{theorem}
+	
+	\begin{proof}
+		We shall only prove parts as the rest is trivial.
 		
-	\end{itemize}
+		\begin{itemize}
+			\item $1^\bot \vdash \bot $: 
+				\begin{center}
+					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\UnaryInfC{$\vdash 1 $}
+					\UnaryInfC{$\vdash 1, \bot $}
+					\UnaryInfC{$1^\bot \vdash \bot $}
+					\DisplayProof
+				\end{center}
+			\item $(A^\bot)^\bot \vdash A $:
+				\begin{center}
+					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\UnaryInfC{$A \vdash A $}
+					\UnaryInfC{$\vdash A^\bot, A $}
+					\UnaryInfC{$(A^\bot)^\bot \vdash A $}
+					\DisplayProof
+				\end{center}
+			\item $\left(A \otimes B\right)^\bot \vdash A^\bot \parr B^\bot $:
+				\begin{center}
+					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\UnaryInfC{$A \vdash A $}
+					\UnaryInfC{$\vdash A^\bot, A $}
+					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\UnaryInfC{$B \vdash B $}
+					\UnaryInfC{$\vdash B^\bot, B $}
+					\BinaryInfC{$\vdash A \otimes B, A^\bot, B^\bot $}
+					\UnaryInfC{$\left(A \otimes B\right)^\bot \vdash A^\bot, B^\bot $}
+					\UnaryInfC{$\left(A \otimes B\right)^\bot \vdash A^\bot \parr B^\bot $}
+					\DisplayProof
+				\end{center}
+		\end{itemize}
+		\formatnote{proofsymbol}
+	\end{proof}
 	
-	\todo[inline]{cut last point and formulate introduction rule for negati	on instead...}
-	
-	With this our calculus rules above become quite redundant and we can restrict them on the rules for the right-hand side. However, these redundancies become necessary when dealing with a negation-free fragment of LL.
+	With this our calculus rules above become quite redundant and we can restrict them on the rules for the right-hand side. However, these redundancies are necessary when dealing with a negation-free fragment of LL.
 	
 	The modality connectives reintroduce stable truths and with them the the weakening and contraction rules known from classical logic:
 	
@@ -386,11 +433,13 @@
 		\DisplayProof
 		
 		\begin{align*}
-			\left(\oc A \right) ^\bot = \wn \left( A^\bot \right) 
+			\left(\oc A \right) ^\bot \equiv \wn \left( A^\bot \right) 
 			\quad 
-			\left(\wn A \right) ^\bot = \oc \left( A^\bot \right) 
+			\left(\wn A \right) ^\bot \equiv \oc \left( A^\bot \right) 
 		\end{align*}
 	\end{center}
+	
+	\todo[inline]{move in front of negation theorem and include negation equivalencies there? }
 	
 	\notimportantnote[noline]{Definition of $\wn \Gamma $ korrekt?}
 	Here the Kontext $\wn \Gamma $ is given by applying the $\wn $-modality to every formula in the list of $\Gamma $, i.e. $\wn \Gamma = \wn q, \wn p, \ldots $ for $\Gamma = q, p \ldots $
