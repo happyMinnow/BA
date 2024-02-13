@@ -161,6 +161,7 @@
 	\urgentnote{formula? term? look up basic terminology}
 	%used "formula" an unterschiedlichen Stellen
 	formulas $p, q, \phi, \psi, p^\bot$ etc. and constants $1, \bot, 0, \top$ with connectives $\otimes, \parr, \with, \oplus, \oc, \wn$.
+	\urgentnote[inline]{negation is connective?}
 	
 	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite lists of formulas (e.g.: $\Gamma = (p_1, ..., p_n)$) and $A$ and $B$ formulas. %clunky sentence
 	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. For structural rules we only have the exchange rule, missing the (general) weakening and contraction rules known from classical logic:
@@ -178,7 +179,7 @@
 	\end{center}
 	
 	
-	First, we have the identity and negation rules:
+	We have the identity and negation rules:
 	
 	\begin{center}
 		\AxiomC{\vphantom{$\frac{a}{b}$} } %temporäre Lösung (auch an anderen Stellen verwendet!)
@@ -347,7 +348,7 @@
 	\todo[inline]{above remark unnötig?}
 	
 	\begin{definition}
-		We call two formulas $A$ and $B $ \emph{(linearly) equivalent} iff $A \vdash B$ and $A \vdash B $ are provable.
+		We call two formulas $A$ and $B $ \emph{(linearly) equivalent} iff $A \vdash B$ and $B \vdash A $ are provable.
 	\end{definition}
 	
 	
