@@ -163,7 +163,7 @@
 	formulas $p, q, \phi, \psi, p^\bot$ etc. and constants $1, \bot, 0, \top$ with connectives $\otimes, \parr, \with, \oplus, \oc, \wn$.
 	\urgentnote[inline]{negation is connective?}
 	
-	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite lists of formulas (e.g.: $\Gamma = (p_1, ..., p_n)$) and $A$ and $B$ formulas. %clunky sentence
+	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite sequents of formulas e.g.: $\Gamma = (p_1, ..., p_n)$ and $A$ and $B$ formulas. %clunky sentence
 	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. For structural rules we only have the exchange rule, missing the (general) weakening and contraction rules known from classical logic:
 	
 	\begin{center}
@@ -322,6 +322,16 @@
 		\AxiomC{$\Gamma \vdash B , \Delta $}
 		\RightLabel{$\oplus_{R2}$}
 		\UnaryInfC{$\Gamma \vdash A \oplus B ,  \Delta $}
+		\DisplayProof
+		
+		\AxiomC{\vphantom{$\frac{a}{b}$}}
+		\RightLabel{$0_L$ }
+		\UnaryInfC{$\Gamma, 0 \vdash \Delta $}
+		\DisplayProof
+		\quad
+		\AxiomC{\vphantom{$\frac{a}{b}$}}
+		\RightLabel{$\top_R$ }
+		\UnaryInfC{$\Gamma \vdash \top , \Delta $}
 		\DisplayProof
 	\end{center}
 	
@@ -541,6 +551,8 @@
 	
 	%=============================================================================================================
 	\subsection{Proof-structures and proof-nets}
+	
+	\todo[inline]{do I even that stuff??}
 	
 	We shall now leave behind any capitalistic resource interpretation and concentrate on what linear logic was invented for: analyzing proofs.
 	
@@ -1586,6 +1598,8 @@
 	\questionnote[inline]{what did I need Barr's definition for, again?}
 	
 	
+	
+	\section{CatSem of LinLog}
 	\todo[inline]{Cats as LinLog semantics and LinLog syntax as cat}
 	%Cats as LinLog semantics
 
