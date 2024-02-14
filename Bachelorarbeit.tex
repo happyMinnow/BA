@@ -155,16 +155,22 @@
 	\subsection{Syntax}
 	\todo[inline]{section needs serious reformatting... }
 	\todo[inline]{main source: IntroLinLog}
-	\todo[inline]{sequent calculus constants}
+	\todo[inline]{definition: "proof"; "cut elimination"}
+	\notimportantnote[inline]{MAYBE to be added: \textbackslash forall and \textbackslash exist. Do we want predicate logic?}
+	%comments..............................................................................................
+	
 	
 	Formulas are built from atomic 
-	\urgentnote{formula? term? look up basic terminology}
+	\urgentnote{formula? pre-formula? term? look up basic terminology}
 	%used "formula" an unterschiedlichen Stellen
-	formulas $p, q, \phi, \psi, p^\bot$ etc. and constants $1, \bot, 0, \top$ with connectives $\otimes, \parr, \with, \oplus, \oc, \wn$.
-	\urgentnote[inline]{negation is connective?}
+	formulas $p, q, \phi, \psi, p^\bot$ etc. and constants $1, \bot, 0, \top$ with binary connectives $\otimes, \parr, \with, \oplus$ and unary connectives $\oc, \wn (\cdot)^\bot $.
+	\urgentnote[inline]{negation is connective? negated atomic formulas still atomic?}
 	
-	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite sequents of formulas e.g.: $\Gamma = (p_1, ..., p_n)$ and $A$ and $B$ formulas. %clunky sentence
-	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. For structural rules we only have the exchange rule, missing the (general) weakening and contraction rules known from classical logic:
+	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite sequents of formulas (e.g.: $\Gamma = p_1, ..., p_n$) and $A$ and $B$ formulas. %clunky sentence
+	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. 
+	
+	\paragraph{Structural rules}
+	We only have the exchange rule as a structural, missing the (general) weakening and contraction rules known from classical logic:
 	
 	\begin{center}
 		\AxiomC{$\Gamma, A, B, \Gamma' \vdash \Delta$}
@@ -179,6 +185,7 @@
 	\end{center}
 	
 	
+	\paragraph{Identity rules}
 	We have the identity and negation rules:
 	
 	\begin{center}
@@ -196,15 +203,20 @@
 		\AxiomC{$\Gamma \vdash A, \Delta $}
 		\RightLabel{neg.L}
 		\UnaryInfC{$\Gamma, A^\bot \vdash \Delta $}
+		\DisplayProof
 		\quad
 		\AxiomC{$\Gamma, A \vdash \Delta $}
 		\RightLabel{neg.R}
-		\UnaryInfC{$\Gamma \vdash A^\bot \Delta $}
+		\UnaryInfC{$\Gamma \vdash A^\bot, \Delta $}
+		\DisplayProof
 	\end{center}
 	\notimportantnote{permanente Lösung für empty axiom finden}
 	
-	\todo{rewrite (include constants)}
-	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ split into two respectively. These can be classified as multiplicative and additive connectives. The calculus rules for the \emph{multiplicative} conjunction $\otimes$ and disjunction $\parr$ ("par") are as follows:
+	
+	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ as well as their respective units split into two respectively. These can be classified as multiplicative and additive connectives. 
+	
+	\paragraph{Multiplicatives }
+	The calculus rules for the \emph{multiplicative} conjunction $\otimes$, disjunction $\parr$ ("par") and their units $1$ and $\bot$ ("bottom") are as follows:
 	
 	\begin{center}
 		\AxiomC{$\Gamma , A, B \vdash \Delta$}
@@ -247,7 +259,7 @@
 		\quad
 		\AxiomC{$\Gamma \vdash \Delta $ }
 		\RightLabel{$\bot_R $}
-		\UnaryInfC{$\Gamma \vdash \bot \Delta $}
+		\UnaryInfC{$\Gamma \vdash \bot , \Delta $}
 		\DisplayProof
 	\end{center}
 	%Bedeutung
@@ -286,7 +298,7 @@
 	\end{proof}
 	\formatnote[]{proofsymbol :/ }
 	
-	\urgentnote[inline]{include constants:}
+	\paragraph{Additives}
 	The calculus rules for the \emph{additive} conjunction $\with$ and disjunction $\oplus$ ("plus") are as follows:
 	
 	\begin{center}
@@ -335,10 +347,17 @@
 		\DisplayProof
 	\end{center}
 	
-	Notice the difference between $\with_R$ and $\otimes_R$ (and dually between $\oplus_L$ and $\parr_L$): while for $\otimes_R$ the contexts $\Gamma$ etc. are arbitrary and get combined in the conclusion, $\with_R$ requires the contexts to be equal. In classical logic these rules would be equivalent using its additional structural rules.
+	Notice the difference between $\with_R$ and $\otimes_R$ (and dually between $\oplus_L$ and $\parr_L$): while for $\otimes_R$ the contexts $\Gamma$ etc. are arbitrary and get combined in the conclusion, $\with_R$ requires the contexts to be equal. In classical logic these rules can be shown to be equivalent using its additional structural rules.
+	
+	Furthermore, note that the contexts in the unit introduction rules are arbitrary, and that each unit only has one introduction rule as opposed to the multiplicative units.
+	
+	
 	
 	\begin{remark}
-		Similarly to the multiplicative connectives above, the additive connectives have a invertibility statement: $\Gamma \vdash A \with B $ is provable iff $\Gamma \vdash A$ and $\Gamma \vdash B$ are provable. (The statement for $\oplus$ is formulated dually)
+		Similarly to the multiplicative connectives above, the additive connectives have a invertibility statement: $\Gamma \vdash A \with B $ is provable iff $\Gamma \vdash A$ and $\Gamma \vdash B$ are provable. Dually, $A \oplus B \vdash \Delta $ iff $A \vdash \Delta $ and $B \vdash \Delta $.
+		
+		\todo[noline]{remark unnötig?}
+		
 	\end{remark}
 	
 	\begin{proof}
@@ -353,13 +372,88 @@
 			\DisplayProof
 		\end{center}
 		$\Gamma \vdash B$ follows the same way.
+		
 	\end{proof}
 	
-	\todo[inline]{above remark unnötig?}
+	
 	
 	\begin{definition}
 		We call two formulas $A$ and $B $ \emph{(linearly) equivalent} iff $A \vdash B$ and $B \vdash A $ are provable.
 	\end{definition}
+	
+	\begin{remark}
+		The names "multiplicative" and "additive" are motivated by the following relations:
+		
+		\begin{align*}
+			A \otimes (B \oplus C) 
+			& \equiv (A \otimes B) \oplus (A \otimes C)
+			\\
+			A \parr (B \with C ) 
+			& \equiv (A \parr B) \with (A \parr C )
+		\end{align*}
+		
+		The similarities to basic arithmetic don't end there:
+		
+		\begin{align*}
+			A \otimes 0 \equiv 0 ,
+			\quad 
+			A \parr \top \equiv \top
+		\end{align*}
+	\end{remark}
+	
+	
+	\begin{proof}
+		We only prove $A \otimes (B \oplus C) \equiv (A \otimes B) \oplus (A \otimes C)$.
+		\begin{itemize}
+			\item $A \otimes (B \oplus C) \vdash (A \otimes B) \oplus (A \otimes C)$:
+			\begin{center}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\AxiomC{}
+				\UnaryInfC{$B \vdash B $}
+				\BinaryInfC{$A, B 
+					\vdash A \otimes B $}
+				\UnaryInfC{$A , B 
+					\vdash (A \otimes B) \oplus (A \otimes C ) $}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\AxiomC{}
+				\UnaryInfC{$C \vdash C$}
+				\BinaryInfC{$A, C 
+					\vdash A \otimes C $}
+				\UnaryInfC{$A , C 
+					\vdash (A \otimes B) \oplus (A \otimes C ) $}
+				\BinaryInfC{$A, B \oplus C 
+					\vdash (A \otimes B) \oplus (A \otimes C ) $}
+				\UnaryInfC{$A \otimes (B \oplus C) 
+					\vdash (A \otimes B) \oplus (A \otimes C ) $}
+				\DisplayProof
+			\end{center}
+			
+			\item $(A \otimes B) \oplus (A \otimes C) \vdash A \otimes (B \oplus C) $:
+			\begin{center}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\AxiomC{}
+				\UnaryInfC{$B \vdash B $}
+				\UnaryInfC{$B \vdash B \oplus C$}
+				\BinaryInfC{$A, B 
+					\vdash A \otimes (B \oplus C ) $}
+				\UnaryInfC{$A \otimes B \vdash A \otimes (B \oplus C ) $}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\AxiomC{}
+				\UnaryInfC{$C \vdash C $}
+				\UnaryInfC{$C \vdash B \oplus C$}
+				\BinaryInfC{$A, C 
+					\vdash A \otimes (B \oplus C ) $}
+				\UnaryInfC{$A \otimes C \vdash A \otimes (B \oplus C ) $}
+				\BinaryInfC{$(A \otimes B) \oplus (A \otimes C) \vdash A \otimes (B \oplus C) $}
+				\DisplayProof
+			\end{center}
+		\end{itemize}
+		The proof for the second equation is similar, the equations for the constants trivial.
+	\end{proof}
 	
 	
 	\begin{theorem}
@@ -390,16 +484,6 @@
 				\left(A \oplus B\right)^\bot \equiv A^\bot \with B^\bot 
 			\end{align*}
 		\end{itemize}
-		We define linear implication with the par-operator: 
-		\begin{align*}
-			A \multimap B := A^\bot \parr B
-		\end{align*}
-		As with classical logic, we can now translate a two-sided sequent 
-		$A_1, ..., A_n \vdash B_1, ..., B_n$ 
-		into a right-sided sequent 
-		$\vdash A_1^\bot, ... A_n^\bot, B_1, ... B_n$ 
-		by negation of the left-hand side and vice versa.
-		With this it is easily seen that $\vdash A\multimap B$ iff $A \vdash B$.
 	\end{theorem}
 	
 	\begin{proof}
@@ -409,8 +493,11 @@
 			\item $1^\bot \vdash \bot $: 
 				\begin{center}
 					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\RightLabel{$1_R$}
 					\UnaryInfC{$\vdash 1 $}
+					\RightLabel{$\bot_R$}
 					\UnaryInfC{$\vdash 1, \bot $}
+					\RightLabel{neg.L}
 					\UnaryInfC{$1^\bot \vdash \bot $}
 					\DisplayProof
 				\end{center}
@@ -439,8 +526,29 @@
 		\formatnote{proofsymbol}
 	\end{proof}
 	
-	With this our calculus rules above become quite redundant and we can restrict them on the rules for the right-hand side. However, these redundancies are necessary when dealing with a negation-free fragment of LL.
+	With the negation our calculus rules become therefore quite redundant and we can restrict them on the rules for the right-hand side by translating any two-sided sequent 
+	$A_1, ..., A_n \vdash B_1, ..., B_n$ 
+	into a one-sided sequent 
+	$\vdash A_1^\bot, ... A_n^\bot, B_1, ... B_n$. 
+	However, these redundancies are necessary when dealing with a negation-free fragment of LL as we will later do.
 	
+	
+	\begin{definition}[Linear implication and equivalence connectives]
+		We define linear implication with the par-operator: 
+		\todo[]{not really connectives...}
+		%comment
+		\begin{align*}
+			A \multimap B := A^\bot \parr B
+		\end{align*}
+		
+		We further define (syntactical) linear equivalence:
+		\begin{align*}
+			A \multimapboth B := (A \multimap B) \with (B \multimap A)
+		\end{align*}
+		It is easily seen that $\vdash A\multimap B$ iff $A \vdash B$ and that $\vdash A \multimapboth B$ iff $A \equiv B$. 
+	\end{definition}
+	
+	\paragraph{Exponentials }
 	The modality connectives reintroduce stable truths and with them the the weakening and contraction rules known from classical logic:
 	
 	\begin{center}
@@ -470,17 +578,13 @@
 			\left(\wn A \right) ^\bot \equiv \oc \left( A^\bot \right) 
 		\end{align*}
 	\end{center}
-	
+	\todo[inline]{define left hand side rules! (or declare above equations as definitions... but more rules is more good)}
 	\notimportantnote[noline]{Definition of $\wn \Gamma $ korrekt?}
 	Here the Kontext $\wn \Gamma $ is given by applying the $\wn $-modality to every formula in the list of $\Gamma $, i.e. $\wn \Gamma = \wn q, \wn p, \ldots $ for $\Gamma = q, p \ldots $
 	
-	\todo[inline]{move in front of negation theorem and include negation equivalencies there? }
-	
 	
 	\begin{remark}
-		These modalities are called exponentials because of the
-		\urgentnote{definition linear equivalence}
-		following relation:
+		These modalities are called exponentials because of the	following relation:
 		\begin{align*}
 			\oc\left(A \with B\right) \equiv \oc A \otimes \oc B ,
 			\quad 
@@ -495,7 +599,7 @@
 			\AxiomC{}
 			\UnaryInfC{$\vdash A, A^\bot $}
 			\RightLabel{$\oplus $}
-			\UnaryInfC{$A^\bot, A\oplus B$}
+			\UnaryInfC{$\vdash A^\bot, A\oplus B$}
 			\RightLabel{$\wn_D $}
 			\UnaryInfC{$\vdash A^\bot, \wn (A\oplus B) $}
 			\RightLabel{$\oc $}
@@ -516,7 +620,7 @@
 			\UnaryInfC{$\vdash \oc(A^\bot) \otimes \oc (B^\bot) , \wn (A\oplus B) $}
 			\RightLabel{$(-)^\bot$}
 			\UnaryInfC{$\vdash (\wn A \parr \wn B)^\bot , \wn (A \oplus B) $}
-			\UnaryInfC{$\vdash \wn A \parr \wn B \multimap \wn (A \oplus B)$}
+			\UnaryInfC{$\wn A \parr \wn B \vdash \wn (A \oplus B)$}
 			\DisplayProof
 			
 			
@@ -528,7 +632,7 @@
 			
 			\AxiomC{}
 			\UnaryInfC{$\vdash B^\bot, B$}
-			\UnaryInfC{$\vdash B^\bot, B$}
+			\UnaryInfC{$\vdash B^\bot, \wn B$}
 			\RightLabel{$\wn_W$}
 			\UnaryInfC{$\vdash B^\bot, \wn B , \wn A $}
 			
@@ -536,27 +640,21 @@
 			\BinaryInfC{$\vdash A^\bot \with B^\bot , \wn A , \wn B $}
 			\UnaryInfC{$\vdash \oc (A^\bot \with B^\bot) , \wn A, \wn B $}
 			\UnaryInfC{$\vdash \oc (A^\bot \with B^\bot) , \wn A \parr \wn B $}
-			\UnaryInfC{$\vdash \wn (A \oplus B) \multimap \wn A \parr \wn B $}
+			\UnaryInfC{$\wn (A \oplus B) \vdash \wn A \parr \wn B $}
 			\DisplayProof
 		\end{center}
 	\end{proof}
 	
 	\formatnote{proofsymbol なんで？ :( }
 	
-	%.......................................
-	\notimportantnote[inline]{MAYBE to be added: \textbackslash forall and \textbackslash exist. Do we want predicate logic?}
-	%comment..............................................................................................
-	
 	
 	
 	%=============================================================================================================
 	\subsection{Proof-structures and proof-nets}
 	
-	\todo[inline]{do I even that stuff??}
+	\urgentnote[inline]{do I even want/need proof nets??}
 	
 	We shall now leave behind any capitalistic resource interpretation and concentrate on what linear logic was invented for: analyzing proofs.
-	
-	\todo[inline]{to be continued... }
 	\todo[inline]{how to typeset axiom links? :(}
 	
 	
