@@ -552,24 +552,45 @@
 	The modality connectives reintroduce stable truths and with them the the weakening and contraction rules known from classical logic:
 	
 	\begin{center}
-		\AxiomC{$\vdash \wn\Gamma , A$}
-		\RightLabel{$\oc$}
-		\UnaryInfC{$\vdash \wn\Gamma , \oc A$}
+		\AxiomC{$\Gamma \vdash \Delta$}
+		\RightLabel{$\oc_W$ (weakening)}
+		\UnaryInfC{$\Gamma \oc A \vdash \Delta $}
 		\DisplayProof
 		\quad
-		\AxiomC{$\vdash \Gamma$}
-		\RightLabel{$\wn_W$ (weakening)}
-		\UnaryInfC{$\vdash \Gamma , \wn A$}
+		\AxiomC{$\Gamma, A \vdash \Delta $}
+		\RightLabel{$\oc_D$ (dereliction)}
+		\UnaryInfC{$\Gamma, \oc A \vdash \Delta $}
 		\DisplayProof
 		
-		\AxiomC{$\vdash \Gamma , A$}
-		\RightLabel{$\wn_D$ (dereliction)}
-		\UnaryInfC{$\vdash \Gamma , \wn A$}\
+		\AxiomC{$\Gamma , \oc A, \oc A \vdash \Delta $}
+		\RightLabel{$\oc_C$ (contraction)}
+		\UnaryInfC{$\Gamma , \oc A \vdash \Delta $}
 		\DisplayProof
 		\quad
-		\AxiomC{$\vdash \Gamma , \wn A , \wn A $}
+		\AxiomC{$\oc\Gamma \vdash \wn\Delta , A$}
+		\RightLabel{$\oc_R$}
+		\UnaryInfC{$\oc\Gamma \vdash \wn\Delta , \oc A$}
+		\DisplayProof
+		
+		
+		\AxiomC{$\Gamma \vdash \Delta $}
+		\RightLabel{$\wn_W$ (weakening)}
+		\UnaryInfC{$\Gamma \vdash \Delta , \wn A$}
+		\DisplayProof
+		\quad
+		\AxiomC{$\Gamma \vdash \Delta , A$}
+		\RightLabel{$\wn_D$ (dereliction)}
+		\UnaryInfC{$\Gamma \vdash \Delta , \wn A$}\
+		\DisplayProof
+		
+		\AxiomC{$\Gamma \vdash \Delta , \wn A , \wn A $}
 		\RightLabel{$\wn_C$ (contraction)}
-		\UnaryInfC{$\vdash \Gamma , \wn A$}
+		\UnaryInfC{$\Gamma \vdash \Delta , \wn A$}
+		\DisplayProof
+		\quad
+		\AxiomC{$\oc \Gamma, A \vdash \wn \Delta $}
+		\RightLabel{$\wn_L$}
+		\UnaryInfC{$\oc \Gamma , \wn A \vdash \Delta $}
 		\DisplayProof
 		
 		\begin{align*}
@@ -578,9 +599,7 @@
 			\left(\wn A \right) ^\bot \equiv \oc \left( A^\bot \right) 
 		\end{align*}
 	\end{center}
-	\todo[inline]{define left hand side rules! (or declare above equations as definitions... but more rules is more good)}
-	\notimportantnote[noline]{Definition of $\wn \Gamma $ korrekt?}
-	Here the Kontext $\wn \Gamma $ is given by applying the $\wn $-modality to every formula in the list of $\Gamma $, i.e. $\wn \Gamma = \wn q, \wn p, \ldots $ for $\Gamma = q, p \ldots $
+	Here the Kontext $\oc \Gamma $ is given by applying the $\oc $-modality to every formula in the list of $\Gamma $, i.e. $\oc \Gamma = \oc q, \oc p, \ldots $ for $\Gamma = q, p \ldots $; same for $\wn \Delta$
 	
 	
 	\begin{remark}
@@ -594,55 +613,62 @@
 	
 	\begin{proof}
 		We will only prove the second equivalence. The first is acquired by duality.
+		\begin{itemize}
+			\item 
+			$\wn A \parr \wn B \vdash \wn (A \oplus B )$:
+				\begin{center}
+					\AxiomC{}
+					\UnaryInfC{$\vdash A, A^\bot $}
+					\RightLabel{$\oplus $}
+					\UnaryInfC{$\vdash A^\bot, A\oplus B$}
+					\RightLabel{$\wn_D $}
+					\UnaryInfC{$\vdash A^\bot, \wn (A\oplus B) $}
+					\RightLabel{$\oc $}
+					\UnaryInfC{$\vdash\oc (A^\bot), \wn (A\oplus B) $}
+					
+					\AxiomC{}
+					\UnaryInfC{$\vdash B, B^\bot$}
+					\RightLabel{$\oplus $}
+					\UnaryInfC{$\vdash B^\bot, A\oplus B$}
+					\RightLabel{$\wn_D $}
+					\UnaryInfC{$\vdash B^\bot, \wn (A\oplus B) $}
+					\RightLabel{$\oc $}
+					\UnaryInfC{$\vdash \oc (B^\bot), \wn (A\oplus B) $}
+					
+					\RightLabel{$\otimes $}
+					\BinaryInfC{$\vdash \oc(A^\bot) \otimes \oc (B^\bot) , \wn (A\oplus B) , \wn (A\oplus B) $}
+					\RightLabel{$\wn_D $}
+					\UnaryInfC{$\vdash \oc(A^\bot) \otimes \oc (B^\bot) , \wn (A\oplus B) $}
+					\RightLabel{$(-)^\bot$}
+					\UnaryInfC{$\vdash (\wn A \parr \wn B)^\bot , \wn (A \oplus B) $}
+					\UnaryInfC{$\wn A \parr \wn B \vdash \wn (A \oplus B)$}
+					\DisplayProof
+				\end{center}
+			
+			\item 
+			$\wn (A \oplus B) \vdash \wn A \parr \wn B $:
+				\begin{center}
+					\AxiomC{}
+					\UnaryInfC{$\vdash A^\bot , A$}
+					\UnaryInfC{$\vdash A^\bot, \wn A$}
+					\RightLabel{$\wn_W$}
+					\UnaryInfC{$\vdash A^\bot, \wn A, \wn B $}
+					
+					\AxiomC{}
+					\UnaryInfC{$\vdash B^\bot, B$}
+					\UnaryInfC{$\vdash B^\bot, \wn B$}
+					\RightLabel{$\wn_W$}
+					\UnaryInfC{$\vdash B^\bot, \wn B , \wn A $}
+					
+					\RightLabel{$\with $}
+					\BinaryInfC{$\vdash A^\bot \with B^\bot , \wn A , \wn B $}
+					\UnaryInfC{$\vdash \oc (A^\bot \with B^\bot) , \wn A, \wn B $}
+					\UnaryInfC{$\vdash \oc (A^\bot \with B^\bot) , \wn A \parr \wn B $}
+					\UnaryInfC{$\wn (A \oplus B) \vdash \wn A \parr \wn B $}
+					\DisplayProof
+				\end{center}
+		\end{itemize}
 		
-		\begin{center}
-			\AxiomC{}
-			\UnaryInfC{$\vdash A, A^\bot $}
-			\RightLabel{$\oplus $}
-			\UnaryInfC{$\vdash A^\bot, A\oplus B$}
-			\RightLabel{$\wn_D $}
-			\UnaryInfC{$\vdash A^\bot, \wn (A\oplus B) $}
-			\RightLabel{$\oc $}
-			\UnaryInfC{$\vdash\oc (A^\bot), \wn (A\oplus B) $}
-			
-			\AxiomC{}
-			\UnaryInfC{$\vdash B, B^\bot$}
-			\RightLabel{$\oplus $}
-			\UnaryInfC{$\vdash B^\bot, A\oplus B$}
-			\RightLabel{$\wn_D $}
-			\UnaryInfC{$\vdash B^\bot, \wn (A\oplus B) $}
-			\RightLabel{$\oc $}
-			\UnaryInfC{$\vdash \oc (B^\bot), \wn (A\oplus B) $}
-			
-			\RightLabel{$\otimes $}
-			\BinaryInfC{$\vdash \oc(A^\bot) \otimes \oc (B^\bot) , \wn (A\oplus B) , \wn (A\oplus B) $}
-			\RightLabel{$\wn_D $}
-			\UnaryInfC{$\vdash \oc(A^\bot) \otimes \oc (B^\bot) , \wn (A\oplus B) $}
-			\RightLabel{$(-)^\bot$}
-			\UnaryInfC{$\vdash (\wn A \parr \wn B)^\bot , \wn (A \oplus B) $}
-			\UnaryInfC{$\wn A \parr \wn B \vdash \wn (A \oplus B)$}
-			\DisplayProof
-			
-			
-			\AxiomC{}
-			\UnaryInfC{$\vdash A^\bot , A$}
-			\UnaryInfC{$\vdash A^\bot, \wn A$}
-			\RightLabel{$\wn_W$}
-			\UnaryInfC{$\vdash A^\bot, \wn A, \wn B $}
-			
-			\AxiomC{}
-			\UnaryInfC{$\vdash B^\bot, B$}
-			\UnaryInfC{$\vdash B^\bot, \wn B$}
-			\RightLabel{$\wn_W$}
-			\UnaryInfC{$\vdash B^\bot, \wn B , \wn A $}
-			
-			\RightLabel{$\with $}
-			\BinaryInfC{$\vdash A^\bot \with B^\bot , \wn A , \wn B $}
-			\UnaryInfC{$\vdash \oc (A^\bot \with B^\bot) , \wn A, \wn B $}
-			\UnaryInfC{$\vdash \oc (A^\bot \with B^\bot) , \wn A \parr \wn B $}
-			\UnaryInfC{$\wn (A \oplus B) \vdash \wn A \parr \wn B $}
-			\DisplayProof
-		\end{center}
 	\end{proof}
 	
 	\formatnote{proofsymbol なんで？ :( }
