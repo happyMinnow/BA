@@ -349,14 +349,14 @@
 	
 	Notice the difference between $\with_R$ and $\otimes_R$ (and dually between $\oplus_L$ and $\parr_L$): while for $\otimes_R$ the contexts $\Gamma$ etc. are arbitrary and get combined in the conclusion, $\with_R$ requires the contexts to be equal. In classical logic these rules can be shown to be equivalent using its additional structural rules.
 	
-	Furthermore, note that the contexts in the unit introduction rules are arbitrary, and that each unit only has one introduction rule as opposed to the multiplicative units.
+	Furthermore, note that the unit introduction rules also introduce arbitrary contexts, and that each unit only has one introduction rule as opposed to the multiplicative units.
 	
 	
 	
 	\begin{remark}
 		Similarly to the multiplicative connectives above, the additive connectives have a invertibility statement: $\Gamma \vdash A \with B $ is provable iff $\Gamma \vdash A$ and $\Gamma \vdash B$ are provable. Dually, $A \oplus B \vdash \Delta $ iff $A \vdash \Delta $ and $B \vdash \Delta $.
 		
-		\todo[noline]{remark unnötig?}
+		\notimportantnote[noline]{remark unnötig?}
 		
 	\end{remark}
 	
@@ -378,7 +378,7 @@
 	
 	
 	\begin{definition}
-		We call two formulas $A$ and $B $ \emph{(linearly) equivalent} iff $A \vdash B$ and $B \vdash A $ are provable.
+		We call two formulas $A$ and $B $ \emph{(linearly) equivalent} iff $A \vdash B$ and $B \vdash A $ are provable, and write $A \equiv B$.
 	\end{definition}
 	
 	\begin{remark}
@@ -590,7 +590,7 @@
 		\quad
 		\AxiomC{$\oc \Gamma, A \vdash \wn \Delta $}
 		\RightLabel{$\wn_L$}
-		\UnaryInfC{$\oc \Gamma , \wn A \vdash \Delta $}
+		\UnaryInfC{$\oc \Gamma , \wn A \vdash \wn \Delta $}
 		\DisplayProof
 		
 		\begin{align*}
@@ -599,7 +599,7 @@
 			\left(\wn A \right) ^\bot \equiv \oc \left( A^\bot \right) 
 		\end{align*}
 	\end{center}
-	Here the Kontext $\oc \Gamma $ is given by applying the $\oc $-modality to every formula in the list of $\Gamma $, i.e. $\oc \Gamma = \oc q, \oc p, \ldots $ for $\Gamma = q, p \ldots $; same for $\wn \Delta$
+	Here the Kontext $\oc \Gamma $ is given by applying the $\oc $-modality to every formula in the list of $\Gamma $, i.e. $\oc \Gamma = \oc q, \oc p, \ldots $ for $\Gamma = q, p \ldots $; same for $\wn \Delta$.
 	
 	
 	\begin{remark}
@@ -1056,6 +1056,7 @@
 				&
 				\category{D}(\functor{F}_0 A , \functor{F}_0 C)
 			\end{tikzcd}
+			
 			\begin{tikzcd}
 				&
 				\Unit
