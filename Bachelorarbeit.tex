@@ -47,6 +47,17 @@
 %Logic
 \usepackage{bussproofs}
 
+%Tables
+\usepackage{tabularx}
+\newcolumntype{x}{>{\centering\arraybackslash}X}
+
+\usepackage{graphicx}
+
+%scalable prooftrees:
+\newenvironment{scprooftree}[1]%
+{\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}%
+	{\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
+
 \usepackage{todonotes} %to do notes...
 \setuptodonotes{tickmarkheight=0.1cm}
 %different types of todonotes:
@@ -189,7 +200,7 @@
 	We have the identity and negation rules:
 	
 	\begin{center}
-		\AxiomC{\vphantom{$\frac{a}{b}$} } %temporäre Lösung (auch an anderen Stellen verwendet!)
+		\AxiomC{\strut} %temporäre Lösung (auch an anderen Stellen verwendet!)
 		\RightLabel{id}
 		\UnaryInfC{$A \vdash A$}
 		\DisplayProof
@@ -211,6 +222,7 @@
 		\DisplayProof
 	\end{center}
 	\notimportantnote{permanente Lösung für empty axiom finden}
+	\todo[inline]{move negation to other place?}
 	
 	
 	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ as well as their respective units split into two respectively. These can be classified as multiplicative and additive connectives. 
@@ -492,7 +504,7 @@
 		\begin{itemize}
 			\item $1^\bot \vdash \bot $: 
 				\begin{center}
-					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\AxiomC{\strut}
 					\RightLabel{$1_R$}
 					\UnaryInfC{$\vdash 1 $}
 					\RightLabel{$\bot_R$}
@@ -503,7 +515,7 @@
 				\end{center}
 			\item $(A^\bot)^\bot \vdash A $:
 				\begin{center}
-					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\AxiomC{\strut}
 					\UnaryInfC{$A \vdash A $}
 					\UnaryInfC{$\vdash A^\bot, A $}
 					\UnaryInfC{$(A^\bot)^\bot \vdash A $}
@@ -511,10 +523,10 @@
 				\end{center}
 			\item $\left(A \otimes B\right)^\bot \vdash A^\bot \parr B^\bot $:
 				\begin{center}
-					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\AxiomC{\strut}
 					\UnaryInfC{$A \vdash A $}
 					\UnaryInfC{$\vdash A^\bot, A $}
-					\AxiomC{\vphantom{$\frac{a}{b}$} }
+					\AxiomC{\strut}
 					\UnaryInfC{$B \vdash B $}
 					\UnaryInfC{$\vdash B^\bot, B $}
 					\BinaryInfC{$\vdash A \otimes B, A^\bot, B^\bot $}
@@ -677,8 +689,391 @@
 	
 	%================================================================================================================================================
 	\subsection{Cut elimination }
+	\label{cut-elimination}
+	\todo[inline]{add "spoiler" to categoru theoru}
 	\urgentnote[inline]{millies intLinLog cut elim. in classical  linlog übersetzen}
 	
+	\todo{add literature}
+	We will adapt the cut-elimination procedure for intuitionistic linear logic by Melliès to (multiplicative) classical linear logic.
+	\urgentnote{multiplicative or full?}
+	
+	\urgentnote[inline]{format that stuff into something more efficient: }
+	
+	\subsubsection{Commuting cuts}
+	
+	\begin{tabularx}{\textwidth}{X c X}
+		\scalebox{.7}{
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+			
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2, B $}
+			
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$A, \Gamma_2, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
+			\DisplayProof
+		}
+		&
+		$\leftrightsquigarrow$
+		&
+		\scalebox{.7}{
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2, B $}
+		
+		\AxiomC{$\pi_3 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$A, \Gamma_2, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
+		\DisplayProof
+		}
+	\end{tabularx}
+	
+	\todo[inline]{put all the stuff in such tables?}
+	
+	The proof 
+	
+	\begin{center}
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2, B $}
+		
+		\AxiomC{$\pi_3 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$A, \Gamma_2, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
+		\DisplayProof
+	\end{center}
+	
+	is transformed into the proof 
+	
+	\begin{center}
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2, B $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2, B $}
+		
+		\AxiomC{$\pi_3 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
+		\DisplayProof
+	\end{center}
+	
+	and vice versa.	
+	
+	
+	The proof
+	 
+	\begin{center}
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B $}
+		
+		\AxiomC{$\pi_3 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, B, \Gamma_3 \vdash \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$A, \Gamma_2, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
+		\DisplayProof
+	\end{center}
+	
+	\urgentnote{Cut rule doesn't apply here...}
+	
+	is transformed into
+	
+	\begin{center}
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B $}
+		
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		
+		\AxiomC{$\pi_3 $}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, B, \Gamma_3 \vdash \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_1, B, \Gamma_3 \vdash \Delta_1, \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_2, \Delta_1, \Delta_3 $}
+		\DisplayProof
+	\end{center}
+	
+	and vice versa
+	\urgentnote[inline]{think about the deltas...}
+	
+	
+%-------------------------------------------------------------------------------------------------------------------------------------
+	\subsubsection{expansion steps }
+	\todo[inline]{why are they called $\eta$-expansion steps? }
+	
+	
+	\begin{tabularx}{\textwidth}{x c x}
+		\AxiomC{\strut}
+		\RightLabel{id}
+		\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+		\DisplayProof
+		&
+		$\rightsquigarrow$
+		&
+		\AxiomC{\strut}
+		\RightLabel{id}
+		\UnaryInfC{$A \vdash A $}
+		
+		\AxiomC{\strut}
+		\RightLabel{id}
+		\UnaryInfC{$B \vdash B $}
+		
+		\RightLabel{$\otimes_R $}
+		\BinaryInfC{$A, B \vdash A \otimes B$}
+		
+		\RightLabel{$\otimes_L $}
+		\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+		\DisplayProof
+		\\
+		%..........................................
+		\AxiomC{\strut}
+		\RightLabel{id}
+		\UnaryInfC{$A \parr B \vdash A \parr B $}
+		\DisplayProof
+		&
+		$\rightsquigarrow$
+		&
+		\AxiomC{\strut}
+		\RightLabel{id}
+		\UnaryInfC{$A \vdash A $}
+		
+		\AxiomC{\strut}
+		\RightLabel{id}
+		\UnaryInfC{$B \vdash B $}
+		
+		\RightLabel{$\parr_L $}
+		\BinaryInfC{$A \parr B \vdash A, B$}
+		
+		\RightLabel{$\parr_R $}
+		\UnaryInfC{$A \parr B \vdash A \parr B $}
+		\DisplayProof
+		\\
+		%.....................................
+		\AxiomC{\strut}
+		\RightLabel{id}
+		\UnaryInfC{$1 \vdash 1 $}
+		\DisplayProof
+		
+		&
+		$\rightsquigarrow$
+		&
+		\AxiomC{\strut}
+		\RightLabel{$1_R $}
+		\UnaryInfC{$\vdash 1 $}
+		\RightLabel{$1_L $}
+		\UnaryInfC{$1 \vdash 1 $}
+		\DisplayProof
+		\\
+		\AxiomC{\strut}
+		\RightLabel{id}
+		\UnaryInfC{$\bot \vdash \bot $}
+		\DisplayProof
+		&
+		$\rightsquigarrow$
+		&
+		\AxiomC{\strut}
+		\RightLabel{$\bot_L $}
+		\UnaryInfC{$\bot \vdash $}
+		\RightLabel{$\bot_R $}
+		\UnaryInfC{$\bot \vdash \bot $}
+		\DisplayProof
+		\\
+		\AxiomC{\strut}
+		\UnaryInfC{$\oc A \vdash \oc A $}
+		\DisplayProof
+		&
+		$\rightsquigarrow$
+		&
+		\AxiomC{\strut}
+		\UnaryInfC{$A \vdash A$}
+		\RightLabel{$\oc_D $}
+		\UnaryInfC{$\oc A \vdash A $}
+		\RightLabel{$\oc_R $}
+		\UnaryInfC{$\oc A \vdash \oc A $}
+		\DisplayProof
+		\\
+		\AxiomC{\strut}
+		\UnaryInfC{$\wn A \vdash \wn A $}
+		\DisplayProof
+		&
+		$\rightsquigarrow$
+		&
+		\AxiomC{\strut}
+		\UnaryInfC{$A \vdash A$}
+		\RightLabel{$\wn_D $}
+		\UnaryInfC{$A \vdash \wn A $}
+		\RightLabel{$\wn_L $}
+		\UnaryInfC{$\wn A \vdash \wn A $}
+		\DisplayProof
+	\end{tabularx}
+	\todo{format (page break)}
+
+	
+	
+%---------------------------------------------------------------------------------------------------------------------
+	\subsubsection{The axiom steps}
+	
+	
+	\begin{tabularx}{\textwidth}{x c x}
+		\AxiomC{}
+		\UnaryInfC{$A \vdash A $}
+		
+		\AxiomC{$\pi$}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, \Gamma \vdash \Delta $}
+		
+		\BinaryInfC{$A, \Gamma \vdash \Delta $}
+		\DisplayProof
+		&
+		$\rightsquigarrow$
+		&
+		\AxiomC{$\pi$}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, \Gamma \vdash \Delta $}
+		\DisplayProof
+		
+		\\
+		\hline
+		
+		\AxiomC{$\pi$}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma \vdash \Delta, A $}
+		
+		\AxiomC{}
+		\UnaryInfC{$A \vdash A $}
+		
+		\BinaryInfC{$\Gamma \vdash \Delta, A $}
+		\DisplayProof
+		&
+		$\rightsquigarrow$
+		&
+		\AxiomC{$\pi$}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma \vdash \Delta, A $}
+		\DisplayProof
+	\end{tabularx}
+	
+	\todo[inline]{tabularx format...}
+	
+	
+	\subsubsection{The exchange steps }
+	
+	\urgentnote[inline]{problem: that's not how Cut was defined...}
+	The proof 
+	
+	\begin{center}
+		\AxiomC{$\pi_1$}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		
+		\AxiomC{$\pi_2$}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, B, \Gamma_2 \vdash \Delta_2 $}
+		\RightLabel{ex.L}
+		\UnaryInfC{$B, A \Gamma_2 \vdash \Delta_2 $}
+		
+		\BinaryInfC{$B, \Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2 $}
+		\DisplayProof
+	\end{center}
+	
+	is transformed into 
+	
+	\begin{center}
+		\AxiomC{$\pi_1$}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		
+		\AxiomC{$\pi_2$}
+		\noLine
+		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$A, B, \Gamma_2 \vdash \Delta_2 $}
+		\BinaryInfC{$\Gamma_1, B, \Gamma_2 \vdash \Delta_1, \Delta_2 $}
+		
+		\doubleLine
+		\RightLabel{ex.L}
+		\UnaryInfC{$B, \Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2 $}
+		\DisplayProof
+	\end{center}
+	
+	where the double line signals multiple applications of the rule.
 	
 	
 	
