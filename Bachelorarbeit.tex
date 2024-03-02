@@ -164,6 +164,7 @@
 	
 	%=============================================================================================================================
 	\subsection{Syntax}
+	\urgentnote[inline]{Quellen, Quellen, Quellen!!!}
 	\todo[inline]{section needs serious reformatting... }
 	\todo[inline]{main source: IntroLinLog}
 	\todo[inline]{definition: "proof"; "cut elimination"}
@@ -171,14 +172,25 @@
 	%comments..............................................................................................
 	
 	
-	Formulas are built from atomic 
-	\urgentnote{formula? pre-formula? term? look up basic terminology}
-	%used "formula" an unterschiedlichen Stellen
-	formulas $p, q, \phi, \psi, p^\bot$ etc. and constants $1, \bot, 0, \top$ with binary connectives $\otimes, \parr, \with, \oplus$ and unary connectives $\oc, \wn (\cdot)^\bot $.
-	\urgentnote[inline]{negation is connective? negated atomic formulas still atomic?}
+	\begin{definition}[Formula]
+		Formulas are defined inductively from atomic formulas and four constants $1$, $\bot$, $\top$ and $0$:
+		\begin{itemize}
+			\item Every constant is a formula.
+			\item Every atomic formula is a formula.
+			\item If $A$ is a formula, so are $A^\bot$,  $\oc A$ and $\wn A$.
+			\item If $A$ and $B$ are formula, so are $A \otimes B$, $A \parr B$, $A \with B$ and $A \oplus B$.
+		\end{itemize}
+		%It is customary in linear logic to call $p^\bot$ atomic, for an atom $p$.
+	\end{definition}
+
+	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite sequents of formulas (e.g.: $\Gamma = p_1, ..., p_n$) and $A$ and $B$ formulas.
 	
-	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite sequents of formulas (e.g.: $\Gamma = p_1, ..., p_n$) and $A$ and $B$ formulas. %clunky sentence
 	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. 
+	
+	\begin{definition}[Proof]
+		A proof is a rooted tree with sequents of the form $\Gamma \vdash \Delta $ as vertices and the following sequent rules as edges:
+	\end{definition}
+	\todo[]{upper vertix of identity?}
 	
 	\paragraph{Structural rules}
 	We only have the exchange rule as a structural, missing the (general) weakening and contraction rules known from classical logic:
@@ -205,10 +217,10 @@
 		\UnaryInfC{$A \vdash A$}
 		\DisplayProof
 		\quad
-		\AxiomC{$\Gamma \vdash \Delta , A$}
-		\AxiomC{$A , \Gamma' \vdash \Delta' $}
+		\AxiomC{$\Gamma_1 \vdash \Delta_1 , A ,  \Delta'_1$}
+		\AxiomC{$\Gamma_2 , A , \Gamma'_2 \vdash \Delta_2 $}
 		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma , \Gamma' \vdash \Delta , \Delta' $}
+		\BinaryInfC{$\Gamma_2 , \Gamma_1 , \Gamma'_2 \vdash \Delta_1 , \Delta_2 , \Delta'_1 $}
 		\DisplayProof
 		
 		\AxiomC{$\Gamma \vdash A, \Delta $}
@@ -244,7 +256,7 @@
 		
 		
 		\AxiomC{$\Gamma , A \vdash \Delta $}
-		\AxiomC{$\Gamma' , B \vdash \Delta' $}
+		\AxiomC{$B , \Gamma' \vdash \Delta' $}
 		\RightLabel{$\parr_L$}
 		\BinaryInfC{$\Gamma, A\parr B, \Gamma' \vdash \Delta, \Delta'$}
 		\DisplayProof
@@ -566,7 +578,7 @@
 	\begin{center}
 		\AxiomC{$\Gamma \vdash \Delta$}
 		\RightLabel{$\oc_W$ (weakening)}
-		\UnaryInfC{$\Gamma \oc A \vdash \Delta $}
+		\UnaryInfC{$\Gamma , \oc A \vdash \Delta $}
 		\DisplayProof
 		\quad
 		\AxiomC{$\Gamma, A \vdash \Delta $}
@@ -611,7 +623,7 @@
 			\left(\wn A \right) ^\bot \equiv \oc \left( A^\bot \right) 
 		\end{align*}
 	\end{center}
-	Here the Kontext $\oc \Gamma $ is given by applying the $\oc $-modality to every formula in the list of $\Gamma $, i.e. $\oc \Gamma = \oc q, \oc p, \ldots $ for $\Gamma = q, p \ldots $; same for $\wn \Delta$.
+	Here, the context $\oc \Gamma $ is given by applying the $\oc $-modality to every formula of $\Gamma $, i.e. $\oc \Gamma = \oc q, \oc p, \ldots $ for $\Gamma = q, p \ldots $; same for $\wn \Delta$.
 	
 	
 	\begin{remark}
@@ -691,14 +703,43 @@
 	\subsection{Cut elimination }
 	\label{cut-elimination}
 	\todo[inline]{add "spoiler" to categoru theoru}
-	\urgentnote[inline]{millies intLinLog cut elim. in classical  linlog übersetzen}
 	
-	\todo{add literature}
-	We will adapt the cut-elimination procedure for intuitionistic linear logic by Melliès to (multiplicative) classical linear logic.
-	\urgentnote{multiplicative or full?}
+	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. We will prove this for the multiplicative fragment by adapting the cut-elimination procedure for intuitionistic linear logic by 
+	\todo{add literature} 
+	Melliès to (multiplicative) classical linear logic and expanding on the proof given by Braüner\cite{brauner}.
+	
+	
+	\begin{definition}[Degree]
+		The \emph{degree} $\partial(A)$ of a formula $A$ is defined inductively:
+		\begin{itemize}
+			\item $\partial(A) = 1$, for atomic $A$ 
+			\item $\partial \left(A^\bot\right) = \partial(A)$ 
+			\item $\partial(A \otimes B) = \partial(A \parr B) = \max\{\partial(A), \partial(B)\} + 1$
+			\item $\partial(\oc A ) = \partial(\wn A) = \partial(A) + 1$
+		\end{itemize} 
+		The degree of a cut is the degree of the cut formula. The degree of a proof is the maximum of the degrees of the cuts in the proof. 
+	\end{definition}
+	
+	\todo[]{degree of constants?}
+	
+	
+	
+	
+	\begin{definition}[Height]
+		The \emph{height} $h(\pi)$ of a proof $\pi$ is just its height as a rooted tree: 
+		\begin{itemize}
+			\item $h(\pi) = 1$ when $\pi$ is an instance of a rule with zero premises, i.e. an axiom.
+			\item $h(\pi) = h(\tau) +1$ when $\pi = \AxiomC{$\tau$} \UnaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
+			\item $h(\pi) = \max\{h(\tau), h(\tau')\} + 1$ when $\pi = \AxiomC{$\tau$} \AxiomC{$\tau'$} \BinaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
+		\end{itemize}
+	\end{definition}
+	
+	
 	
 	\urgentnote[inline]{format that stuff into something more efficient: }
 	
+	
+	%.........................................................
 	\subsubsection{Commuting cuts}
 	
 	\begin{tabularx}{\textwidth}{X c X}
@@ -1477,7 +1518,7 @@
 	Where $r$ is one of the following rules: $\oc_C, \oc_D, \oc_W, \oc_R, \wn_C, \wn_D, \wn_W, \wn_L, \otimes_L, \parr_R, 1_L, \bot_R$
 	
 	
-	\subsubsection{Secondary conclusion}
+	\subsubsection{Secondary hypothesis}
 	
 	
 	
