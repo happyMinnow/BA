@@ -105,6 +105,16 @@
 \usepackage{csvsimple} %Import von csv-Dateien
 
 
+%better vdots:
+\DeclareRobustCommand{\svdots}{% s for `scaling'
+	\vbox{%
+		\baselineskip=0.33333\normalbaselineskip
+		\lineskiplimit=0pt
+		\hbox{.}\hbox{.}\hbox{.}%
+		\kern-0.2\baselineskip
+	}%
+}
+
 
 %==============================================================================
 
@@ -187,8 +197,8 @@
 	
 	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. 
 	
-	\begin{definition}[Proof]
-		A proof is a rooted tree with sequents of the form $\Gamma \vdash \Delta $ as vertices and the following sequent rules as edges:
+	\begin{definition}[Proof (tree)]
+		A \emph{proof tree} (often just \emph{proof}) is a rooted tree with sequents of the form $\Gamma \vdash \Delta $ as \emph{edges} and the following sequent rules as \emph{vertices} (except for the root).
 	\end{definition}
 	\todo[]{upper vertix of identity?}
 	
@@ -243,9 +253,9 @@
 	The calculus rules for the \emph{multiplicative} conjunction $\otimes$, disjunction $\parr$ ("par") and their units $1$ and $\bot$ ("bottom") are as follows:
 	
 	\begin{center}
-		\AxiomC{$\Gamma , A, B \vdash \Delta$}
+		\AxiomC{$\Gamma , A, B, \Gamma' \vdash \Delta$}
 		\RightLabel{$\otimes_L$}
-		\UnaryInfC{$\Gamma A\otimes B \vdash \Delta $}
+		\UnaryInfC{$\Gamma, A\otimes B, \Gamma' \vdash \Delta $}
 		\DisplayProof
 		\quad
 		\AxiomC{$\Gamma \vdash \Delta , A$}
@@ -261,9 +271,9 @@
 		\BinaryInfC{$\Gamma, A\parr B, \Gamma' \vdash \Delta, \Delta'$}
 		\DisplayProof
 		\quad
-		\AxiomC{$\Gamma \vdash \Delta , A, B$}
+		\AxiomC{$\Gamma \vdash \Delta , A, B,  \Delta'$}
 		\RightLabel{$\parr_R$}
-		\UnaryInfC{$\Gamma \vdash \Delta , A \parr B $}
+		\UnaryInfC{$\Gamma \vdash \Delta , A \parr B, \Delta' $}
 		\DisplayProof
 		
 		\AxiomC{$\Gamma \vdash \Delta $}
@@ -297,8 +307,6 @@
 		We only have to show that $A , B \vdash C , D $ follows from $A\otimes B \vdash C \parr D$ as the other direction is just our introduction rule:
 		
 		\begin{center}
-			\AxiomC{$A \otimes B \vdash C \parr D $}
-			
 			\AxiomC{}
 			\RightLabel{id}
 			\UnaryInfC{$A \vdash A $}
@@ -307,6 +315,9 @@
 			\UnaryInfC{$B \vdash B $}
 			\RightLabel{$\otimes_R$}
 			\BinaryInfC{$A , B \vdash A \otimes B $}
+			
+			\AxiomC{$A \otimes B \vdash C \parr D $}
+			
 			\RightLabel{Cut}
 			\BinaryInfC{$A , B \vdash C \parr D $}
 			
@@ -704,33 +715,249 @@
 	\label{cut-elimination}
 	\todo[inline]{add "spoiler" to categoru theoru}
 	
-	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. We will prove this for the multiplicative fragment by adapting the cut-elimination procedure for intuitionistic linear logic by 
-	\todo{add literature} 
-	Melliès to (multiplicative) classical linear logic and expanding on the proof given by Braüner\cite{brauner}.
+	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can find a \emph{cut-free} proof $\pi'$ of that same sequent. We will prove this for the multiplicative fragment by adapting the cut-elimination procedure for intuitionistic linear logic by 
+	\urgentnote{add literature} 
+	Melliès to (multiplicative) classical linear logic and expanding a little bit on the proof given by Braüner \cite{brauner}.
 	
 	
 	\begin{definition}[Degree]
 		The \emph{degree} $\partial(A)$ of a formula $A$ is defined inductively:
 		\begin{itemize}
-			\item $\partial(A) = 1$, for atomic $A$ 
+			\item $\partial(A) = 1$, for $A$ atomic or constant
 			\item $\partial \left(A^\bot\right) = \partial(A)$ 
 			\item $\partial(A \otimes B) = \partial(A \parr B) = \max\{\partial(A), \partial(B)\} + 1$
 			\item $\partial(\oc A ) = \partial(\wn A) = \partial(A) + 1$
 		\end{itemize} 
-		The degree of a cut is the degree of the cut formula. The degree of a proof is the maximum of the degrees of the cuts in the proof. 
+		The degree of a cut is the degree of the cut formula. The cut formula is called \emph{principal formula}. The degree $\partial(\pi)$ of a proof $\pi$ is the supremum of the degrees of the cuts in the proof. 
 	\end{definition}
 	
-	\todo[]{degree of constants?}
+	\todo[inline]{Übergangstext}
 	
+	\begin{lemma}
+		\label{key-cases}
+		Let $\tau$ be a proof consisting of two subproofs $\tau_1$ and $\tau_2$ of strictly lower degree, whose last rules each introduce the principal formula $A$ respectively, i.e.: 
+		\begin{center}
+			$\tau = $ 
+			\AxiomC{$\tau_1$} 
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $} 
+			\AxiomC{$\tau_2$} 
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2 $} 
+			\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_1, \Delta_2, \Delta'_1 $}
+			\DisplayProof
+		\end{center}
+		
+		Then, we can find a proof $\tau'$ of that same sequent 
+		$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_1, \Delta_2, \Delta'_1 $ 
+		with 
+		$\partial(\tau') < \partial(\tau) $.
+	\end{lemma}
 	
-	
+	\begin{proof}
+		We go case by case:
+		
+		\begin{tabularx}{\textwidth}{x c x}
+			\AxiomC{}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{$\pi$}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A, \Gamma \vdash \Delta $}
+			
+			\BinaryInfC{$A, \Gamma \vdash \Delta $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{$\pi$}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A, \Gamma \vdash \Delta $}
+			\DisplayProof
+			
+			\\
+			%......................................
+			
+			\AxiomC{$\pi$}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma \vdash \Delta, A $}
+			
+			\AxiomC{}
+			\UnaryInfC{$A \vdash A $}
+			
+			\BinaryInfC{$\Gamma \vdash \Delta, A $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{$\pi$}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma \vdash \Delta, A $}
+			\DisplayProof
+			
+			\\
+			%......................................
+			
+			%cut otimes intro vs otimes intro
+			\scalebox{0.7}{
+				\AxiomC{$\pi_1$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A$}
+				
+				\AxiomC{$\pi_2$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2$}
+				
+				\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, A\otimes B, \Delta_2 $}
+				
+				\AxiomC{$\pi_3$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3$}
+				\UnaryInfC{$\Gamma_3, A \otimes B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta_2 $}
+				\DisplayProof
+			}
+			&
+			$\rightsquigarrow$
+			&
+			\scalebox{0.7}{
+				\AxiomC{$\pi_1$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A$}
+				
+				\AxiomC{$\pi_2$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2$}
+				
+				\AxiomC{$\pi_3$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A, B, \Gamma_3 \vdash \Delta_3$}
+				
+				\BinaryInfC{$A, \Gamma_2, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+				
+				\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_3, \Delta_2 $}
+				\DisplayProof
+			}
+			
+			\\
+			%.............................................
+			
+			%cut par intro vs par intro
+			\scalebox{0.7}{			
+				\AxiomC{$\pi_1$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, B, \Delta'_1 $}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A \parr B, \Delta'_1 $}
+				
+				\AxiomC{$\pi_2$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
+				
+				\AxiomC{$\pi_3$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+				
+				\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+				
+				\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_1 $}
+				\DisplayProof
+			}
+			&
+			$\rightsquigarrow $
+			&
+			\scalebox{0.7}{
+				\AxiomC{$\pi_1$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, B, \Delta'_1 $}
+				
+				\AxiomC{$\pi_2$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
+				
+				\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2, B, \Delta'_1 $}
+				
+				\AxiomC{$\pi_3$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+				
+				\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_1 $}
+				\DisplayProof
+			}
+			
+			\\
+			%................................
+			
+			\AxiomC{\strut}
+			\UnaryInfC{$\vdash 1$}
+			
+			\AxiomC{$\pi$}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma \vdash \Delta $}
+			\UnaryInfC{$\Gamma, 1 \vdash \Delta$}
+			
+			\BinaryInfC{$\Gamma \vdash \Delta$}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{$\pi$}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma \vdash \Delta $}
+			\DisplayProof
+			
+			\\
+			%..............................
+			
+			\AxiomC{\strut}
+			\UnaryInfC{$\bot \vdash $}
+			
+			\AxiomC{$\pi$}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma \vdash \Delta $}
+			\UnaryInfC{$\Gamma \vdash \bot, \Delta$}
+			
+			\BinaryInfC{$\Gamma \vdash \Delta$}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			
+			\AxiomC{$\pi$}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma \vdash \Delta $}
+			\DisplayProof
+		\end{tabularx}
+	\end{proof}
 	
 	\begin{definition}[Height]
 		The \emph{height} $h(\pi)$ of a proof $\pi$ is just its height as a rooted tree: 
 		\begin{itemize}
 			\item $h(\pi) = 1$ when $\pi$ is an instance of a rule with zero premises, i.e. an axiom.
-			\item $h(\pi) = h(\tau) +1$ when $\pi = \AxiomC{$\tau$} \UnaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
-			\item $h(\pi) = \max\{h(\tau), h(\tau')\} + 1$ when $\pi = \AxiomC{$\tau$} \AxiomC{$\tau'$} \BinaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
+			\item $h(\pi) = h(\tau) +1$, for $\pi = \AxiomC{$\tau$} \UnaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
+			\item $h(\pi) = \max\{h(\tau), h(\tau')\} + 1$, for $\pi = \AxiomC{$\tau$} \AxiomC{$\tau'$} \BinaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
 		\end{itemize}
 	\end{definition}
 	
@@ -746,17 +973,17 @@
 		\scalebox{.7}{
 			\AxiomC{$\pi_1 $}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
 			
 			\AxiomC{$\pi_2 $}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2, B $}
 			
 			\AxiomC{$\pi_3 $}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
 			
 			\RightLabel{Cut}
@@ -772,17 +999,17 @@
 		\scalebox{.7}{
 		\AxiomC{$\pi_1 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
 		
 		\AxiomC{$\pi_2 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2, B $}
 		
 		\AxiomC{$\pi_3 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
 		
 		\RightLabel{Cut}
@@ -801,17 +1028,17 @@
 	\begin{center}
 		\AxiomC{$\pi_1 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
 		
 		\AxiomC{$\pi_2 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2, B $}
 		
 		\AxiomC{$\pi_3 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
 		
 		\RightLabel{Cut}
@@ -827,12 +1054,12 @@
 	\begin{center}
 		\AxiomC{$\pi_1 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
 		
 		\AxiomC{$\pi_2 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2, B $}
 		
 		\RightLabel{Cut}
@@ -840,7 +1067,7 @@
 		
 		\AxiomC{$\pi_3 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
 		
 		\RightLabel{Cut}
@@ -856,17 +1083,17 @@
 	\begin{center}
 		\AxiomC{$\pi_1 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
 		
 		\AxiomC{$\pi_2 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B $}
 		
 		\AxiomC{$\pi_3 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, B, \Gamma_3 \vdash \Delta_3 $}
 		
 		\RightLabel{Cut}
@@ -884,17 +1111,17 @@
 	\begin{center}
 		\AxiomC{$\pi_2 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B $}
 		
 		\AxiomC{$\pi_1 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
 		
 		\AxiomC{$\pi_3 $}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, B, \Gamma_3 \vdash \Delta_3 $}
 		
 		\RightLabel{Cut}
@@ -1025,89 +1252,48 @@
 %---------------------------------------------------------------------------------------------------------------------
 	\subsubsection{The axiom steps}
 	
-	
-	\begin{tabularx}{\textwidth}{x c x}
-		\AxiomC{}
-		\UnaryInfC{$A \vdash A $}
+	gone to \ref{key-cases}
 		
-		\AxiomC{$\pi$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$A, \Gamma \vdash \Delta $}
-		
-		\BinaryInfC{$A, \Gamma \vdash \Delta $}
-		\DisplayProof
-		&
-		$\rightsquigarrow$
-		&
-		\AxiomC{$\pi$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$A, \Gamma \vdash \Delta $}
-		\DisplayProof
-		
-		\\
-		\hline
-		
-		\AxiomC{$\pi$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma \vdash \Delta, A $}
-		
-		\AxiomC{}
-		\UnaryInfC{$A \vdash A $}
-		
-		\BinaryInfC{$\Gamma \vdash \Delta, A $}
-		\DisplayProof
-		&
-		$\rightsquigarrow$
-		&
-		\AxiomC{$\pi$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma \vdash \Delta, A $}
-		\DisplayProof
-	\end{tabularx}
-	
 	\todo[inline]{tabularx format...}
 	
 	
 	\subsubsection{The exchange steps }
 	
-	\urgentnote[inline]{problem: that's not how Cut was defined...}
+	\todo[inline]{that's just changing the contexts $\Gamma_2$ and $\Gamma'_2$}
 	
 	\begin{tabularx}{\textwidth}{x c x}
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$A, B, \Gamma_2 \vdash \Delta_2 $}
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$ \Gamma_2, A, B, \Gamma'_2 \vdash \Delta_2 $}
 		\RightLabel{ex.L}
-		\UnaryInfC{$B, A, \Gamma_2 \vdash \Delta_2 $}
+		\UnaryInfC{$ \Gamma_2, B, A, \Gamma'_2 \vdash \Delta_2 $}
 		
-		\BinaryInfC{$B, \Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2 $}
+		\BinaryInfC{$ \Gamma_2, B, \Gamma_1, \Gamma'_2 \vdash \Delta_1, \Delta_2, \Delta'_1 $}
 		\DisplayProof
 		&
 		$\rightsquigarrow$
 		&
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$ \Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$A, B, \Gamma_2 \vdash \Delta_2 $}
-		\BinaryInfC{$\Gamma_1, B, \Gamma_2 \vdash \Delta_1, \Delta_2 $}
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$ \Gamma_2, A, B, \Gamma'_2 \vdash \Delta_2 $}
+		
+		\BinaryInfC{$ \Gamma_2, \Gamma_1, B, \Gamma'_2 \vdash \Delta_1, \Delta_2, \Delta'_1 $}
 		
 		\doubleLine
 		\RightLabel{ex.L}
-		\UnaryInfC{$B, \Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2 $}
+		\UnaryInfC{$ \Gamma_2, B, \Gamma_1, \Gamma'_2 \vdash \Delta_1, \Delta_2, \Delta'_1 $}
 		\DisplayProof
 		
 		\\
@@ -1115,12 +1301,12 @@
 		
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, B $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, B, \Gamma_2 \vdash \Delta_2 $}
 		\RightLabel{ex.L}
 		\UnaryInfC{$B, A, \Gamma_2 \vdash \Delta_2 $}
@@ -1132,12 +1318,12 @@
 		&
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, B$}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, B, \Gamma_2 \vdash \Delta_2 $}
 		\BinaryInfC{$A, \Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2 $}
 		
@@ -1152,152 +1338,7 @@
 	
 	\subsubsection{Principal formulae}
 	
-	\begin{tabularx}{\textwidth}{x c x}
-		\scalebox{0.7}{
-		\AxiomC{$\pi_1$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A$}
-		
-		\AxiomC{$\pi_2$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B$}
-		
-		\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, A\otimes B, \Delta_2 $}
-		
-		\AxiomC{$\pi_3$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$A, B, \Gamma_3 \vdash \Delta_3$}
-		\UnaryInfC{$A \otimes B, \Gamma_3 \vdash \Delta_3 $}
-		
-		\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
-		\DisplayProof
-		}
-		&
-		$\rightsquigarrow$
-		&
-		\scalebox{0.7}{
-		\AxiomC{$\pi_1$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A$}
-		
-		\AxiomC{$\pi_2$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B$}
-		
-		\AxiomC{$\pi_3$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$A, B, \Gamma_3 \vdash \Delta_3$}
-		
-		\BinaryInfC{$A, \Gamma_2, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
-		
-		\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
-		\DisplayProof
-		}
-		
-		\\
-		%.......................
-		
-		\scalebox{0.7}{			
-			\AxiomC{$\pi_1$}
-			\noLine
-			\UnaryInfC{$\vdots$}
-			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, B $}
-			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A \parr B $}
-			
-			\AxiomC{$\pi_2$}
-			\noLine
-			\UnaryInfC{$\vdots$}
-			\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
-			
-			\AxiomC{$\pi_3$}
-			\noLine
-			\UnaryInfC{$\vdots$}
-			\UnaryInfC{$\Gamma_3, B \vdash \Delta_3 $}
-			
-			\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
-			
-			\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
-			\DisplayProof
-		}
-		&
-		$\rightsquigarrow $
-		&
-		\scalebox{0.7}{
-			\AxiomC{$\pi_1$}
-			\noLine
-			\UnaryInfC{$\vdots$}
-			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, B $}
-			
-			\AxiomC{$\pi_2$}
-			\noLine
-			\UnaryInfC{$\vdots$}
-			\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
-			
-			\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2, B $}
-			
-			\AxiomC{$\pi_3$}
-			\noLine
-			\UnaryInfC{$\vdots$}
-			\UnaryInfC{$\Gamma_3, B \vdash \Delta_3 $}
-			
-			\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
-			\DisplayProof
-		}
-		
-		\\
-		%................................
-		
-		\AxiomC{\strut}
-		\UnaryInfC{$\vdash 1$}
-		
-		\AxiomC{$\pi$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma \vdash \Delta $}
-		\UnaryInfC{$\Gamma, 1 \vdash \Delta$}
-		
-		\BinaryInfC{$\Gamma \vdash \Delta$}
-		\DisplayProof
-		&
-		$\rightsquigarrow$
-		&
-		\AxiomC{$\pi$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma \vdash \Delta $}
-		\DisplayProof
-		
-		\\
-		%..............................
-		
-		\AxiomC{\strut}
-		\UnaryInfC{$\bot \vdash $}
-		
-		\AxiomC{$\pi$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma \vdash \Delta $}
-		\UnaryInfC{$\Gamma \vdash \bot, \Delta$}
-		
-		\BinaryInfC{$\Gamma \vdash \Delta$}
-		\DisplayProof
-		&
-		$\rightsquigarrow$
-		&
-		
-		\AxiomC{$\pi$}
-		\noLine
-		\UnaryInfC{$\vdots$}
-		\UnaryInfC{$\Gamma \vdash \Delta $}
-		\DisplayProof
-	\end{tabularx}
-	\urgentnote[inline]{Reihenfolge der Kontexte überdenken/ calculus detailierter definieren}
+	gone to \ref{key-cases}
 	
 	
 	
@@ -1307,14 +1348,14 @@
 		%promotion vs derelection
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\oc\Gamma_1 \vdash \wn\Delta_1, A$}
 		\RightLabel{$\oc_R$}
 		\UnaryInfC{$\oc\Gamma_1\vdash \wn\Delta_1, \oc A $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2$}
 		\RightLabel{$\oc_D$}
 		\UnaryInfC{$\oc A, \Gamma_2 \vdash \Delta_2$}
@@ -1328,12 +1369,12 @@
 		
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\oc\Gamma_1 \vdash \wn\Delta_1, A$}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, \Gamma_2 \vdash \Delta_2$}
 		
 		\BinaryInfC{$\oc\Gamma_1, \Gamma_2 \vdash \wn\Delta_1, \Delta_2$}
@@ -1345,14 +1386,14 @@
 		%promotion vs contraction
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\oc\Gamma_1 \vdash \wn\Delta_1, A$}
 		\RightLabel{$\oc_R$}
 		\UnaryInfC{$\oc\Gamma_1\vdash \wn\Delta_1, \oc A $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\oc A, \oc A, \Gamma_2 \vdash \Delta_2$}
 		\RightLabel{$\oc_C$}
 		\UnaryInfC{$\oc A, \Gamma_2 \vdash \Delta_2$}
@@ -1365,21 +1406,21 @@
 		\scalebox{0.8}{
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\oc\Gamma_1 \vdash \wn\Delta_1, A$}
 		\RightLabel{$\oc_R$}
 		\UnaryInfC{$\oc\Gamma_1\vdash \wn\Delta_1, \oc A $}
 		
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\oc\Gamma_1 \vdash \wn\Delta_1, A$}
 		\RightLabel{$\oc_R$}
 		\UnaryInfC{$\oc\Gamma_1\vdash \wn\Delta_1, \oc A $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\oc A, \oc A, \Gamma_2 \vdash \Delta_2$}
 		
 		\BinaryInfC{$\oc\Gamma_1, \oc A, \Gamma_2 \vdash \wn \Delta_1, \Delta_2 $}
@@ -1398,14 +1439,14 @@
 		%promotion vs weakening
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\oc\Gamma_1 \vdash \wn\Delta_1, A$}
 		\RightLabel{$\oc_R$}
 		\UnaryInfC{$\oc\Gamma_1\vdash \wn\Delta_1, \oc A $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_2 \vdash \Delta_2$}
 		\RightLabel{$\oc_W$}
 		\UnaryInfC{$\oc A, \Gamma_2 \vdash \Delta_2$}
@@ -1417,7 +1458,7 @@
 		&
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Gamma_2 \vdash \Delta_2$}
 		\doubleLine
 		\RightLabel{$\oc_W$, $\wn_W$}
@@ -1432,12 +1473,12 @@
 		\scalebox{0.7}{
 			\AxiomC{$\pi_1$}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$\Gamma_1, A \vdash \Delta_1 $}
 			
 			\AxiomC{$\pi_2$}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$\Gamma_2, B \vdash \Delta_2, C $}
 			
 			\RightLabel{$\parr_L$}
@@ -1445,7 +1486,7 @@
 			
 			\AxiomC{$\pi_3$}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$C, \Gamma_3 \vdash \Delta_3$}
 			
 			\BinaryInfC{$\Gamma_1, A \parr B, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3 $}
@@ -1457,17 +1498,17 @@
 		\scalebox{0.7}{
 			\AxiomC{$\pi_1$}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$\Gamma_1, A \vdash \Delta_1 $}
 			
 			\AxiomC{$\pi_2$}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$\Gamma_2, B \vdash \Delta_2, C $}
 			
 			\AxiomC{$\pi_3$}
 			\noLine
-			\UnaryInfC{$\vdots$}
+			\UnaryInfC{$\svdots$}
 			\UnaryInfC{$C, \Gamma_3 \vdash \Delta_3$}
 			
 			\BinaryInfC{$\Gamma_2, B, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
@@ -1481,14 +1522,14 @@
 		
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Psi_1 \vdash \Psi_2, A $}
 		\RightLabel{$r$}
 		\UnaryInfC{$\Phi \vdash \Phi_2, A $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, \Gamma \vdash \Delta $}
 		
 		\RightLabel{Cut}
@@ -1499,12 +1540,12 @@
 		&
 		\AxiomC{$\pi_1$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$\Psi_1 \vdash \Psi_2, A $}
 		
 		\AxiomC{$\pi_2$}
 		\noLine
-		\UnaryInfC{$\vdots$}
+		\UnaryInfC{$\svdots$}
 		\UnaryInfC{$A, \Gamma \vdash \Delta $}
 		
 		\RightLabel{Cut}
