@@ -59,6 +59,7 @@
 	{\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
 
 \usepackage[]{todonotes} %to do notes...
+%package options: obeyDraft , obeyFinal
 \setuptodonotes{tickmarkheight=0.1cm}
 %different types of todonotes:
 \newcommand{\formatnote}[2][]{\todo[color=cyan!40, #1]{#2}}
@@ -138,6 +139,8 @@
 	\todo[inline]{what am I even writing about?}
 	
 	\section{LinLog Preliminaries}
+	
+	\todo[inline]{move the LinLog stuff under the cat stuff?}
 	
 	\subsection{Motivation/Intuition}
 	\label{sec: intuition}
@@ -1178,7 +1181,9 @@
 				\DisplayProof
 			\end{center}
 		\end{center}
-		with $\partial(\tau_1), \partial(\tau_2) < \partial(A)$. Note that $\Gamma = \Gamma_2, \Gamma_1, \Gamma'_2$ and $\Delta = \Gamma_2, \Gamma_1, \Gamma'_2$.
+		with $\partial(\tau_1), \partial(\tau_2) < \partial(A)$. Note that $\Gamma = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$ and $\Delta = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$,
+		\notimportantnote{just use commata instead of conc.?}
+		with $\Vert$ being the concatenation operator.
 		We then apply Lemma \ref{key-cases} to the proof tree.
 	\end{proof}
 	
@@ -1195,347 +1200,6 @@
 	
 	
 	%---------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	\subsection{Proof invariants}
-	
-	\todo[inline]{text}
-	
-	\begin{definition}[$\eta$-expansion]
-		We call the following proof transformations \emph{$\eta$-expansions}: 
-			\begin{tabularx}{\textwidth}{x c x}
-			\AxiomC{\strut}
-			\RightLabel{$\id$}
-			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
-			\DisplayProof
-			&
-			$\rightsquigarrow$
-			&
-			\AxiomC{\strut}
-			\RightLabel{$\id$}
-			\UnaryInfC{$A \vdash A $}
-			
-			\AxiomC{\strut}
-			\RightLabel{$\id$}
-			\UnaryInfC{$B \vdash B $}
-			
-			\RightLabel{$\otimes_R $}
-			\BinaryInfC{$A, B \vdash A \otimes B$}
-			
-			\RightLabel{$\otimes_L $}
-			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
-			\DisplayProof
-			\\
-			%..........................................
-			\AxiomC{\strut}
-			\RightLabel{$\id$}
-			\UnaryInfC{$A \parr B \vdash A \parr B $}
-			\DisplayProof
-			&
-			$\rightsquigarrow$
-			&
-			\AxiomC{\strut}
-			\RightLabel{$\id$}
-			\UnaryInfC{$A \vdash A $}
-			
-			\AxiomC{\strut}
-			\RightLabel{$\id$}
-			\UnaryInfC{$B \vdash B $}
-			
-			\RightLabel{$\parr_L $}
-			\BinaryInfC{$A \parr B \vdash A, B$}
-			
-			\RightLabel{$\parr_R $}
-			\UnaryInfC{$A \parr B \vdash A \parr B $}
-			\DisplayProof
-			\\
-			%.....................................
-			\AxiomC{\strut}
-			\RightLabel{$\id$}
-			\UnaryInfC{$1 \vdash 1 $}
-			\DisplayProof
-			
-			&
-			$\rightsquigarrow$
-			&
-			\AxiomC{\strut}
-			\RightLabel{$1_R $}
-			\UnaryInfC{$\vdash 1 $}
-			\RightLabel{$1_L $}
-			\UnaryInfC{$1 \vdash 1 $}
-			\DisplayProof
-			\\
-			\AxiomC{\strut}
-			\RightLabel{$\id$}
-			\UnaryInfC{$\bot \vdash \bot $}
-			\DisplayProof
-			&
-			$\rightsquigarrow$
-			&
-			\AxiomC{\strut}
-			\RightLabel{$\bot_L $}
-			\UnaryInfC{$\bot \vdash $}
-			\RightLabel{$\bot_R $}
-			\UnaryInfC{$\bot \vdash \bot $}
-			\DisplayProof
-		\end{tabularx}
-	\end{definition}
-	
-	\begin{remark}
-		From now on, when talking about "cut elimination procedure" or "modulo cut elimination", we mean the above mentioned transformations and the proof transformations from Lemma \ref{key-cases}. 
-	\end{remark}
-	
-	We will now define proof invariants as outlined by \urgentnote{add citation} Milliès.
-	
-	\begin{definition}[Proof invariant]
-		Let $\pi$ be a proof tree. We call any function
-		\begin{align*}
-			\pi \mapsto [\pi]
-		\end{align*}
-		that remains constant under cut elimination \emph{proof invariant}. The entity $[\pi]$ is called \emph{denotation} of the proof $\pi$.
-	\end{definition}
-	
-	\todo[inline]{We're reachng categorical semantics. Move that stuff behind the category stuff.}
-	
-	\begin{definition}[Modularity]
-		We call a proof invariant \emph{modular} iff there exists a binary operation $\circ$ such that for any two proofs
-		\todo{is there a notation that's not as high as me on 4/20?}
-		\AxiomC{$\pi_1 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$A \vdash B$} 
-		\DisplayProof
-		and
-		\AxiomC{$\pi_2 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$B \vdash C$} 
-		\DisplayProof
-		the denotation of the proof
-		\begin{center}
-			$\pi$ = 
-			\AxiomC{$\pi_1 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$A \vdash B$} 
-			\AxiomC{$\pi_2 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$B \vdash C$} 
-			\RightLabel{Cut}
-			\BinaryInfC{$A \vdash C$}
-			\DisplayProof
-		\end{center}
-		is given by $[\pi] = [\pi_2] \circ [\pi_1]$. As the symbol suggests, we call this operation \emph{composition}.
-	\end{definition}
-	
-	
-	\begin{proposition}
-		Every modular invariant of proofs forms a category with the formulae as objects and the proof denotations as morphisms.
-	\end{proposition}
-	
-	\begin{proof}
-		Associativity is given by commuting cuts. The identity morphisms are given by the axiom rule. \notimportantnote{ausfuehren?}
-	\end{proof}
-	
-	
-	\begin{definition}[tensoriality]
-		A proof invariant is called \emph{tensorial} iff there is a binary operation $\otimes$ such that for any two proofs
-		\AxiomC{$\pi_1 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$A \vdash C$} 
-		\DisplayProof
-		and
-		\AxiomC{$\pi_2 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$B \vdash D$} 
-		\DisplayProof
-		the denotation of the proof
-		\urgentnote{what about the proof without $\otimes_L$?}
-		\begin{center}
-			$\pi$ = 
-			\AxiomC{$\pi_1 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$A \vdash C$} 
-			\AxiomC{$\pi_2 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$B \vdash D$} 
-			\RightLabel{$\otimes_R$}
-			\BinaryInfC{$A, B \vdash C \otimes D$}
-			\RightLabel{$\otimes_L$}
-			\UnaryInfC{$A \otimes B \vdash C \otimes D$}
-			\DisplayProof
-		\end{center}
-		is given by $[\pi] = [\pi_1] \otimes [\pi_2]$.
-	\end{definition}
-	
-	
-	\begin{definition}[cotensorial]
-		A proof invariant is called \emph{cotensorial} iff there is a binary operation $\otimes$ such that for any two proofs
-		\AxiomC{$\pi_1 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$A \vdash C$} 
-		\DisplayProof
-		and
-		\AxiomC{$\pi_2 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$B \vdash D$} 
-		\DisplayProof
-		the denotation of the proof
-		\urgentnote{what about the proof without $\parr_R$?}
-		\begin{center}
-			$\pi$ = 
-			\AxiomC{$\pi_1 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$A \vdash C$} 
-			\AxiomC{$\pi_2 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$B \vdash D$} 
-			\RightLabel{$\parr_L$}
-			\BinaryInfC{$A \parr B \vdash C, D$}
-			\RightLabel{$\parr_R$}
-			\UnaryInfC{$A \parr B \vdash C \parr D$}
-			\DisplayProof
-		\end{center}
-		is given by $[\pi] = [\pi_1] \parr [\pi_2]$.
-	\end{definition}
-	
-	
-	\begin{theorem}
-		A proof invariant that is modular, tensorial and cotensorial forms a linearly distributive category.
-	\end{theorem}
-	
-	\begin{proof}
-		Inhalt...
-	\end{proof}
-	
-	
-	%.........................................................
-	\subsubsection{Commuting cuts}
-	
-	\todo[inline]{is a separate definition even needed? move that stuff up to expansions.}
-	
-	\begin{tabularx}{\textwidth}{X c X}
-		\scalebox{.6}{
-			\AxiomC{$\pi_1 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
-			
-			\AxiomC{$\pi_2 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
-			
-			\AxiomC{$\pi_3 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
-			
-			\RightLabel{Cut}
-			\BinaryInfC{$\Gamma_3, \Gamma_2, A, \Gamma'_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
-			
-			\RightLabel{Cut}
-			\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
-			\DisplayProof
-		}
-		&
-		$\leftrightsquigarrow$
-		&
-		\scalebox{.6}{
-			\AxiomC{$\pi_1 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
-			
-			\AxiomC{$\pi_2 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
-			
-			\RightLabel{Cut}
-			\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
-			
-			\AxiomC{$\pi_3 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
-			
-			\RightLabel{Cut}
-			\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
-			\DisplayProof
-		}
-	\end{tabularx}
-	
-	\todo[]{put that stuff back into a normal center instead of tabularx?}
-	
-	
-	The proof
-	 
-	\begin{center}
-		\AxiomC{$\pi_1 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
-		
-		\AxiomC{$\pi_2 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
-		
-		\AxiomC{$\pi_3 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
-		
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma_3, A, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
-		
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
-		\DisplayProof
-	\end{center}
-	
-	is transformed into
-	
-	\begin{center}
-		\AxiomC{$\pi_2 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
-		
-		\AxiomC{$\pi_1 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
-		
-		\AxiomC{$\pi_3 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
-		
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma_3, \Gamma_1, B, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 $}
-		
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_1, \Delta_3, \Delta'_1, \Delta'_2 $}
-		\DisplayProof
-	\end{center}
-	
-	and vice versa
-	\urgentnote[inline]{think about the deltas...: aufteilen in zwei Regeln mit einseitigen Deltas für A und B oder allgemein halten und viele exchanges drunter klatschen (was es asymmetrisch macht und damit)?}
-	
-	
-	%---------------------------------------------------------------------------------------------------------------------
-		
-	
 	
 	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	\section{Categorical Preliminaries}
@@ -2575,11 +2239,626 @@
 	\questionnote[inline]{what did I need Barr's definition for, again?}
 	
 	
+	\urgentnote[inline]{add definition of poly-categories?}
+	
+	
+	
+	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	
 	\section{CatSem of LinLog}
 	\todo[inline]{Cats as LinLog semantics and LinLog syntax as cat}
 	%Cats as LinLog semantics
-
+	
+	
+	
+	\subsection{Proof invariants}
+	
+	\todo[inline]{text}
+	
+	\begin{definition}[$\eta$-expansion]
+		We call the following proof transformations \emph{$\eta$-expansions}: 
+		\begin{tabularx}{\textwidth}{x c x}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$A, B \vdash A \otimes B$}
+			
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+			\\
+			%..........................................
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \parr B \vdash A \parr B $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			
+			\RightLabel{$\parr_L $}
+			\BinaryInfC{$A \parr B \vdash A, B$}
+			
+			\RightLabel{$\parr_R $}
+			\UnaryInfC{$A \parr B \vdash A \parr B $}
+			\DisplayProof
+			\\
+			%.....................................
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$1 \vdash 1 $}
+			\DisplayProof
+			
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{\strut}
+			\RightLabel{$1_R $}
+			\UnaryInfC{$\vdash 1 $}
+			\RightLabel{$1_L $}
+			\UnaryInfC{$1 \vdash 1 $}
+			\DisplayProof
+			\\
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$\bot \vdash \bot $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{\strut}
+			\RightLabel{$\bot_L $}
+			\UnaryInfC{$\bot \vdash $}
+			\RightLabel{$\bot_R $}
+			\UnaryInfC{$\bot \vdash \bot $}
+			\DisplayProof
+		\end{tabularx}
+	\end{definition}
+	
+	\begin{remark}
+		From now on, when talking about "cut elimination procedure" or "modulo cut elimination", we mean the above mentioned transformations and the proof transformations from Lemma \ref{key-cases}. 
+	\end{remark}
+	
+	We will now define proof invariants as outlined by \urgentnote{add citation} Milliès.
+	
+	\begin{definition}[Proof invariant]
+		Let $\pi$ be a proof tree. We call any function
+		\begin{align*}
+			\pi \mapsto [\pi]
+		\end{align*}
+		that remains constant under cut elimination \emph{proof invariant}. The entity $[\pi]$ is called \emph{denotation} of the proof $\pi$.
+		\urgentnote{restrict definition on proofs of singular formula sequents}
+	\end{definition}
+	
+	\todo[inline]{We're reachng categorical semantics. Move that stuff behind the category stuff.}
+	
+	\begin{definition}[Modularity]
+		We call a proof invariant \emph{modular} iff there exists a binary operation $\circ$ such that for any two proofs
+		\todo{is there a notation that's not as high as me on 4/20?}
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$A \vdash B$} 
+		\DisplayProof
+		and
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$B \vdash C$} 
+		\DisplayProof
+		the denotation of the proof
+		\begin{center}
+			$\pi$ = 
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash B$} 
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B \vdash C$} 
+			\RightLabel{Cut}
+			\BinaryInfC{$A \vdash C$}
+			\DisplayProof
+		\end{center}
+		is given by $[\pi] = [\pi_2] \circ [\pi_1]$. As the symbol suggests, we call this operation \emph{composition}.
+	\end{definition}
+	
+	
+	\begin{proposition}
+		A modular invariant of proofs forms a category with the formulae as objects and the proof denotations as morphisms.
+		\todo{more like polycategory if we allow general sequents...}
+	\end{proposition}
+	
+	\begin{proof}
+		Associativity is given by commuting cuts. The identity morphisms are given by the axiom rule. 
+	\end{proof}
+	
+	
+	\begin{definition}[tensoriality]
+		A proof invariant is called \emph{tensorial} iff there is a binary operation $\otimes$ such that for any two proofs
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$A \vdash C$} 
+		\DisplayProof
+		and
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$B \vdash D$} 
+		\DisplayProof
+		the denotation of the proof
+		\urgentnote{what about the proof without $\otimes_L$?}
+		\begin{center}
+			$\pi$ = 
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash C$} 
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B \vdash D$} 
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A, B \vdash C \otimes D$}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A \otimes B \vdash C \otimes D$}
+			\DisplayProof
+		\end{center}
+		is given by $[\pi] = [\pi_1] \otimes [\pi_2]$.
+	\end{definition}
+	
+	
+	\begin{definition}[cotensorial]
+		A proof invariant is called \emph{cotensorial} iff there is a binary operation $\otimes$ such that for any two proofs
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$A \vdash C$} 
+		\DisplayProof
+		and
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$B \vdash D$} 
+		\DisplayProof
+		the denotation of the proof
+		\urgentnote{what about the proof without $\parr_R$?}
+		\begin{center}
+			$\pi$ = 
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash C$} 
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B \vdash D$} 
+			\RightLabel{$\parr_L$}
+			\BinaryInfC{$A \parr B \vdash C, D$}
+			\RightLabel{$\parr_R$}
+			\UnaryInfC{$A \parr B \vdash C \parr D$}
+			\DisplayProof
+		\end{center}
+		is given by $[\pi] = [\pi_1] \parr [\pi_2]$.
+	\end{definition}
+	
+	
+	\begin{lemma}
+		A (co-)tensorial, modular proof invariant forms a monoidal category.
+	\end{lemma}
+	
+	\begin{proof}
+		We focus on tensorial proof invariants as the proof trees for the cotensorial case are geometrically the same. From now on we abuse our notation and write $\pi$ for the denotation $[\pi]$ of the proof $\pi$.
+		
+		It is easy to see that $\otimes$ forms a bifunctor:
+		By $\eta$-expansion the two proofs 
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+			\quad
+			and 
+			\quad
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$A, B \vdash A \otimes B$}
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+		\end{center}
+		have the same denotation $\id_{A \otimes B} = \id_A \otimes \id_B$.
+		
+		Given four proofs
+		\begin{center}
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_1 \vdash A_2 $}
+			\DisplayProof
+			, \quad
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_1 \vdash B_2$}
+			\DisplayProof
+			, \quad
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_2 \vdash A_3$}
+			\DisplayProof
+			\quad
+			and 
+			\quad
+			\AxiomC{$\pi_4 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_2 \vdash B_3$}
+			\DisplayProof
+		\end{center}
+		
+		the proof tree
+		\begin{center}
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_1 \vdash A_2 $}
+			
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_1 \vdash B_2$}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A_1, B_1 \vdash A_2, B_2 $}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A_1 \otimes B_1 \vdash A_2, B_2 $}
+			
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_2 \vdash A_3$}
+			
+			\AxiomC{$\pi_4 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_2 \vdash B_3$}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A_2, B_2 \vdash A_3 \otimes B_3 $}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A_2 \otimes B_2 \vdash A_3 \otimes B_3 $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$A_1 \otimes B_1 \vdash A_3 \otimes B_3 $}
+			
+			\DisplayProof
+		\end{center}
+		
+		with denotation $(\pi_3 \otimes \pi_4) \circ (\pi_1 \otimes \pi_2)$
+		is transformed via cut elimination into the proof
+		\begin{center}
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_1 \vdash A_2 $}
+			
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_2 \vdash A_3$}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$A_1 \vdash A_3 $}
+			
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_1 \vdash B_2$}
+			
+			\AxiomC{$\pi_4 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_2 \vdash B_3$}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$B_1 \vdash B_3 $}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A_1, B_1 \vdash A_3 \otimes B_3 $}
+			
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A_1 \otimes B_1 \vdash A_3 \otimes B_3 $}
+			
+			\DisplayProof
+		\end{center}
+		
+		with denotation $(\pi_3\circ \pi_1) \otimes (\pi_4 \circ \pi_2)$ which gives us the following equation
+		\begin{align*}
+			(\pi_3 \otimes \pi_4) \circ (\pi_1 \otimes \pi_2)
+			= (\pi_3\circ \pi_1) \otimes (\pi_4 \circ \pi_2)
+		\end{align*}
+		
+		The associator $\alpha$ is given by the denotation of the proof
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$C \vdash C $}
+			
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$B, C \vdash B \otimes C$}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A, B, C \vdash A \otimes (B \otimes C )$}
+			
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes B, C \vdash A \otimes (B \otimes C )$}
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$(A \otimes B) \otimes C \vdash A \otimes (B \otimes C) $}
+			\DisplayProof
+		\end{center}
+		
+		while the unitors $\lambda$ and $\rho$ are given by
+		\todo{requires generalized unit rules}
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\RightLabel{$1_L$}
+			\UnaryInfC{$1, A\vdash A$}
+			\UnaryInfC{$1 \otimes A \vdash A$}
+			\DisplayProof
+			\quad
+			and
+			\quad
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\RightLabel{$1_L$}
+			\UnaryInfC{$A, 1\vdash A$}
+			\UnaryInfC{$A \otimes 1\vdash A$}
+			\DisplayProof
+		\end{center}
+		We have to show isomorphy as well as the naturality and coherence conditions.
+		The inverse morphisms are given by 
+		
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$A, B \vdash A \otimes B$}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$C \vdash C $}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A, B, C \vdash (A \otimes B) \otimes C $}
+			
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A , B \otimes C \vdash  (A \otimes B) \otimes C $}
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes (B \otimes C) \vdash  (A \otimes B) \otimes C  $}
+			\DisplayProof
+		\end{center}
+		
+		as well as
+		
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$1_R$}
+			\UnaryInfC{$1 \vdash $}
+%			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+%
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A \vdash 1 \otimes A$}
+			\DisplayProof
+			\quad 
+			and 
+			\quad
+			\AxiomC{\strut}
+			\RightLabel{$1_R$}
+			\UnaryInfC{$1 \vdash $}
+%
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+%
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A \vdash 1 \otimes A$}
+			\DisplayProof
+		\end{center}
+		
+		\urgentnote[inline]{finish: naturality example on $\alpha$, isomorphy with $\id_{A \otimes B} \circ \rho^{-1} \circ \rho = \id_{A \otimes B} $}
+	\end{proof}
+	
+	%______________________________________________________________Baustelle
+	\begin{theorem}
+		A proof invariant that is modular, tensorial and cotensorial forms a linearly distributive category.
+	\end{theorem}
+	
+	\begin{proof}
+		The distributors $\partial_L$ and $\partial_R$ are given by:
+		\urgentnote[inline]{write $\partial$ proofs and maybe show coherence.}
+	\end{proof}
+	
+	
+	%.........................................................
+	\subsubsection{Commuting cuts}
+	
+	\todo[inline]{is a separate definition even needed? integrate that stuff into expansions.}
+	
+	\begin{tabularx}{\textwidth}{X c X}
+		\scalebox{.6}{
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+			
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+			
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$\Gamma_3, \Gamma_2, A, \Gamma'_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+			\DisplayProof
+		}
+		&
+		$\leftrightsquigarrow$
+		&
+		\scalebox{.6}{
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+			
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+			
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+			\DisplayProof
+		}
+	\end{tabularx}
+	
+	\todo[]{put that stuff back into a normal center instead of tabularx?}
+	
+	
+	The proof
+	
+	\begin{center}
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+		
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
+		
+		\AxiomC{$\pi_3 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_3, A, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+		\DisplayProof
+	\end{center}
+	
+	is transformed into
+	
+	\begin{center}
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
+		
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+		
+		\AxiomC{$\pi_3 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_3, \Gamma_1, B, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 $}
+		
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_1, \Delta_3, \Delta'_1, \Delta'_2 $}
+		\DisplayProof
+	\end{center}
+	
+	and vice versa
+	\urgentnote[inline]{think about the deltas...: aufteilen in zwei Regeln mit einseitigen Deltas für A und B oder allgemein halten und viele exchanges drunter klatschen (was es asymmetrisch macht und damit)?}
+	
+	
+	%---------------------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	\todo[inline]{add refs}
 	
 	\printbibliography
