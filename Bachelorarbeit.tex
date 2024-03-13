@@ -138,6 +138,734 @@
 	
 	\todo[inline]{what am I even writing about?}
 	
+
+	%---------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+	\section{Categorical Preliminaries}
+	
+	\subsection{Categories}
+	\label{sec: catSec}
+	%Tensorcats?
+	
+	\todo[inline]{sources for basic definitions. (nlab prolly doesn't suffice)}
+	
+	\begin{definition}[Category]
+		\label{def: cat}
+		A Category $\category{C}$ consists of the following data: 
+		\begin{itemize}
+			\item A class $\Obj(\category{C})$ of \emph{objects}.
+			\item For every pair of objects $A, B \in \Obj(\category{C})$ there is a class $\Hom(A, B)$ of \emph{morphisms} $f: A \rightarrow B$ from $A$ to $B$. 
+			\item Morphisms \emph{compose}: For $f \in \Hom(A, B)$ and $g \in \Hom(B, C)$ there is a morphism $g \circ  f \in \Hom(A, C)$. 
+			That composition is associative: 
+			\begin{align*}
+				h \circ (g \circ f) = (h \circ g) \circ f
+			\end{align*}
+			We will write $gf$ for $g\circ f$ when appropriate.
+			\item For every object $A$ there is an \emph{identity morphism} $\id_A \in \Hom(A, A)$:
+			\begin{align*}
+				f \circ \id_A = f, \quad \id_B \circ f = f
+			\end{align*}
+			for $f \in \Hom(A, B)$
+		\end{itemize}
+		If the hom-classes are sets, we call the category \emph{locally small}. If the object class is a set, we call the category \emph{small}. Otherwise, we call the category \emph{large}.
+		
+		If we have a category $\category{C} $, we call its \emph{opposite} category $\category{C}^\opp $ the category with the following structure:
+		\begin{itemize}
+			\item $\Obj{\left(\category{C}^\opp \right)} = \Obj(\category{C}) $
+			\item $\forall A, B \in \Obj(\category{C}): 
+			\Hom_{\category{C}^\opp }(A,B) = \Hom_{\category{C}}(B,A)$
+		\end{itemize}
+	\end{definition}
+	
+	%.....................................................................................
+	\notimportantnote[inline]{extra definition for opposite structure? }
+	%commment....................................................................................
+	
+	
+	\begin{definition}[Functor]
+		\label{def: functor}
+		A \emph{(covariant) functor} $\functor{F}: \category{C} \rightarrow \category{D} $ between two categories $\category{C}$ and $\category{D} $ is a function mapping each object $A \in  \Obj(\category{C}) $ to an object $F(A) \in \Obj(D) $ and each morphism $ f \in \Hom(A,B) $ to a morphism $\functor{F}(f) \in \Hom(\functor{F}(A), \functor{F}(B))$ such that identity and composition are preserved:
+		\begin{align*}
+			\functor{F}(\id_A) = \id_{\functor{F}(A)},
+			\quad
+			\functor{F}(g\circ f) = \functor{F}(g) \circ \functor{F}(f)
+		\end{align*}
+		
+		A functor $\functor{F}: \category{C}^\opp \rightarrow \category{D} $ is called \emph{contravariant} on $\category{C} $.
+		
+		We will drop the parentheses when appropriate.
+	\end{definition}
+	
+	
+	\begin{definition}[Natural transformation]
+		\label{def: natTrans}
+		A \emph{natural transformation} $\tau: F \rightarrow G $ between two functors $\functor{F}, \functor{G}: \category{C} \rightarrow \category{D} $ is family of morphisms in $\category{D}$:
+		\begin{align*}
+			\tau = \{ \tau_A : \functor{F}A \rightarrow \functor{G}A \,| A \in \Obj(\category{C})\}
+		\end{align*}
+		such that $\tau_B\functor{F}(f) = \functor{F}(f)\tau_A $ for all $f: A \rightarrow B \in \Morph(\category{C}) $, i.e. the following diagram commutes:
+		
+		\begin{center}
+			\begin{tikzcd}
+				\functor{F} A 
+				\arrow[r, "\functor{F}f " ]
+				\arrow[d, "\tau_A" ] 
+				&
+				\functor{F} B
+				\arrow[d, "\tau_B" ]
+				\\
+				\functor{G} A 
+				\arrow[r, "\functor{G}f" ]
+				&
+				\functor{G} B
+			\end{tikzcd}
+		\end{center}
+		
+		If $\tau_A$ is an isomorphism for all $A \in \Obj(\category{C}) $, we call $\tau$ a \emph{natural} \emph{isomorphism}.
+		We will often represent a natural transformation by a single one of its members and also drop the index when appropriate.
+	\end{definition}
+	
+	
+	\todo[inline]{definition: equivalence of categories}
+	
+
+	
+	\begin{definition}[Adjunction]
+		\label{def: adjunction}
+		\notimportantnote[]{source: Brandenburg}
+		Let $\category{C}$ and $\category{D} $ be categories. We call $\functor{F}: \category{C} \rightarrow \category{D} $ the \emph{left adjoint} of $\functor{G}: \category{D} \rightarrow \category{C} $ and $\functor{G} $ the \emph{right adjoint} of $\functor{F} $ if there is an isomorphism that is natural in $A \in \category{C} $ and $B \in \category{D} $:
+		\begin{align*}
+			\Hom_\category{D}(\functor{F}A, B) 
+			\cong \Hom_\category{C}(A, \functor{G}B)
+		\end{align*}
+		Equivalently, we call $\functor{F} $ the left adjoint of $\functor{G} $ if there are natural transformations 
+		\begin{align*}
+			\eta &: \id_\category{C} \rightarrow \functor{G} \circ \functor{F}
+			\\
+			\varepsilon &: \functor{F} \circ \functor{G} \rightarrow \id_\category{D}
+		\end{align*}
+		fulfilling the following condition: 
+		
+		\begin{align*}
+			\id_{\functor{F}A} 
+			&= \varepsilon(\functor{F}A) \circ \functor{F}\eta(A)
+			\\
+			\id_{\functor{G}B} 
+			&= \functor{G}\varepsilon(B) \circ \eta(\functor{G}B)
+		\end{align*}
+		\todo{maybe index Schreibweise?}
+		
+		i.e. the following diagrams commute:
+		\begin{center}
+			\begin{tikzcd}
+				&
+				\functor{F} \circ \functor{G} \circ \functor{F}
+				\arrow[rd, "\varepsilon \bullet \functor{F} " ]
+				&
+				\\
+				\functor{F}\id_\category{C}
+				\arrow[ru, "\functor{F} \bullet \eta " ]
+				\arrow[rr, equal, "\id" ]
+				&
+				&
+				\id_\category{C} \circ \functor{F}
+			\end{tikzcd}
+			\begin{tikzcd}
+				&
+				\functor{G} \circ \functor{F} \circ \functor{G}
+				\arrow[rd, "\functor{G} \bullet \varepsilon " ]
+				&
+				\\
+				\id_\category{C} \circ \functor{G}
+				\arrow[ru, "\eta \bullet \functor{G} "]\
+				\arrow[rr, equal, "\id " ]
+				&
+				&
+				\functor{G} \circ \id_\category{D}
+			\end{tikzcd}
+		\end{center}
+		\todo[inline]{cut triangle diagrams or define $\bullet $ } %diagramme.............................................................................................................................................
+		
+		We write $F \dashv G$.
+	\end{definition}
+	
+	
+	\begin{definition}[Monoidal category]
+		\label{def: monoCat}
+		A \emph{monoidal category} $(\category{C}, \otimes, \Unit, \alpha, \lambda, \rho)$ is a category $\category{C}$ with the following additional data:
+		\begin{itemize}
+			\item a functor $\otimes : \category{C} \times \category{C} \rightarrow \category{C} $, called \emph{monoidal} or \emph{tensor product};
+			\item an object $\Unit \in  \Obj(\category{C})$, called \emph{unit object};
+			\item a natural isomorphism $\alpha: A \otimes (B \otimes C ) \rightarrow (A \otimes B) \otimes C$, called \emph{associator};
+			\item a natural isomorphism $\lambda: \Unit \otimes A \rightarrow A$, called left unitor;
+			\item a natural isomorphism $\rho: A \otimes \Unit \rightarrow A$, called right unitor;
+		\end{itemize}
+		such that the following diagrams commute:
+		\begin{itemize}
+			\item the pentagon diagram: 
+			%name correct?............................................................................................................
+			\begin{center}
+				\begin{tikzcd}
+					& A \otimes (B \otimes ( C \otimes D)) 
+					\arrow[ld, "\id \otimes \alpha " ]
+					\arrow[rd, "\alpha " ]
+					&
+					\\
+					A \otimes ((B \otimes C ) \otimes D)
+					\arrow[d, "\alpha" ]
+					&
+					&
+					(A \otimes B) \otimes (C \otimes D)
+					\arrow[d, "\alpha" ]
+					\\
+					(A \otimes (B \otimes C)) \otimes D
+					\arrow[rr, "\alpha \otimes \id " ]
+					&
+					&
+					((A \otimes B) \otimes C) \otimes D
+				\end{tikzcd}
+			\end{center}
+			
+			\item the unit diagram:
+			\begin{center}
+				\begin{tikzcd}
+					(A \otimes \Unit) \otimes B
+					\arrow[rr, "\alpha " ]
+					\arrow[rd, "\rho \otimes \id "' ]
+					&
+					&
+					A \otimes (\Unit \otimes B)
+					\arrow[ld, "\id \otimes \lambda " ]
+					\\
+					& 
+					A \otimes B
+					&
+				\end{tikzcd}
+			\end{center}
+		\end{itemize}
+		A \emph{symmetric monoidal category} has an additional natural isomorphism:
+		\begin{align*}
+			s_{A,B}: A \otimes B \rightarrow B \otimes A
+		\end{align*}
+		satisfying the following conditions:
+		\begin{itemize}
+			\item the hexagon law:
+			\begin{center}
+				\begin{tikzcd}
+					A \otimes (B \otimes C)
+					\arrow[d, "\id \otimes s_{B, C}"]
+					\arrow[r, "\alpha " ]
+					&
+					(A \otimes B) \otimes C
+					\arrow[r, "s_{A\otimes B, C} "]
+					&
+					C \otimes (A \otimes B)
+					\arrow[d, "\alpha" ]
+					\\
+					A \otimes (C \otimes B)
+					\arrow[r, "\alpha"' ]
+					&
+					(A \otimes C) \otimes B 
+					\arrow[r, "s_{A, C} \otimes B"' ]
+					&
+					(C \otimes A) \otimes B
+				\end{tikzcd}
+			\end{center}
+			\item the inverse law: $s_{A, B}^{-1} = s_{B, A} $
+			\item the unit law: $\lambda = \rho s$
+			\begin{center}
+				\begin{tikzcd}
+					\Unit \otimes A 
+					\arrow[rr, "s_{\Unit, A} "]
+					\arrow[rd, "\lambda "' ]
+					&
+					&
+					A \otimes \Unit
+					\arrow[ld, "\rho" ]
+					\\
+					&
+					A
+					&
+				\end{tikzcd}
+			\end{center}
+		\end{itemize}
+		\notimportantnote[inline]{Diagramme verschönern}
+		%........................................................................................................................................
+	\end{definition}
+	
+	
+	\begin{definition}[Closed monoidal category]
+		\label{def: closedMonoCat}
+		\todo{lengthy, rambling... maybe cut into three definitions?}
+		A monoidal category $\category{C} $ is called \emph{right closed}, resp. \emph{left closed}, iff there is a functor 
+		$- \multimap -: \category{C}^\opp \times \category{C} \rightarrow \category{C} $, 
+		resp. 
+		$- \multimapinv -: \category{C} \times \category{C}^\opp \rightarrow \category{C} $, 
+		such that there is a natural isomorphism 
+		$\Hom(A \otimes B, C) \cong \Hom(B, A\multimap C)$, 
+		resp. 
+		$\Hom(A \otimes B, C) \cong \Hom(A, C\multimapinv B)$,
+		i.e. iff the functor $- \otimes B$, resp. $A \otimes - $, has a right adjoint.
+		A monoidal $\category{C} $ is called \emph{biclosed} iff it is both left and right closed.
+		
+		\todo[inline]{definitely  mixed up the right and left homs there}
+		
+		If $\category{C} $ is symmetric, these functors coincide and we call the category \emph{closed}.
+		
+		The functors 
+		$- \multimap -: \category{C}^\opp \times \category{C} \rightarrow \category{C} $ 
+		and 
+		$- \multimapinv -: \category{C} \times \category{C}^\opp \rightarrow \category{C} $
+		are called \emph{internal hom} functors.
+	\end{definition}
+	
+	
+\iffalse	
+	\todo[inline]{following definitions prolly unnötig:}
+	
+	\begin{definition}[Enriched category]
+		\label{def: enrichment}
+		Let $(\category{M}, \Unit, \alpha, \lambda, \rho) $ be a monoidal category. An $\category{M} $\emph{-enriched category} $\category{C} $ consists of the following data:
+		\begin{itemize}
+			\item 
+			A class $\Obj(\category{C}) $ of objects;
+			\item 
+			For every pair of objects $(A, B) \in \Obj(\category{C}) \times \Obj(\category{C}) $ an object 
+			$\category{C}(A, B) \in \Obj(\category{M}) $
+			called \emph{hom object};
+			\item 
+			For every triple of objects 
+			$(A, B, C) \in \Obj(\category{C}) \times \Obj(\category{C}) \times \Obj(\category{C}) $
+			a morphism 
+			$\Morph(\category{M}) \ni \circ_{A, B, C}: \category{C}(B, C) \otimes \category{C}(A, B) \rightarrow \category{C}(A, C) $
+			called \emph{composition morphism};
+			\item 
+			For every object $A \in \category{C} $ a morphism $ \id_A : \Unit \rightarrow \category{C}(A, A) $;
+		\end{itemize}
+		such that the following diagrams commute:
+		\begin{center}
+			\begin{tikzcd}
+				(\category{C}(C, D) \otimes \category{C}(B, C) ) \otimes \category{C}(A, B)
+				\arrow[d, " \circ_{B, C, D} \otimes \id_{\category{C}(A, B) } " ]
+				\arrow[rr, "\alpha " ]
+				&
+				&
+				\category{C}(C, D) \otimes (\category{C}(B, C) \otimes \category{C}(A, B))
+				\arrow[d, "\id_{\category{C}(C, D)} \otimes  \circ_{A, B, C} " ]
+				\\
+				\category{C}(D, B) \otimes \category{C}(A, B)
+				\arrow[dr, "\circ_{A, B, D} "' ]
+				&
+				&
+				\category{C}(C, D) \otimes \category{C}(A, C)
+				\arrow[dl, "\circ_{A, C, D} " ]
+				\\
+				&
+				\category{C}(A, D)
+				&
+			\end{tikzcd}
+		\end{center}
+		
+		\begin{center}
+			\begin{tikzcd}
+				\Unit \otimes \category{C}(A, B)
+				\arrow[r, "\lambda" ]
+				\arrow[d, "\id_B \otimes \id_{\category{C}(A,B) }"' ]
+				&
+				\category{C}(A, B)
+				&
+				\category{C}(A, B) \otimes \Unit 
+				\arrow[l, "\rho "' ]
+				\arrow[d, "\id_{\category{C}(A, B)} \otimes \id_A " ]
+				\\
+				\category{C}(B, B) \otimes \category{C}(A, B)
+				\arrow[ru, "\circ_{A, B, B}"']
+				&
+				&
+				\category{C}(A, B) \otimes \category{C}(A, A)
+				\arrow[lu, "\circ_{A, A, B}"]
+			\end{tikzcd}
+		\end{center}
+	\end{definition}
+	
+	\begin{definition}[Enriched functors]
+		\label{def: enrichedFunctors}
+		Let $\category{C} $ and $\category{D} $ be $\category{M} $-enriched categories. An \emph{enriched functor} $\functor{F} : \category{C} \rightarrow \category{D} $ consists of:
+		\begin{itemize}
+			\item 
+			a function $\functor{F}_0 : \Obj(\category{C}) \rightarrow \Obj(\category{D}) $ between the objects
+			\item 
+			a family of morphisms in $\category{M} $: $\functor{F}_{A,B} : \category{C}(A, B) \rightarrow \category{D}(\functor{F}_0 A , \functor{F}_0 B) $
+		\end{itemize}
+		such that the following diagrams commute:
+		\begin{center}
+			\begin{tikzcd}
+				\category{C}(B, C) \otimes \category{C}(A, B)
+				\arrow[r, "\circ " ]
+				\arrow[d, "\functor{F}_{B, C} \otimes \functor{F}_{A, B} " ]
+				&
+				\category{C}(A,C)
+				\arrow[d, "\functor{F}_{A, C} " ]
+				\\
+				\category{D}(\functor{F}_0 B , \functor{F}_0 C) \otimes \category{D}(\functor{F}_0 A , \functor{F}_0 B)
+				\arrow[r, "\circ " ]
+				&
+				\category{D}(\functor{F}_0 A , \functor{F}_0 C)
+			\end{tikzcd}
+			
+			\begin{tikzcd}
+				&
+				\Unit
+				\arrow[dl, "\id_A "' ]
+				\arrow[dr, "\id_{\functor{F}_0 A} " ]
+				&
+				\\
+				\category{C}(A, A)
+				\arrow[rr, "\functor{F}_{A, A} " ]
+				&
+				&
+				\category{D}(\functor{F}_0 A, \functor{F}_0 A)
+			\end{tikzcd}
+		\end{center}
+	\end{definition}
+\fi
+
+	
+%---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
+	\subsection{LinDisCats}
+	\label{sec: linDisCats}
+	%LDCs
+	%*-auto. Cats
+	
+	\begin{definition}[Linearly distributive category]
+		\label{def: linDisCat}
+		A \emph{linearly} \emph{distributive} \emph{category} $(\category{C}, \otimes, 1, \parr, \bot)$ is a category $\category{C}$ consisting of:
+		\begin{itemize}
+			\item a monoidal category $(\category{C}, \otimes, 1, \alpha_\otimes, \lambda_\otimes, \rho_\otimes)$, with $\otimes$ called "tensor";
+			\item a monoidal  category $(\category{C}, \parr, \bot, \alpha_\parr, \lambda_\parr, \rho_\parr)$, with $\parr$ called "par";
+			\item two natural transformations called left and right \emph{linear distributors} respectively:
+			\begin{align*}
+				\partial_L:& A \otimes (B \parr C) \rightarrow (A\otimes B) \parr C
+				\\
+				\partial_R:& (A \parr B) \otimes C \rightarrow A \parr (B \otimes C)
+			\end{align*}
+		\end{itemize}
+		satisfying the following coherence conditions:
+		\begin{itemize}
+			\item coherence between the distributors and unitors:
+			\begin{center}
+				\begin{tikzcd}
+					1 \otimes (A \parr B)
+					\arrow[rr, "\partial_L " ]
+					\arrow[rd, "\lambda_\otimes "' ]
+					&
+					&
+					(1 \otimes A) \parr B
+					\arrow[ld, "\lambda_\otimes \parr \id " ]
+					\\
+					&
+					A \parr B
+					&
+				\end{tikzcd}
+				\begin{tikzcd}
+					(A \parr B) \otimes 1
+					\arrow[rr, "\partial_R " ]
+					\arrow[rd, " \rho_\otimes "' ]
+					&
+					&
+					A \parr (B \otimes 1)
+					\arrow[ld, "\id \otimes \rho_\otimes " ]
+					\\
+					&
+					A \parr B
+					&
+				\end{tikzcd}
+				
+				\begin{tikzcd}
+					A \otimes (B \parr \bot ) 
+					\arrow[rr, "\partial_L " ]
+					\arrow[dr, "\id \otimes \rho_\parr "' ]
+					&
+					&
+					(A \otimes B) \parr \bot
+					\arrow[dl, "\rho_\parr " ]
+					\\
+					&
+					A\otimes B
+					&
+				\end{tikzcd}
+				\begin{tikzcd}
+					(\bot \parr A) \otimes B
+					\arrow[rr, "\partial_R " ]
+					\arrow[dr, "\lambda_\parr \otimes \id "' ]
+					&
+					&
+					\bot \parr (A \otimes B)
+					\arrow[dl, "\lambda_\parr " ]
+					\\
+					&
+					A \otimes B
+					&
+				\end{tikzcd}
+			\end{center}
+			\formatnote{Diagramme besser alignen}
+			%Diagramme besser alignen.............................................................................................................
+			\item coherence between distributors and associators:
+			\begin{center}
+				\begin{tikzcd}
+					&
+					(A \otimes B) \otimes (C \parr D)
+					\arrow[rd, "\partial_L " ]
+					\arrow[ld, "\alpha_\otimes " ]
+					&
+					\\
+					A \otimes (B \otimes (C \parr D))
+					\arrow[d, "\id \otimes \partial_L " ]
+					
+					&
+					&
+					((A \otimes B) \otimes C) \parr D
+					\arrow[d, "\alpha_\otimes \parr \id " ]
+					\\
+					A \otimes ((B \otimes C) \parr D)
+					\arrow[rr, "\partial_L " ]
+					&
+					&
+					(A \otimes (B \otimes C)) \parr D
+				\end{tikzcd}
+				
+				\begin{tikzcd}
+					&
+					A \otimes (B \parr (C \parr D))
+					\arrow[ld, "\id \otimes \alpha_\parr " ]
+					\arrow[rd, "\partial_L " ]
+					&
+					\\
+					A \otimes ((B \parr C) \parr D)
+					\arrow[d, "\partial_L " ]
+					&
+					&
+					(A \otimes B) \parr (C \parr D)
+					\arrow[d, "\alpha_\parr " ]
+					\\
+					(A \otimes (B \parr C)) \parr D
+					\arrow[rr, "\partial_L \parr \id " ]
+					&
+					&
+					((A \otimes B) \parr C) \parr D    \end{tikzcd}
+				
+				\begin{tikzcd}
+					&
+					(A \parr B) \otimes (C \otimes D)
+					\arrow[ld, "\alpha_\otimes " ]
+					\arrow[rd, "\partial_R " ]
+					&
+					\\
+					((A \parr B) \otimes C) \otimes D
+					\arrow[d, "\partial_R \otimes \id " ]
+					&
+					&
+					A \parr (B \otimes (C \otimes D))
+					\arrow[d, "\id \parr \alpha_\otimes " ]
+					\\
+					(A \parr (B \otimes C)) \otimes D
+					\arrow[rr, "\partial_R " ]
+					&
+					&
+					A \parr ((B \otimes C) \otimes D)
+				\end{tikzcd}
+				
+				\begin{tikzcd}
+					&
+					((A \parr B) \parr C) \otimes D
+					\arrow[ld, "\alpha_\parr \otimes \id " ]
+					\arrow[rd, "\partial_R " ]
+					&
+					\\
+					(A \parr (B \parr C)) \otimes D
+					\arrow[d, "\partial_R " ]
+					&
+					&
+					(A \parr B) \parr (C \otimes D)
+					\arrow[d, "\alpha_\parr " ]
+					\\
+					A \parr ((B \parr C) \otimes D)
+					\arrow[rr, "\id \parr \partial_R " ]
+					&
+					&
+					A \parr (B \parr (C \otimes D))
+				\end{tikzcd}
+			\end{center}
+			\item coherence between the distributors:
+			\begin{center}
+				\begin{tikzcd}
+					&
+					(A \parr B) \otimes (C \parr D)
+					\arrow[rd, "\partial_L " ]
+					\arrow[ld, "\partial_R " ]
+					&
+					\\
+					((A \parr B) \otimes C) \parr D
+					\arrow[d, "\partial_R \parr \id " ]
+					&
+					&
+					A \parr (B \otimes (C \parr D))
+					\arrow[d, "\id \parr \partial_L " ]
+					\\
+					(A \parr (B \otimes C)) \parr D
+					&
+					&
+					A \parr ((B \otimes C) \parr D)
+					\arrow[ll, "\alpha_\parr " ]
+				\end{tikzcd}
+				\formatnote[inline]{obiges Diagramm rumdrehen}
+				%.......................................................................................................
+				\formatnote[inline]{\textbackslash parr \textbackslash id sieht kacke aus...}    %..................................................................................
+				\begin{tikzcd}
+					&
+					A \otimes ((B \parr C) \otimes D)
+					\arrow[ld, "\alpha_\otimes " ]
+					\arrow[rd, "\id \otimes \partial_R " ]
+					&
+					\\
+					(A \otimes (B \parr C)) \otimes D
+					\arrow[d, "\partial_L \otimes \id " ]
+					&
+					&
+					A \otimes (B \parr (C \otimes D))
+					\arrow[d, "\partial_L " ]
+					\\
+					((A \otimes B) \parr C) \otimes D
+					\arrow[rr, "\partial_R " ]
+					&
+					&
+					(A \otimes B) \parr (C \otimes D)
+				\end{tikzcd}
+			\end{center}
+		\end{itemize}
+		\formatnote[inline]{itemize anpassen?}
+		%.............................................................................
+	\end{definition}
+	
+	
+	\subsection{*-aut. cats}
+	\label{sec: autoCats}
+	\todo[inline]{structure an Mellies, CatSemOfLinLog, anpassen; equivalence Srinivasan and Barr definitions}
+	
+	\begin{definition}[Dual object]
+		\label{def: dualObj}
+		%source: srinivasan
+		Let $\category{C} $ be a linearly distributive category and $A, A^* \in \Obj(\category{C}) $, then we call $A^* $ \emph{left dual} (or \emph{left linearly adjoint}) to $A$, if there are morphisms $\tau: 1 \rightarrow A^* \parr A$ and $\gamma: A \otimes A^* \rightarrow \bot $, called \emph{unit} and \emph{counit} resp., such that the following diagrams commute:
+		\begin{center}
+			\begin{tikzcd}
+				A^*
+				\arrow[r, equal, "\id" ]
+				&
+				A^*
+				\arrow[d, "\lambda_\otimes^{-1} " ]
+				\\
+				A^* \parr \bot
+				\arrow[u, "\rho_\parr " ]
+				&
+				1 \otimes A^*
+				\arrow[d, "\tau \otimes \id " ]
+				\\
+				A^*\parr (A \otimes A^*)
+				\arrow[u, "\id \parr \gamma " ]
+				&
+				(A^* \parr A) \otimes A^*
+				\arrow[l, "\partial_R " ]
+			\end{tikzcd}
+			\begin{tikzcd}
+				A
+				\arrow[r, equal, "\id " ]
+				&
+				A
+				\arrow[d, "\rho_\otimes^{-1} " ]
+				\\
+				\bot \parr A
+				\arrow[u, "\lambda_\parr " ]
+				&
+				A \otimes 1
+				\arrow[d, "\id \otimes \tau " ]
+				\\
+				(A^* \parr A) \otimes A^*
+				\arrow[u, "\gamma \parr \id " ]
+				&
+				A^* \parr (A \otimes A^*)
+				\arrow[l, "\partial_L " ]
+			\end{tikzcd}
+			\formatnote[inline]{das geht schöner}
+		\end{center}
+		
+		We write $(\tau, \gamma): A^* \dashV A $ and also call $A$ \emph{right dual} to $A^*$. 
+		\formatnote[inline]{mathabx incompatible with amssymb, stix absolutely broken; repalce dashV with dashv + some index?}
+	\end{definition}
+	
+	\begin{lemma}
+		\label{lemma: isoLinDisCat}
+		{ }
+		\begin{enumerate}
+			\item In an LDC: if 
+			$A^* \dashV A $ and $A' \dashV A $, 
+			then $A^*$ and $A'$ are isomorphic. 
+			We will from now on only talk about \emph{the} dual object, when equality up to isomorphism is sufficient.
+			\item In a symmetric LDC: 
+			$(\tau, \gamma): A^* \dashV A 
+			\Longleftrightarrow 
+			(\tau s_{\parr}, s_{\otimes} \gamma): A \dashV A^* $ 
+		\end{enumerate}
+	\end{lemma}
+	
+	\todo[inline]{proof }
+	%(BCS: "Feedback for linearly distributive categories: traces and fixpoints)
+	%comment..............................................................................................................................
+	
+	\todo[inline]{\cite{srinavsan-thesis} Lemma 2.9 (iii)?}
+	%comment.............................................................................................................................
+	
+	\begin{definition}[*-autonomous categories \cite{srinavsan-thesis}]
+		\label{def: autoCatSrinivasan}
+		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
+	\end{definition}
+	
+\todo[inline]{cut Barr's stuff as it doesn't lead to anything right now?}	
+	
+	\begin{definition}[*-autonomous categories (\cite{barr95}, A)]
+		\label{def: autoCatBarrA}
+		A *-autonomous category is a biclosed monoidal category $\category{C} $ with a closed functor $(-)^*: \category{C} \rightarrow \category{C}^\opp $, which is a strong equivalence of categories.     
+	\end{definition}
+	%Barr, 95
+	\todo[inline]{definition closed functor, strong equivalence. (strong closed functor?)}
+	
+	\begin{definition}[Dualizing object]
+		\label{def: dualizingObj}
+		Let $\category{C} $ be a biclosed monoidal category. 
+		\todo{details (Barr, 99)}
+		An object $\bot $ is called a dualizing object if for every $A \in \Obj(\category{C}) $ the natural map $A \rightarrow \bot \multimapinv (A \multimap \bot) $ gotten by transposing $\id: A \multimap \bot \rightarrow A\multimap \bot $ twice is an isomorphism. 
+	\end{definition}
+	
+	\begin{definition}[*-autonomous categories (Barr, B)]
+		\label{def: autoCatBarrB}
+		A *-autonomous category is a biclosed category with a dualizing object.
+	\end{definition}
+	\notimportantnote{main definition, Barr}
+	
+	
+	\begin{definition}[*-autonomous categories (Barr, C)]
+		\label{def: autoCatBarrC}
+		A *-autonomous category is a monoidal category $\category{C} $ equipped with an equivalence $(-)^* : \category{C} \rightarrow \category{C}^\opp $ such that there is a natural isomorphism 
+		\begin{align*}
+			\Hom(A, B^*) \rightarrow \Hom(1, (A \oplus B)^*)
+		\end{align*}
+	\end{definition}
+	
+
+
+
+%__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+	
 	\section{LinLog Preliminaries}
 	
 	\todo[inline]{move the LinLog stuff under the cat stuff?}
@@ -179,7 +907,6 @@
 	\subsection{Syntax}
 	\urgentnote[inline]{Quellen, Quellen, Quellen!!!}
 	\todo[inline]{main source: IntroLinLog}
-	\notimportantnote[inline]{MAYBE to be added: \textbackslash forall and \textbackslash exist. Do we want predicate logic?}
 	%comments..............................................................................................
 	
 	
@@ -189,19 +916,22 @@
 			\item Every constant is a formula.
 			\item Every atomic formula is a formula.
 			\item If $A$ is a formula, so are $A^\bot$,  $\oc A$ and $\wn A$.
-			\item If $A$ and $B$ are formula, so are $A \otimes B$, $A \parr B$, $A \with B$ and $A \oplus B$.
+			\item If $A$ and $B$ are formulas, so are $A \otimes B$, $A \parr B$, $A \with B$ and $A \oplus B$.
 		\end{itemize}
 		%It is customary in linear logic to call $p^\bot$ atomic, for an atom $p$.
 	\end{definition}
-
-	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite sequents of formulas (e.g.: $\Gamma = p_1, ..., p_n$) and $A$ and $B$ formulas.
+	
+	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite lists of formulas (e.g.: $\Gamma = p_1, ..., p_n$), and $A$, $B$ etc. formulas.
 	
 	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. 
+	
+	\notimportantnote{definition: sequent?}
 	
 	\begin{definition}[Proof (tree)]
 		A \emph{proof tree} (often just \emph{proof}) is a rooted tree with sequents of the form $\Gamma \vdash \Delta $ as \emph{edges} and the following sequent rules as \emph{vertices} (except for the root).
 	\end{definition}
-	\todo[]{add more graph-like proof tree?}
+	\todo[]{add example with more graph-like proof tree}
+	
 	
 	\paragraph{Structural rules}
 	We only have the exchange rule as a structural, missing the (general) weakening and contraction rules known from classical logic:
@@ -244,8 +974,6 @@
 		\UnaryInfC{$\Gamma \vdash A^\bot, \Delta $}
 		\DisplayProof
 	\end{center}
-	\notimportantnote{permanente Lösung für empty axiom finden}
-	\todo[inline]{move negation to other place?}
 	
 	
 	
@@ -489,21 +1217,21 @@
 				\DisplayProof
 			\end{center}
 			
-%			\item $A \otimes 0 \vdash 0$:
-%			\begin{center}
-%				\AxiomC{}
-%				\RightLabel{$0_L$}
-%				\UnaryInfC{$A, 0 \vdash 0$}
-%				\UnaryInfC{$A \otimes 0 \vdash 0$}
-%				\DisplayProof
-%			\end{center}
-%			
-%			\item $0 \vdash A \otimes 0$
-%			\begin{center}
-%				\AxiomC{}
-%				\UnaryInfC{$0 \vdash 0 \otimes A$}
-%				\DisplayProof
-%			\end{center}
+			%			\item $A \otimes 0 \vdash 0$:
+			%			\begin{center}
+				%				\AxiomC{}
+				%				\RightLabel{$0_L$}
+				%				\UnaryInfC{$A, 0 \vdash 0$}
+				%				\UnaryInfC{$A \otimes 0 \vdash 0$}
+				%				\DisplayProof
+				%			\end{center}
+			%			
+			%			\item $0 \vdash A \otimes 0$
+			%			\begin{center}
+				%				\AxiomC{}
+				%				\UnaryInfC{$0 \vdash 0 \otimes A$}
+				%				\DisplayProof
+				%			\end{center}
 		\end{itemize}
 		The proof for $A \parr (B \with C ) \equiv (A \parr B) \with (A \parr C )$ is similar, the proof for the equations of the constants a trivial application of their introduction rules.
 	\end{proof}
@@ -544,42 +1272,42 @@
 		
 		\begin{itemize}
 			\item $1^\bot \vdash \bot $: 
-				\begin{center}
-					\AxiomC{\strut}
-					\RightLabel{$1_R$}
-					\UnaryInfC{$\vdash 1 $}
-					\RightLabel{$\bot_R$}
-					\UnaryInfC{$\vdash 1, \bot $}
-					\RightLabel{neg.L}
-					\UnaryInfC{$1^\bot \vdash \bot $}
-					\DisplayProof
-				\end{center}
+			\begin{center}
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1 $}
+				\RightLabel{$\bot_R$}
+				\UnaryInfC{$\vdash 1, \bot $}
+				\RightLabel{neg.L}
+				\UnaryInfC{$1^\bot \vdash \bot $}
+				\DisplayProof
+			\end{center}
 			\item $(A^\bot)^\bot \vdash A $:
-				\begin{center}
-					\AxiomC{\strut}
-					\UnaryInfC{$A \vdash A $}
-					\UnaryInfC{$\vdash A^\bot, A $}
-					\UnaryInfC{$(A^\bot)^\bot \vdash A $}
-					\DisplayProof
-				\end{center}
+			\begin{center}
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				\UnaryInfC{$\vdash A^\bot, A $}
+				\UnaryInfC{$(A^\bot)^\bot \vdash A $}
+				\DisplayProof
+			\end{center}
 			\item $\left(A \otimes B\right)^\bot \vdash A^\bot \parr B^\bot $:
-				\begin{center}
-					\AxiomC{\strut}
-					\UnaryInfC{$A \vdash A $}
-					\UnaryInfC{$\vdash A^\bot, A $}
-					\AxiomC{\strut}
-					\UnaryInfC{$B \vdash B $}
-					\UnaryInfC{$\vdash B^\bot, B $}
-					\BinaryInfC{$\vdash A \otimes B, A^\bot, B^\bot $}
-					\UnaryInfC{$\left(A \otimes B\right)^\bot \vdash A^\bot, B^\bot $}
-					\UnaryInfC{$\left(A \otimes B\right)^\bot \vdash A^\bot \parr B^\bot $}
-					\DisplayProof
-				\end{center}
+			\begin{center}
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				\UnaryInfC{$\vdash A^\bot, A $}
+				\AxiomC{\strut}
+				\UnaryInfC{$B \vdash B $}
+				\UnaryInfC{$\vdash B^\bot, B $}
+				\BinaryInfC{$\vdash A \otimes B, A^\bot, B^\bot $}
+				\UnaryInfC{$\left(A \otimes B\right)^\bot \vdash A^\bot, B^\bot $}
+				\UnaryInfC{$\left(A \otimes B\right)^\bot \vdash A^\bot \parr B^\bot $}
+				\DisplayProof
+			\end{center}
 		\end{itemize}
-		\formatnote{proofsymbol}
+		The rest is shown similarly.
 	\end{proof}
 	
-	With the negation our calculus rules become therefore quite redundant and we can restrict them on the rules for the right-hand side by translating any two-sided sequent 
+	With the negation our calculus rules become quite redundant and we can restrict them on the rules for the right-hand side by translating any two-sided sequent 
 	$A_1, ..., A_n \vdash B_1, ..., B_n$ 
 	into a one-sided sequent 
 	$\vdash A_1^\bot, ... A_n^\bot, B_1, ... B_n$. 
@@ -667,56 +1395,56 @@
 		\begin{itemize}
 			\item 
 			$\wn A \parr \wn B \vdash \wn (A \oplus B )$:
-				\begin{center}
-					\AxiomC{}
-					\UnaryInfC{$A \vdash A$}
-					\RightLabel{$\oplus_R $}
-					\UnaryInfC{$A \vdash A\oplus B$}
-					\RightLabel{$\wn_D $}
-					\UnaryInfC{$A \vdash \wn (A\oplus B) $}
-					\RightLabel{$\wn_L $}
-					\UnaryInfC{$\wn A \vdash \wn (A\oplus B) $}
-					
-					\AxiomC{}
-					\UnaryInfC{$B \vdash B$}
-					\RightLabel{$\oplus_R $}
-					\UnaryInfC{$B \vdash A\oplus B$}
-					\RightLabel{$\wn_D $}
-					\UnaryInfC{$B \vdash, \wn (A\oplus B) $}
-					\RightLabel{$\wn_L $}
-					\UnaryInfC{$\wn B \vdash \wn (A\oplus B) $}
-					
-					\RightLabel{$\parr $}
-					\BinaryInfC{$(\wn A) \parr (\wn B) \vdash \wn (A\oplus B) , \wn (A\oplus B) $}
-					\RightLabel{$\wn_D $}
-					\UnaryInfC{$\wn A \parr \wn B \vdash \wn (A \oplus B)$}
-					\DisplayProof
-				\end{center}
+			\begin{center}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\RightLabel{$\oplus_R $}
+				\UnaryInfC{$A \vdash A\oplus B$}
+				\RightLabel{$\wn_D $}
+				\UnaryInfC{$A \vdash \wn (A\oplus B) $}
+				\RightLabel{$\wn_L $}
+				\UnaryInfC{$\wn A \vdash \wn (A\oplus B) $}
+				
+				\AxiomC{}
+				\UnaryInfC{$B \vdash B$}
+				\RightLabel{$\oplus_R $}
+				\UnaryInfC{$B \vdash A\oplus B$}
+				\RightLabel{$\wn_D $}
+				\UnaryInfC{$B \vdash, \wn (A\oplus B) $}
+				\RightLabel{$\wn_L $}
+				\UnaryInfC{$\wn B \vdash \wn (A\oplus B) $}
+				
+				\RightLabel{$\parr $}
+				\BinaryInfC{$(\wn A) \parr (\wn B) \vdash \wn (A\oplus B) , \wn (A\oplus B) $}
+				\RightLabel{$\wn_D $}
+				\UnaryInfC{$\wn A \parr \wn B \vdash \wn (A \oplus B)$}
+				\DisplayProof
+			\end{center}
 			
 			\item 
 			$\wn (A \oplus B) \vdash \wn A \parr \wn B $:
-				\begin{center}
-					\AxiomC{}
-					\UnaryInfC{$A \vdash A$}
-					\RightLabel{$\wn_D$}
-					\UnaryInfC{$A \vdash \wn A$}
-					\RightLabel{$\wn_W$}
-					\UnaryInfC{$A \vdash \wn A, \wn B $}
-					
-					\AxiomC{}
-					\UnaryInfC{$B \vdash B$}
-					\UnaryInfC{$B \vdash \wn B$}
-					\RightLabel{$\wn_W$}
-					\UnaryInfC{$B \vdash \wn B , \wn A $}
-					
-					\RightLabel{$\oplus_L $}
-					\BinaryInfC{$ A \oplus B \vdash \wn A , \wn B $}
-					\RightLabel{$\wn_L $}
-					\UnaryInfC{$\wn (A \oplus B) \vdash \wn A, \wn B $}
-					\RightLabel{$\parr_R$}
-					\UnaryInfC{$\wn (A \oplus B) \vdash \wn A \parr \wn B $}
-					\DisplayProof
-				\end{center}
+			\begin{center}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\RightLabel{$\wn_D$}
+				\UnaryInfC{$A \vdash \wn A$}
+				\RightLabel{$\wn_W$}
+				\UnaryInfC{$A \vdash \wn A, \wn B $}
+				
+				\AxiomC{}
+				\UnaryInfC{$B \vdash B$}
+				\UnaryInfC{$B \vdash \wn B$}
+				\RightLabel{$\wn_W$}
+				\UnaryInfC{$B \vdash \wn B , \wn A $}
+				
+				\RightLabel{$\oplus_L $}
+				\BinaryInfC{$ A \oplus B \vdash \wn A , \wn B $}
+				\RightLabel{$\wn_L $}
+				\UnaryInfC{$\wn (A \oplus B) \vdash \wn A, \wn B $}
+				\RightLabel{$\parr_R$}
+				\UnaryInfC{$\wn (A \oplus B) \vdash \wn A \parr \wn B $}
+				\DisplayProof
+			\end{center}
 		\end{itemize}
 		
 	\end{proof}
@@ -732,9 +1460,9 @@
 	
 	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can find a \emph{cut-free} proof $\pi'$ of that same sequent. We will prove this for the multiplicative fragment by simplifying the proof due to Braüner \cite[Appendix B]{brauner}. Baüner's proof includes the exponentials which require additional care because of the contraction rule. The general strategy consists of either, moving a cut upwards in a proof or replacing it with cuts of simpler formulas. To do this, we need two definitions:
 	
-%	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can find a \emph{cut-free} proof $\pi'$ of that same sequent. We will prove this for the multiplicative fragment by adapting the cut-elimination procedure for intuitionistic linear logic by 
-%	\urgentnote{add literature} 
-%	Melliès to (multiplicative) classical linear logic and expanding a little bit on the proof given by Braüner \cite{brauner}.
+	%	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can find a \emph{cut-free} proof $\pi'$ of that same sequent. We will prove this for the multiplicative fragment by adapting the cut-elimination procedure for intuitionistic linear logic by 
+	%	\urgentnote{add literature} 
+	%	Melliès to (multiplicative) classical linear logic and expanding a little bit on the proof given by Braüner \cite{brauner}.
 	
 	
 	\begin{definition}[Degree]
@@ -782,8 +1510,8 @@
 		$\partial(\tau') < \partial(\tau) $.
 	\end{lemma}
 	
-		
-	\todo[inline]{tabularx format}
+	
+	\todo[inline]{tabularx format:}
 	\begin{proof}
 		Induction on $h(\tau_1) + h(\tau_2)$. The immediate subproofs of $\tau_i$ are denoted by $\pi_j$.
 		We perform transformations case by case:
@@ -840,9 +1568,9 @@
 				Possible solutions: \\
 				1: add exchanges to transformation (easy; ugly)\\ 
 				2: find generalized $\parr_L$-rule (more difficult; possibly uglier)}
-				
+			
 			\todo[inline]{To be added: $\otimes_R$-cases.\\
-			Maybe combine $\parr_L$- and $\otimes_R$-cases into one? (Requires generalized formulation of the rules)}
+				Maybe combine $\parr_L$- and $\otimes_R$-cases into one? (Requires generalized formulation of the rules)}
 			
 			\begin{tabularx}{\textwidth}{x c x}
 				\scalebox{0.6}{
@@ -1196,1049 +1924,6 @@
 	\begin{proof}
 		Iteration of Lemma \ref{cut-reduction} on a non-cut-free proof.
 	\end{proof}
-	
-	
-	%---------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-	\section{Categorical Preliminaries}
-	
-	\subsection{Categories}
-	\label{sec: catSec}
-	%Tensorcats?
-	
-	\todo[inline]{sources for basic definitions. (nlab prolly doesn't suffice)}
-	
-	\begin{definition}[Category]
-		\label{def: cat}
-		A Category $\category{C}$ consists of the following data: 
-		\begin{itemize}
-			\item A class $\Obj(\category{C})$ of \emph{objects}.
-			\item For every pair of objects $A, B \in \Obj(\category{C})$ there is a class $\Hom(A, B)$ of \emph{morphisms} $f: A \rightarrow B$ from $A$ to $B$. 
-			\item Morphisms \emph{compose}: For $f \in \Hom(A, B)$ and $g \in \Hom(B, C)$ there is a morphism $g \circ  f \in \Hom(A, C)$. 
-			That composition is associative: 
-			\begin{align*}
-				h \circ (g \circ f) = (h \circ g) \circ f
-			\end{align*}
-			We will write $gf$ for $g\circ f$ when appropriate.
-			\item For every object $A$ there is an \emph{identity morphism} $\id_A \in \Hom(A, A)$:
-			\begin{align*}
-				f \circ \id_A = f, \quad \id_B \circ f = f
-			\end{align*}
-			for $f \in \Hom(A, B)$
-		\end{itemize}
-		If the hom-classes are sets, we call the category \emph{locally small}. If the object class is a set, we call the category \emph{small}. Otherwise, we call the category \emph{large}.
-		
-		If we have a category $\category{C} $, we call its \emph{opposite} category $\category{C}^\opp $ the category with the following structure:
-		\begin{itemize}
-			\item $\Obj{\left(\category{C}^\opp \right)} = \Obj(\category{C}) $
-			\item $\forall A, B \in \Obj(\category{C}): 
-			\Hom_{\category{C}^\opp }(A,B) = \Hom_{\category{C}}(B,A)$
-		\end{itemize}
-	\end{definition}
-	
-	%.....................................................................................
-	\notimportantnote[inline]{extra definition for opposite structure? }
-	%commment....................................................................................
-	
-	
-	\begin{definition}[Functor]
-		\label{def: functor}
-		A \emph{(covariant) functor} $\functor{F}: \category{C} \rightarrow \category{D} $ between two categories $\category{C}$ and $\category{D} $ is a function mapping each object $A \in  \Obj(\category{C}) $ to an object $F(A) \in \Obj(D) $ and each morphism $ f \in \Hom(A,B) $ to a morphism $\functor{F}(f) \in \Hom(\functor{F}(A), \functor{F}(B))$ such that identity and composition are preserved:
-		\begin{align*}
-			\functor{F}(\id_A) = \id_{\functor{F}(A)},
-			\quad
-			\functor{F}(g\circ f) = \functor{F}(g) \circ \functor{F}(f)
-		\end{align*}
-		
-		A functor $\functor{F}: \category{C}^\opp \rightarrow \category{D} $ is called \emph{contravariant} on $\category{C} $.
-		
-		We will drop the parentheses when appropriate.
-	\end{definition}
-	
-	
-	\begin{definition}[Natural transformation]
-		\label{def: natTrans}
-		A \emph{natural transformation} $\tau: F \rightarrow G $ between two functors $\functor{F}, \functor{G}: \category{C} \rightarrow \category{D} $ is family of morphisms in $\category{D}$:
-		\begin{align*}
-			\tau = \{ \tau_A : \functor{F}A \rightarrow \functor{G}A \,| A \in \Obj(\category{C})\}
-		\end{align*}
-		such that $\tau_B\functor{F}(f) = \functor{F}(f)\tau_A $ for all $f: A \rightarrow B \in \Morph(\category{C}) $, i.e. the following diagram commutes:
-		
-		\begin{center}
-			\begin{tikzcd}
-				\functor{F} A 
-				\arrow[r, "\functor{F}f " ]
-				\arrow[d, "\tau_A" ] 
-				&
-				\functor{F} B
-				\arrow[d, "\tau_B" ]
-				\\
-				\functor{G} A 
-				\arrow[r, "\functor{G}f" ]
-				&
-				\functor{G} B
-			\end{tikzcd}
-		\end{center}
-		
-		If $\tau_A$ is an isomorphism for all $A \in \Obj(\category{C}) $, we call $\tau$ a \emph{natural} \emph{isomorphism}.
-		We will often represent a natural transformation by a single one of its members and also drop the index when appropriate.
-	\end{definition}
-	
-	
-	\todo[inline]{definition: equivalence of categories}
-	
-
-	
-	\begin{definition}[Adjunction]
-		\label{def: adjunction}
-		\notimportantnote[]{source: Brandenburg}
-		Let $\category{C}$ and $\category{D} $ be categories. We call $\functor{F}: \category{C} \rightarrow \category{D} $ the \emph{left adjoint} of $\functor{G}: \category{D} \rightarrow \category{C} $ and $\functor{G} $ the \emph{right adjoint} of $\functor{F} $ if there is an isomorphism that is natural in $A \in \category{C} $ and $B \in \category{D} $:
-		\begin{align*}
-			\Hom_\category{D}(\functor{F}A, B) 
-			\cong \Hom_\category{C}(A, \functor{G}B)
-		\end{align*}
-		Equivalently, we call $\functor{F} $ the left adjoint of $\functor{G} $ if there are natural transformations 
-		\begin{align*}
-			\eta &: \id_\category{C} \rightarrow \functor{G} \circ \functor{F}
-			\\
-			\varepsilon &: \functor{F} \circ \functor{G} \rightarrow \id_\category{D}
-		\end{align*}
-		fulfilling the following condition: 
-		
-		\begin{align*}
-			\id_{\functor{F}A} 
-			&= \varepsilon(\functor{F}A) \circ \functor{F}\eta(A)
-			\\
-			\id_{\functor{G}B} 
-			&= \functor{G}\varepsilon(B) \circ \eta(\functor{G}B)
-		\end{align*}
-		\todo{maybe index Schreibweise?}
-		
-		i.e. the following diagrams commute:
-		\begin{center}
-			\begin{tikzcd}
-				&
-				\functor{F} \circ \functor{G} \circ \functor{F}
-				\arrow[rd, "\varepsilon \bullet \functor{F} " ]
-				&
-				\\
-				\functor{F}\id_\category{C}
-				\arrow[ru, "\functor{F} \bullet \eta " ]
-				\arrow[rr, equal, "\id" ]
-				&
-				&
-				\id_\category{C} \circ \functor{F}
-			\end{tikzcd}
-			\begin{tikzcd}
-				&
-				\functor{G} \circ \functor{F} \circ \functor{G}
-				\arrow[rd, "\functor{G} \bullet \varepsilon " ]
-				&
-				\\
-				\id_\category{C} \circ \functor{G}
-				\arrow[ru, "\eta \bullet \functor{G} "]\
-				\arrow[rr, equal, "\id " ]
-				&
-				&
-				\functor{G} \circ \id_\category{D}
-			\end{tikzcd}
-		\end{center}
-		\todo[inline]{cut triangle diagrams or define $\bullet $ } %diagramme.............................................................................................................................................
-		
-		We write $F \dashv G$.
-	\end{definition}
-	
-	
-	\begin{definition}[Monoidal category]
-		\label{def: monoCat}
-		A \emph{monoidal category} $(\category{C}, \otimes, \Unit, \alpha, \lambda, \rho)$ is a category $\category{C}$ with the following additional data:
-		\begin{itemize}
-			\item a functor $\otimes : \category{C} \times \category{C} \rightarrow \category{C} $, called \emph{monoidal} or \emph{tensor product};
-			\item an object $\Unit \in  \Obj(\category{C})$, called \emph{unit object};
-			\item a natural isomorphism $\alpha: A \otimes (B \otimes C ) \rightarrow (A \otimes B) \otimes C$, called \emph{associator};
-			\item a natural isomorphism $\lambda: \Unit \otimes A \rightarrow A$, called left unitor;
-			\item a natural isomorphism $\rho: A \otimes \Unit \rightarrow A$, called right unitor;
-		\end{itemize}
-		such that the following diagrams commute:
-		\begin{itemize}
-			\item the pentagon diagram: 
-			%name correct?............................................................................................................
-			\begin{center}
-				\begin{tikzcd}
-					& A \otimes (B \otimes ( C \otimes D)) 
-					\arrow[ld, "\id \otimes \alpha " ]
-					\arrow[rd, "\alpha " ]
-					&
-					\\
-					A \otimes ((B \otimes C ) \otimes D)
-					\arrow[d, "\alpha" ]
-					&
-					&
-					(A \otimes B) \otimes (C \otimes D)
-					\arrow[d, "\alpha" ]
-					\\
-					(A \otimes (B \otimes C)) \otimes D
-					\arrow[rr, "\alpha \otimes \id " ]
-					&
-					&
-					((A \otimes B) \otimes C) \otimes D
-				\end{tikzcd}
-			\end{center}
-			
-			\item the unit diagram:
-			\begin{center}
-				\begin{tikzcd}
-					(A \otimes \Unit) \otimes B
-					\arrow[rr, "\alpha " ]
-					\arrow[rd, "\rho \otimes \id "' ]
-					&
-					&
-					A \otimes (\Unit \otimes B)
-					\arrow[ld, "\id \otimes \lambda " ]
-					\\
-					& 
-					A \otimes B
-					&
-				\end{tikzcd}
-			\end{center}
-		\end{itemize}
-		A \emph{symmetric monoidal category} has an additional natural isomorphism:
-		\begin{align*}
-			s_{A,B}: A \otimes B \rightarrow B \otimes A
-		\end{align*}
-		satisfying the following conditions:
-		\begin{itemize}
-			\item the hexagon law:
-			\begin{center}
-				\begin{tikzcd}
-					A \otimes (B \otimes C)
-					\arrow[d, "\id \otimes s_{B, C}"]
-					\arrow[r, "\alpha " ]
-					&
-					(A \otimes B) \otimes C
-					\arrow[r, "s_{A\otimes B, C} "]
-					&
-					C \otimes (A \otimes B)
-					\arrow[d, "\alpha" ]
-					\\
-					A \otimes (C \otimes B)
-					\arrow[r, "\alpha"' ]
-					&
-					(A \otimes C) \otimes B 
-					\arrow[r, "s_{A, C} \otimes B"' ]
-					&
-					(C \otimes A) \otimes B
-				\end{tikzcd}
-			\end{center}
-			\item the inverse law: $s_{A, B}^{-1} = s_{B, A} $
-			\item the unit law: $\lambda = \rho s$
-			\begin{center}
-				\begin{tikzcd}
-					\Unit \otimes A 
-					\arrow[rr, "s_{\Unit, A} "]
-					\arrow[rd, "\lambda "' ]
-					&
-					&
-					A \otimes \Unit
-					\arrow[ld, "\rho" ]
-					\\
-					&
-					A
-					&
-				\end{tikzcd}
-			\end{center}
-		\end{itemize}
-		\notimportantnote[inline]{Diagramme verschönern}
-		%........................................................................................................................................
-	\end{definition}
-	
-	\todo[inline]{fix associators throughout the document (direction)}
-	
-	\begin{definition}[Closed monoidal category]
-		\label{def: closedMonoCat}
-		\todo{lengthy, rambling... maybe cut into three definitions?}
-		A monoidal category $\category{C} $ is called \emph{right closed}, resp. \emph{left closed}, iff there is a functor 
-		$- \multimap -: \category{C}^\opp \times \category{C} \rightarrow \category{C} $, 
-		resp. 
-		$- \multimapinv -: \category{C} \times \category{C}^\opp \rightarrow \category{C} $, 
-		such that there is a natural isomorphism 
-		$\Hom(A \otimes B, C) \cong \Hom(B, A\multimap C)$, 
-		resp. 
-		$\Hom(A \otimes B, C) \cong \Hom(A, C\multimapinv B)$,
-		i.e. iff the functor $- \otimes B$, resp. $A \otimes - $, has a right adjoint.
-		A monoidal $\category{C} $ is called \emph{biclosed} iff it is both left and right closed.
-		
-		\todo[inline]{definitely  mixed up the right and left homs there}
-		
-		If $\category{C} $ is symmetric, these functors coincide and we call the category \emph{closed}.
-		
-		The functors 
-		$- \multimap -: \category{C}^\opp \times \category{C} \rightarrow \category{C} $ 
-		and 
-		$- \multimapinv -: \category{C} \times \category{C}^\opp \rightarrow \category{C} $
-		are called \emph{internal hom} functors.
-	\end{definition}
-	
-	\todo[inline]{following definitions prolly unnötig:}
-	
-	\begin{definition}[Enriched category]
-		\label{def: enrichment}
-		Let $(\category{M}, \Unit, \alpha, \lambda, \rho) $ be a monoidal category. An $\category{M} $\emph{-enriched category} $\category{C} $ consists of the following data:
-		\begin{itemize}
-			\item 
-			A class $\Obj(\category{C}) $ of objects;
-			\item 
-			For every pair of objects $(A, B) \in \Obj(\category{C}) \times \Obj(\category{C}) $ an object 
-			$\category{C}(A, B) \in \Obj(\category{M}) $
-			called \emph{hom object};
-			\item 
-			For every triple of objects 
-			$(A, B, C) \in \Obj(\category{C}) \times \Obj(\category{C}) \times \Obj(\category{C}) $
-			a morphism 
-			$\Morph(\category{M}) \ni \circ_{A, B, C}: \category{C}(B, C) \otimes \category{C}(A, B) \rightarrow \category{C}(A, C) $
-			called \emph{composition morphism};
-			\item 
-			For every object $A \in \category{C} $ a morphism $ \id_A : \Unit \rightarrow \category{C}(A, A) $;
-		\end{itemize}
-		such that the following diagrams commute:
-		\begin{center}
-			\begin{tikzcd}
-				(\category{C}(C, D) \otimes \category{C}(B, C) ) \otimes \category{C}(A, B)
-				\arrow[d, " \circ_{B, C, D} \otimes \id_{\category{C}(A, B) } " ]
-				\arrow[rr, "\alpha " ]
-				&
-				&
-				\category{C}(C, D) \otimes (\category{C}(B, C) \otimes \category{C}(A, B))
-				\arrow[d, "\id_{\category{C}(C, D)} \otimes  \circ_{A, B, C} " ]
-				\\
-				\category{C}(D, B) \otimes \category{C}(A, B)
-				\arrow[dr, "\circ_{A, B, D} "' ]
-				&
-				&
-				\category{C}(C, D) \otimes \category{C}(A, C)
-				\arrow[dl, "\circ_{A, C, D} " ]
-				\\
-				&
-				\category{C}(A, D)
-				&
-			\end{tikzcd}
-		\end{center}
-		
-		\begin{center}
-			\begin{tikzcd}
-				\Unit \otimes \category{C}(A, B)
-				\arrow[r, "\lambda" ]
-				\arrow[d, "\id_B \otimes \id_{\category{C}(A,B) }"' ]
-				&
-				\category{C}(A, B)
-				&
-				\category{C}(A, B) \otimes \Unit 
-				\arrow[l, "\rho "' ]
-				\arrow[d, "\id_{\category{C}(A, B)} \otimes \id_A " ]
-				\\
-				\category{C}(B, B) \otimes \category{C}(A, B)
-				\arrow[ru, "\circ_{A, B, B}"']
-				&
-				&
-				\category{C}(A, B) \otimes \category{C}(A, A)
-				\arrow[lu, "\circ_{A, A, B}"]
-			\end{tikzcd}
-		\end{center}
-	\end{definition}
-	
-	\begin{definition}[Enriched functors]
-		\label{def: enrichedFunctors}
-		Let $\category{C} $ and $\category{D} $ be $\category{M} $-enriched categories. An \emph{enriched functor} $\functor{F} : \category{C} \rightarrow \category{D} $ consists of:
-		\begin{itemize}
-			\item 
-			a function $\functor{F}_0 : \Obj(\category{C}) \rightarrow \Obj(\category{D}) $ between the objects
-			\item 
-			a family of morphisms in $\category{M} $: $\functor{F}_{A,B} : \category{C}(A, B) \rightarrow \category{D}(\functor{F}_0 A , \functor{F}_0 B) $
-		\end{itemize}
-		such that the following diagrams commute:
-		\begin{center}
-			\begin{tikzcd}
-				\category{C}(B, C) \otimes \category{C}(A, B)
-				\arrow[r, "\circ " ]
-				\arrow[d, "\functor{F}_{B, C} \otimes \functor{F}_{A, B} " ]
-				&
-				\category{C}(A,C)
-				\arrow[d, "\functor{F}_{A, C} " ]
-				\\
-				\category{D}(\functor{F}_0 B , \functor{F}_0 C) \otimes \category{D}(\functor{F}_0 A , \functor{F}_0 B)
-				\arrow[r, "\circ " ]
-				&
-				\category{D}(\functor{F}_0 A , \functor{F}_0 C)
-			\end{tikzcd}
-			
-			\begin{tikzcd}
-				&
-				\Unit
-				\arrow[dl, "\id_A "' ]
-				\arrow[dr, "\id_{\functor{F}_0 A} " ]
-				&
-				\\
-				\category{C}(A, A)
-				\arrow[rr, "\functor{F}_{A, A} " ]
-				&
-				&
-				\category{D}(\functor{F}_0 A, \functor{F}_0 A)
-			\end{tikzcd}
-		\end{center}
-	\end{definition}
-	
-	
-	\subsection{LinDisCats}
-	\label{sec: linDisCats}
-	%LDCs
-	%*-auto. Cats
-	
-	\begin{definition}[Linearly distributive category]
-		\label{def: linDisCat}
-		A \emph{linearly} \emph{distributive} \emph{category} $(\category{C}, \otimes, 1, \parr, \bot)$ is a category $\category{C}$ consisting of:
-		\begin{itemize}
-			\item a monoidal category $(\category{C}, \otimes, 1, \alpha_\otimes, \lambda_\otimes, \rho_\otimes)$, with $\otimes$ called "tensor";
-			\item a monoidal  category $(\category{C}, \parr, \bot, \alpha_\parr, \lambda_\parr, \rho_\parr)$, with $\parr$ called "par";
-			\item two natural transformations called left and right \emph{linear distributors} respectively:
-			\begin{align*}
-				\partial_L:& A \otimes (B \parr C) \rightarrow (A\otimes B) \parr C
-				\\
-				\partial_R:& (A \parr B) \otimes C \rightarrow A \parr (B \otimes C)
-			\end{align*}
-		\end{itemize}
-		satisfying the following coherence conditions:
-		\begin{itemize}
-			\item coherence between the distributors and unitors:
-			\begin{center}
-				\begin{tikzcd}
-					1 \otimes (A \parr B)
-					\arrow[rr, "\partial_L " ]
-					\arrow[rd, "\lambda_\otimes "' ]
-					&
-					&
-					(1 \otimes A) \parr B
-					\arrow[ld, "\lambda_\otimes \parr \id " ]
-					\\
-					&
-					A \parr B
-					&
-				\end{tikzcd}
-				\begin{tikzcd}
-					(A \parr B) \otimes 1
-					\arrow[rr, "\partial_R " ]
-					\arrow[rd, " \rho_\otimes "' ]
-					&
-					&
-					A \parr (B \otimes 1)
-					\arrow[ld, "\id \otimes \rho_\otimes " ]
-					\\
-					&
-					A \parr B
-					&
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					A \otimes (B \parr \bot ) 
-					\arrow[rr, "\partial_L " ]
-					\arrow[dr, "\id \otimes \rho_\parr "' ]
-					&
-					&
-					(A \otimes B) \parr \bot
-					\arrow[dl, "\rho_\parr " ]
-					\\
-					&
-					A\otimes B
-					&
-				\end{tikzcd}
-				\begin{tikzcd}
-					(\bot \parr A) \otimes B
-					\arrow[rr, "\partial_R " ]
-					\arrow[dr, "\lambda_\parr \otimes \id "' ]
-					&
-					&
-					\bot \parr (A \otimes B)
-					\arrow[dl, "\lambda_\parr " ]
-					\\
-					&
-					A \otimes B
-					&
-				\end{tikzcd}
-			\end{center}
-			\formatnote{Diagramme besser alignen}
-			%Diagramme besser alignen.............................................................................................................
-			\item coherence between distributors and associators:
-			\begin{center}
-				\begin{tikzcd}
-					&
-					(A \otimes B) \otimes (C \parr D)
-					\arrow[rd, "\partial_L " ]
-					\arrow[ld, "\alpha_\otimes " ]
-					&
-					\\
-					A \otimes (B \otimes (C \parr D))
-					\arrow[d, "\id \otimes \partial_L " ]
-					
-					&
-					&
-					((A \otimes B) \otimes C) \parr D
-					\arrow[d, "\alpha_\otimes \parr \id " ]
-					\\
-					A \otimes ((B \otimes C) \parr D)
-					\arrow[rr, "\partial_L " ]
-					&
-					&
-					(A \otimes (B \otimes C)) \parr D
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					A \otimes (B \parr (C \parr D))
-					\arrow[ld, "\id \otimes \alpha_\parr " ]
-					\arrow[rd, "\partial_L " ]
-					&
-					\\
-					A \otimes ((B \parr C) \parr D)
-					\arrow[d, "\partial_L " ]
-					&
-					&
-					(A \otimes B) \parr (C \parr D)
-					\arrow[d, "\alpha_\parr " ]
-					\\
-					(A \otimes (B \parr C)) \parr D
-					\arrow[rr, "\partial_L \parr \id " ]
-					&
-					&
-					((A \otimes B) \parr C) \parr D    \end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					(A \parr B) \otimes (C \otimes D)
-					\arrow[ld, "\alpha_\otimes " ]
-					\arrow[rd, "\partial_R " ]
-					&
-					\\
-					((A \parr B) \otimes C) \otimes D
-					\arrow[d, "\partial_R \otimes \id " ]
-					&
-					&
-					A \parr (B \otimes (C \otimes D))
-					\arrow[d, "\id \parr \alpha_\otimes " ]
-					\\
-					(A \parr (B \otimes C)) \otimes D
-					\arrow[rr, "\partial_R " ]
-					&
-					&
-					A \parr ((B \otimes C) \otimes D)
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					((A \parr B) \parr C) \otimes D
-					\arrow[ld, "\alpha_\parr \otimes \id " ]
-					\arrow[rd, "\partial_R " ]
-					&
-					\\
-					(A \parr (B \parr C)) \otimes D
-					\arrow[d, "\partial_R " ]
-					&
-					&
-					(A \parr B) \parr (C \otimes D)
-					\arrow[d, "\alpha_\parr " ]
-					\\
-					A \parr ((B \parr C) \otimes D)
-					\arrow[rr, "\id \parr \partial_R " ]
-					&
-					&
-					A \parr (B \parr (C \otimes D))
-				\end{tikzcd}
-			\end{center}
-			\item coherence between the distributors:
-			\begin{center}
-				\begin{tikzcd}
-					&
-					(A \parr B) \otimes (C \parr D)
-					\arrow[rd, "\partial_L " ]
-					\arrow[ld, "\partial_R " ]
-					&
-					\\
-					((A \parr B) \otimes C) \parr D
-					\arrow[d, "\partial_R \parr \id " ]
-					&
-					&
-					A \parr (B \otimes (C \parr D))
-					\arrow[d, "\id \parr \partial_L " ]
-					\\
-					(A \parr (B \otimes C)) \parr D
-					&
-					&
-					A \parr ((B \otimes C) \parr D)
-					\arrow[ll, "\alpha_\parr " ]
-				\end{tikzcd}
-				\formatnote[inline]{obiges Diagramm rumdrehen}
-				%.......................................................................................................
-				\formatnote[inline]{\textbackslash parr \textbackslash id sieht kacke aus...}    %..................................................................................
-				\begin{tikzcd}
-					&
-					A \otimes ((B \parr C) \otimes D)
-					\arrow[ld, "\alpha_\otimes " ]
-					\arrow[rd, "\id \otimes \partial_R " ]
-					&
-					\\
-					(A \otimes (B \parr C)) \otimes D
-					\arrow[d, "\partial_L \otimes \id " ]
-					&
-					&
-					A \otimes (B \parr (C \otimes D))
-					\arrow[d, "\partial_L " ]
-					\\
-					((A \otimes B) \parr C) \otimes D
-					\arrow[rr, "\partial_R " ]
-					&
-					&
-					(A \otimes B) \parr (C \otimes D)
-				\end{tikzcd}
-			\end{center}
-		\end{itemize}
-		\formatnote[inline]{itemize anpassen?}
-		%.............................................................................
-	\end{definition}
-	
-	
-	\subsection{*-aut. cats}
-	\label{sec: autoCats}
-	\todo[inline]{structure an Mellies, CatSemOfLinLog, anpassen; equivalence Srinivasan and Barr definitions}
-	
-	\begin{definition}[Dual object]
-		\label{def: dualObj}
-		%source: srinivasan
-		Let $\category{C} $ be a linearly distributive category and $A, A^* \in \Obj(\category{C}) $, then we call $A^* $ \emph{left dual} (or \emph{left linearly adjoint}) to $A$, if there are morphisms $\tau: 1 \rightarrow A^* \parr A$ and $\gamma: A \otimes A^* \rightarrow \bot $, called \emph{unit} and \emph{counit} resp., such that the following diagrams commute:
-		\begin{center}
-			\begin{tikzcd}
-				A^*
-				\arrow[r, equal, "\id" ]
-				&
-				A^*
-				\arrow[d, "\lambda_\otimes^{-1} " ]
-				\\
-				A^* \parr \bot
-				\arrow[u, "\rho_\parr " ]
-				&
-				1 \otimes A^*
-				\arrow[d, "\tau \otimes \id " ]
-				\\
-				A^*\parr (A \otimes A^*)
-				\arrow[u, "\id \parr \gamma " ]
-				&
-				(A^* \parr A) \otimes A^*
-				\arrow[l, "\partial_R " ]
-			\end{tikzcd}
-			\begin{tikzcd}
-				A
-				\arrow[r, equal, "\id " ]
-				&
-				A
-				\arrow[d, "\rho_\otimes^{-1} " ]
-				\\
-				\bot \parr A
-				\arrow[u, "\lambda_\parr " ]
-				&
-				A \otimes 1
-				\arrow[d, "\id \otimes \tau " ]
-				\\
-				(A^* \parr A) \otimes A^*
-				\arrow[u, "\gamma \parr \id " ]
-				&
-				A^* \parr (A \otimes A^*)
-				\arrow[l, "\partial_L " ]
-			\end{tikzcd}
-			\formatnote[inline]{das geht schöner}
-		\end{center}
-		
-		We write $(\tau, \gamma): A^* \dashV A $ and also call $A$ \emph{right dual} to $A^*$. 
-		\formatnote[inline]{mathabx incompatible with amssymb, stix absolutely broken; repalce dashV with dashv + some index?}
-	\end{definition}
-	
-	\begin{lemma}
-		\label{lemma: isoLinDisCat}
-		{ }
-		\begin{enumerate}
-			\item In an LDC: if 
-			$A^* \dashV A $ and $A' \dashV A $, 
-			then $A^*$ and $A'$ are isomorphic. 
-			We will from now on only talk about \emph{the} dual object, when equality up to isomorphism is sufficient.
-			\item In a symmetric LDC: 
-			$(\tau, \gamma): A^* \dashV A 
-			\Longleftrightarrow 
-			(\tau s_{\parr}, s_{\otimes} \gamma): A \dashV A^* $ 
-		\end{enumerate}
-	\end{lemma}
-	
-	\todo[inline]{proof }
-	%(BCS: "Feedback for linearly distributive categories: traces and fixpoints)
-	%comment..............................................................................................................................
-	
-	\todo[inline]{\cite{srinavsan-thesis} Lemma 2.9 (iii)?}
-	%comment.............................................................................................................................
-	
-	\begin{definition}[*-autonomous categories (Srinivasan \cite{srinavsan-thesis})]
-		\label{def: autoCatSrinivasan}
-		\notimportantnote{is Srinivasan the origin of this version?}
-		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
-	\end{definition}
-	
-	
-	
-	\begin{definition}[*-autonomous categories (Barr \cite{barr95}, A)]
-		\label{def: autoCatBarrA}
-		\notimportantnote{find a way to make letter part of definition numbering?}
-		A *-autonomous category is a biclosed monoidal category $\category{C} $ with a closed functor $(-)^*: \category{C} \rightarrow \category{C}^\opp $, which is a strong equivalence of categories.     
-	\end{definition}
-	%Barr, 95
-	\todo[inline]{definition closed functor, strong equivalence. (strong closed functor?)}
-	
-	\begin{definition}[Dualizing object]
-		\label{def: dualizingObj}
-		Let $\category{C} $ be a biclosed monoidal category. 
-		\todo{details (Barr, 99)}
-		An object $\bot $ is called a dualizing object if for every $A \in \Obj(\category{C}) $ the natural map $A \rightarrow \bot \multimapinv (A \multimap \bot) $ gotten by transposing $\id: A \multimap \bot \rightarrow A\multimap \bot $ twice is an isomorphism. 
-	\end{definition}
-	
-	\begin{definition}[*-autonomous categories (Barr, B)]
-		\label{def: autoCatBarrB}
-		A *-autonomous category is a biclosed category with a dualizing object.
-	\end{definition}
-	\notimportantnote{main definition, Barr}
-	
-	
-	\begin{definition}[*-autonomous categories (Barr, C)]
-		\label{def: autoCatBarrC}
-		A *-autonomous category is a monoidal category $\category{C} $ equipped with an equivalence $(-)^* : \category{C} \rightarrow \category{C}^\opp $ such that there is a natural isomorphism 
-		\begin{align*}
-			\Hom(A, B^*) \rightarrow \Hom(1, (A \oplus B)^*)
-		\end{align*}
-	\end{definition}
-	
-	
-	\begin{definition}[*-autonomous categories (Barr, D)]
-		\label{def: autoCatBarrD}
-		A *-autonomous category is a closed category $\category{C} $ in the sense of 
-		\todo{nachschauen}
-		Eilenberg and Kelly (1966) together with an equivalence $(-)^* : \category{C}^\opp \rightarrow \category{C} $ such that 
-		\begin{align*}
-			A \multimap (B \multimapinv C) \cong (A \multimap B) \multimapinv C
-		\end{align*}
-		where $A \multimapinv B := A^* \multimap B^* $.
-	\end{definition}
-	\questionnote[inline]{unnötig? C impliziert offensichtlich D, von D nach C sind drei Zeilen.}
-
-	
-	\begin{theorem}
-		\label{thrm: BarrEqui}
-		Barr's definitions are equivalent.
-	\end{theorem}
-	
-	\begin{proof}
-%		\formatnote{define useful control sequence}
-%		\implication{Barr A}{Barr B}
-		\todo[inline]{to be added (\cite{barr95})}
-	\end{proof}
-	
-	\begin{theorem}
-		Srinivasan's definition is equivalent to Barr's definitions.
-	\end{theorem}
-	
-	
-\urgentnote[inline]{Weihnachtsbaustelle:}
-	\begin{proof}
-		Let $\category{A} $ be a symmetric LDC satisfying definition \ref{def: autoCatSrinivasan}.\\
-		The mapping $A \mapsto A^* $ is an isomorphism $\Obj(\category{A}) \rightarrow \Obj(\category{A}^\opp) $ between objects and defines a Functor by extending it to morphisms 
-		with the following diagram:
-		\todo[inline]{change definition to diagram?}
-		
-		\begin{align*}
-			\Hom_\category{A}(A, B) \ni f \mapsto f^* \in \Hom_{\category{A}^\opp }(A^*, B^*)= \Hom_{\category{A} }(B^*, A^*)
-		\end{align*}
-		\begin{align*}
-			f^*:
-			B^*
-			& 
-			\xrightarrow{\lambda_\otimes^{-1}} 
-			1\otimes B^* 
-			\xrightarrow{\eta_A \otimes \id} 
-			(A^* \parr A ) \otimes B^* 
-			\xrightarrow{(\id \parr f) \otimes \id}
-			(A^* \parr B) \otimes B^*
-			\\
-			&
-			\xrightarrow{\partial_R}  
-			A^* \parr (B \otimes B^*)
-			\xrightarrow{\id \parr \varepsilon_B}
-			A^* \parr \bot
-			\xrightarrow{\rho_\parr}
-			A^* 
-		\end{align*}
-		This mapping of morphisms is also a bijection:
-		
-		\begin{align*} 
-			f 
-			= 
-			&
-			\lambda_{\parr, B} 
-			\circ (\varepsilon_A \parr \id_B)
-			\circ ((\id_A \otimes f^*) \parr \id_B )
-			\circ \partial_L 
-			\circ (\id_A \otimes \eta_B)
-			\circ \rho_{\otimes, A}^{-1}
-			\\
-			=
-			&
-			\lambda_{\parr, B} 
-			\circ (\varepsilon_A \parr \id_B)
-			\\
-			&
-			\circ 
-			\left(\left(\id_A( 
-			\otimes 
-				\rho_{\parr, A}
-				\circ (\id_{A^*} \parr \varepsilon_B)
-				\circ (\id_{A^*} \parr (f \otimes \id_{B^*} ))
-				\circ \partial_R
-				\circ (\eta_A \otimes \id)
-				\circ \lambda_{\otimes, B}^{-1}
-			)
-			\right) \parr 
-			\id_{B^*} 
-			\right)
-			\\
-			&
-			\circ \partial_L 
-			\circ (\id_A \otimes \eta_B)
-			\circ \rho_{\otimes, A}^{-1}
-		\end{align*}
-		
-		
-		\todo[inline, color=lightgray]{(maybe suppress brackets for stuff like $A \otimes 1 \otimes 1$ )}
-		\begin{tikzcd}
-			A
-				\arrow[r, "(\id \otimes \eta_B) \circ \rho_\otimes^{-1}" ]
-				\arrow[d, "\rho_\otimes^{-1} \circ \rho_\otimes^{-1} "]
-				\arrow[ddddr, bend left=40, "f" ]
-			&
-			A \otimes (B^* \otimes B)
-				\arrow[
-					rr, 
-					"
-					\id \otimes 
-					((\eta_A \otimes \id) 
-					\parr \id) 
-					"
-					]
-			&
-			&
-			A \otimes 
-			\left(\left(
-			(A^* \parr A) 
-			\otimes 
-			B^* 
-			\right) 
-			\parr 
-			B 
-			\right)
-				\arrow[d, "\id \otimes 
-					\left(\left(
-					(\id \parr f ) 
-					\otimes 
-					\id 
-					\right)
-					\parr
-					\id
-					\right)
-					"'
-					]
-			\\
-			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-			(A \otimes 1) \otimes 1
-				\arrow[
-					d,
-					"
-					\id 
-					\otimes 
-					\eta_A 
-					\otimes 
-					\eta_B
-					"]
-			&
-			&
-			&
-			A 
-			\otimes 
-			\left(
-			\left(
-			(A^*\parr B)
-			\otimes 
-			B^*
-			\right)
-			\parr
-			B
-			\right)
-				\arrow[
-					d, 
-					"
-					\id 
-					\otimes
-					\left( 
-					\partial_R
-					\parr 
-					\id
-					\right)
-					"']
-			\\
-			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-			\left(
-			A 
-			\otimes
-			(A^* \parr A)
-			\right)
-			\otimes
-			(B^* \parr B)
-				\arrow[
-					d, 
-					"
-					\partial_L
-					\otimes
-					\id
-					"]
-			&
-			&
-			&
-			A 
-			\otimes 
-			\left(
-			\left(
-			A^*
-			\parr 
-			(B \otimes B^*)
-			\right)
-			\parr B
-			\right)
-				\arrow[
-					d,
-					"
-					\id
-					\otimes 
-					(\partial_R \parr \id)
-					"']
-			\\
-			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-			\left(
-			(A \otimes A^*)
-			\parr
-			A
-			\right)
-			\otimes 
-			(B^* \parr B)
-				\arrow[
-					d,
-					"
-					(\lambda_\parr \otimes \id)
-					\circ
-					\left(
-					(\varepsilon_A \parr f)
-					\otimes
-					\id
-					\right)
-					"]
-			&
-			&
-			&
-			A 
-			\otimes
-			\left(
-			\left(
-			A^*
-			\parr
-			(B \otimes B^*)
-			\right)
-			\parr
-			B
-			\right)
-				\arrow[
-					d,
-					"
-					\id
-					\otimes
-					\left(
-					\rho_\parr
-					\circ
-					(\id 
-					\parr
-					\varepsilon_B
-					\parr
-					\id)
-					\right)
-					"']
-			\\
-			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-			B 
-			\otimes 
-			(B^* \parr B)
-				\arrow[
-				r,
-				"
-				\lambda_\parr
-				\circ
-				\varepsilon_B 
-				\circ
-				\partial_L
-				"']
-			&
-			B
-			&
-			&
-			A 
-			\otimes 
-			(A^* \parr B)
-				\arrow[
-				ll,
-				"
-				\lambda_\parr
-				\circ
-				\varepsilon_B 
-				\circ
-				\partial_L
-				"]
-		\end{tikzcd}
-		\todo[inline, color=lightgray]{does this commute?}
-		
-		
-		\begin{align*}
-			A
-			&
-			\xrightarrow{\rho_\otimes^{-1}}
-			A \otimes 1
-			\xrightarrow{\id \otimes \eta_B}
-			A \otimes (B^* \parr B)
-			\xrightarrow{\partial_L}
-			(A \otimes B^*) \parr B
-			\\
-			&
-			\xrightarrow{(\id \otimes f^*) \parr \id }
-			(A \otimes A^*) \parr B
-			\xrightarrow{\varepsilon_A \parr \id}
-			\bot \parr B
-			\xrightarrow{\lambda_\parr}
-			B
-		\end{align*}
-		\todo[inline, color=lightgray]{is this really f?}
-
-	\end{proof}
-	\notimportantnote[inline]{non-symmetric case to be added (should already be in there, never used symmetry)}
-	
-	\questionnote[inline]{what did I need Barr's definition for, again?}
-	
-	
-	\urgentnote[inline]{add definition of poly-categories?}
 	
 	
 	
