@@ -178,10 +178,6 @@
 		\end{itemize}
 	\end{definition}
 	
-	%.....................................................................................
-	\notimportantnote[inline]{extra definition for opposite structure? }
-	%commment....................................................................................
-	
 	
 	\begin{definition}[Functor]
 		\label{def: functor}
@@ -236,6 +232,7 @@
 		\notimportantnote[]{source: Brandenburg}
 		Let $\category{C}$ and $\category{D} $ be categories. We call $\functor{F}: \category{C} \rightarrow \category{D} $ the \emph{left adjoint} of $\functor{G}: \category{D} \rightarrow \category{C} $ and $\functor{G} $ the \emph{right adjoint} of $\functor{F} $ if there is an isomorphism that is natural in $A \in \category{C} $ and $B \in \category{D} $:
 		\begin{align*}
+			\forall A \in \category{C}, \forall B \in \category{D}:
 			\Hom_\category{D}(\functor{F}A, B) 
 			\cong \Hom_\category{C}(A, \functor{G}B)
 		\end{align*}
@@ -249,13 +246,14 @@
 		
 		\begin{align*}
 			\id_{\functor{F}A} 
-			&= \varepsilon(\functor{F}A) \circ \functor{F}\eta(A)
+			&= \varepsilon_{\functor{F}A} \circ \functor{F}(\eta_A)
 			\\
 			\id_{\functor{G}B} 
-			&= \functor{G}\varepsilon(B) \circ \eta(\functor{G}B)
+			&= \functor{G}(\varepsilon_B) \circ \eta_{\functor{G}B}
 		\end{align*}
-		\todo{maybe index Schreibweise?}
 		
+		%cut content.....................................................................................................
+		\iffalse
 		i.e. the following diagrams commute:
 		\begin{center}
 			\begin{tikzcd}
@@ -286,6 +284,7 @@
 			\end{tikzcd}
 		\end{center}
 		\todo[inline]{cut triangle diagrams or define $\bullet $ } %diagramme.............................................................................................................................................
+		\fi
 		
 		We write $F \dashv G$.
 	\end{definition}
@@ -390,7 +389,8 @@
 				\end{tikzcd}
 			\end{center}
 		\end{itemize}
-		\notimportantnote[inline]{Diagramme verschönern}
+		%............................................................................................
+		%\notimportantnote[inline]{Diagramme verschönern}
 		%........................................................................................................................................
 	\end{definition}
 	
@@ -609,8 +609,8 @@
 					&
 				\end{tikzcd}
 			\end{center}
-			\formatnote{Diagramme besser alignen}
-			%Diagramme besser alignen.............................................................................................................
+%			\formatnote{Diagramme besser alignen}
+			%comment.............................................................................................................
 			\item coherence between distributors and associators:
 			\begin{center}
 				\begin{tikzcd}
@@ -719,9 +719,10 @@
 					A \parr ((B \otimes C) \parr D)
 					\arrow[ll, "\alpha_\parr " ]
 				\end{tikzcd}
-				\formatnote[inline]{obiges Diagramm rumdrehen}
-				%.......................................................................................................
-				\formatnote[inline]{\textbackslash parr \textbackslash id sieht kacke aus...}    %..................................................................................
+				%comment.............................................................................................................
+				%\formatnote[inline]{obiges Diagramm rumdrehen}
+				%comment.......................................................................................................
+				%\formatnote[inline]{\textbackslash parr \textbackslash id sieht kacke aus...}    %..................................................................................
 				\begin{tikzcd}
 					&
 					A \otimes ((B \parr C) \otimes D)
@@ -744,14 +745,11 @@
 				\end{tikzcd}
 			\end{center}
 		\end{itemize}
-		\formatnote[inline]{itemize anpassen?}
-		%.............................................................................
 	\end{definition}
 	
 	
 	\subsection{*-aut. cats}
 	\label{sec: autoCats}
-	\todo[inline]{structure an Mellies, CatSemOfLinLog, anpassen; equivalence Srinivasan and Barr definitions}
 	
 	\begin{definition}[Dual object]
 		\label{def: dualObj}
@@ -796,11 +794,13 @@
 				A^* \parr (A \otimes A^*)
 				\arrow[l, "\partial_L " ]
 			\end{tikzcd}
-			\formatnote[inline]{das geht schöner}
 		\end{center}
 		
 		We write $(\tau, \gamma): A^* \dashV A $ and also call $A$ \emph{right dual} to $A^*$. 
-		\formatnote[inline]{mathabx incompatible with amssymb, stix absolutely broken; repalce dashV with dashv + some index?}
+		
+		%........................................................................................................................................................
+		%\formatnote[inline]{mathabx incompatible with amssymb, stix absolutely broken; repalce dashV with dashv + some index?}
+		%comment..................................................................................................................................................................................................................................................................
 	\end{definition}
 	
 	\begin{lemma}
@@ -822,7 +822,7 @@
 	%(BCS: "Feedback for linearly distributive categories: traces and fixpoints)
 	%comment..............................................................................................................................
 	
-	\todo[inline]{\cite{srinavsan-thesis} Lemma 2.9 (iii)?}
+	%\todo[inline]{\cite{srinavsan-thesis} Lemma 2.9 (iii)?}
 	%comment.............................................................................................................................
 	
 	\begin{definition}[*-autonomous categories \cite{srinavsan-thesis}]
@@ -830,7 +830,7 @@
 		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
 	\end{definition}
 	
-\todo[inline]{cut Barr's stuff as it doesn't lead to anything right now?}	
+\todo[inline]{cut Barr's following stuff as it doesn't lead to anything right now?}	
 	
 	\begin{definition}[*-autonomous categories (\cite{barr95}, A)]
 		\label{def: autoCatBarrA}
@@ -850,7 +850,6 @@
 		\label{def: autoCatBarrB}
 		A *-autonomous category is a biclosed category with a dualizing object.
 	\end{definition}
-	\notimportantnote{main definition, Barr}
 	
 	
 	\begin{definition}[*-autonomous categories (Barr, C)]
@@ -867,8 +866,6 @@
 %__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	
 	\section{LinLog Preliminaries}
-	
-	\todo[inline]{move the LinLog stuff under the cat stuff?}
 	
 	\subsection{Intuition}
 	\label{sec: intuition}
@@ -898,8 +895,7 @@
 	In order to regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ ("of course" or "bang") and $\wn$ ("why not"). The bang operator informs us that there is an infinite amount of a resource: The statement $\oc A$ translates into the ownership of an amount of money that is large enough for us to ignore resource sensitivity. Imagine for example a billionaire buying a Pokemon figurine instead of a social media site: His amount of money will not be noticeably smaller after buying the figurine. We can informally say $\oc A = (1 \with A) \otimes (1 \with A) \otimes \cdots $ and therefore view classical and intuitionistic logic as some sort of limit of linear logic, just as classical mechanics is a limit of quantum mechanics and the theory of relativity. 
 	
 	%......................................................
-	\todo[inline]{interpretation of ?wn.}
-	\todo[inline ]{interpretation of constants}
+	\todo[inline]{interpretation of ?wn and constants.}
 	%comment........................................................................................................................................
 	
 	
@@ -925,7 +921,6 @@
 	
 	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. 
 	
-	\notimportantnote{definition: sequent?}
 	
 	\begin{definition}[Proof (tree)]
 		A \emph{proof tree} (often just \emph{proof}) is a rooted tree with sequents of the form $\Gamma \vdash \Delta $ as \emph{edges} and the following sequent rules as \emph{vertices} (except for the root).
@@ -1136,8 +1131,8 @@
 			\BinaryInfC{$\Gamma \vdash A$}
 			\DisplayProof
 		\end{center}
-		$\Gamma \vdash B$ follows the same way.
 		
+		$\Gamma \vdash B$ follows the same way.
 	\end{proof}
 	
 	
@@ -1268,7 +1263,7 @@
 	\end{theorem}
 	
 	\begin{proof}
-		We shall only prove parts as the rest is trivial.
+		We shall only prove parts.
 		
 		\begin{itemize}
 			\item $1^\bot \vdash \bot $: 
@@ -1391,7 +1386,7 @@
 	\end{remark}
 	
 	\begin{proof}
-		We will only prove the second equivalence. The first is acquired by duality.
+		We will only prove the second equivalence.
 		\begin{itemize}
 			\item 
 			$\wn A \parr \wn B \vdash \wn (A \oplus B )$:
@@ -1446,10 +1441,10 @@
 				\DisplayProof
 			\end{center}
 		\end{itemize}
-		
+		$\oc\left(A \with B\right) \equiv \oc A \otimes \oc B $ is acquired the same way.
 	\end{proof}
 	
-	\formatnote{proofsymbol なんで？ :( }
+%	\formatnote{proofsymbol なんで？ :( }
 	
 	
 	
@@ -1511,7 +1506,6 @@
 	\end{lemma}
 	
 	
-	\todo[inline]{tabularx format:}
 	\begin{proof}
 		Induction on $h(\tau_1) + h(\tau_2)$. The immediate subproofs of $\tau_i$ are denoted by $\pi_j$.
 		We perform transformations case by case:
@@ -1909,7 +1903,7 @@
 			\end{center}
 		\end{center}
 		with $\partial(\tau_1), \partial(\tau_2) < \partial(A)$. Note that $\Gamma = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$ and $\Delta = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$,
-		\notimportantnote{just use commata instead of conc.?}
+%		\notimportantnote{just use commata instead of conc.?}
 		with $\Vert$ being the concatenation operator.
 		We then apply Lemma \ref{key-cases} to the proof tree.
 	\end{proof}
@@ -1930,7 +1924,6 @@
 	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	
 	\section{CatSem of LinLog}
-	\todo[inline]{Cats as LinLog semantics and LinLog syntax as cat}
 	%Cats as LinLog semantics
 	
 	
@@ -2034,22 +2027,24 @@
 		\urgentnote{restrict definition on proofs of singular formula sequents}
 	\end{definition}
 	
-	\todo[inline]{We're reachng categorical semantics. Move that stuff behind the category stuff.}
 	
 	\begin{definition}[Modularity]
 		We call a proof invariant \emph{modular} iff there exists a binary operation $\circ$ such that for any two proofs
-		\todo{is there a notation that's not as high as me on 4/20?}
-		\AxiomC{$\pi_1 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$A \vdash B$} 
-		\DisplayProof
-		and
-		\AxiomC{$\pi_2 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$B \vdash C$} 
-		\DisplayProof
+		\begin{center}
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash B$} 
+			\DisplayProof
+			\quad
+			and
+			\quad
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B \vdash C$} 
+			\DisplayProof
+		\end{center}
 		the denotation of the proof
 		\begin{center}
 			$\pi$ = 
@@ -2093,7 +2088,8 @@
 		\UnaryInfC{$B \vdash D$} 
 		\DisplayProof
 		the denotation of the proof
-		\urgentnote{what about the proof without $\otimes_L$?}
+%		\urgentnote{what about the proof without $\otimes_L$?}
+%comment.................................................................................................................................
 		\begin{center}
 			$\pi$ = 
 			\AxiomC{$\pi_1 $}
@@ -2128,7 +2124,8 @@
 		\UnaryInfC{$B \vdash D$} 
 		\DisplayProof
 		the denotation of the proof
-		\urgentnote{what about the proof without $\parr_R$?}
+%		\urgentnote{what about the proof without $\parr_R$?}
+%comment................................................................................................................................................
 		\begin{center}
 			$\pi$ = 
 			\AxiomC{$\pi_1 $}
