@@ -52,6 +52,7 @@
 \newcolumntype{x}{>{\centering\arraybackslash}X}
 
 \usepackage{graphicx}
+\usepackage{tikz}
 
 %scalable prooftrees:
 \newenvironment{scprooftree}[1]%
@@ -223,8 +224,9 @@
 	\end{definition}
 	
 	
-	\todo[inline]{definition: equivalence of categories}
-	
+	%\todo[inline]{definition: equivalence of categories}
+	%definition only relevant for Barr's definitions of *-auto. cats
+	%comment.....................................................................................................................................
 
 	
 	\begin{definition}[Adjunction]
@@ -283,8 +285,9 @@
 				\functor{G} \circ \id_\category{D}
 			\end{tikzcd}
 		\end{center}
-		\todo[inline]{cut triangle diagrams or define $\bullet $ } %diagramme.............................................................................................................................................
+		\todo[inline]{cut triangle diagrams or define $\bullet $ } %comment......................................................................................................................................
 		\fi
+		%end of cut content.............................................................................................
 		
 		We write $F \dashv G$.
 	\end{definition}
@@ -395,6 +398,9 @@
 	\end{definition}
 	
 	
+	%cut conten.................................................................................................................................................
+	%cut because only needed in Barr's definitions
+	\iffalse
 	\begin{definition}[Closed monoidal category]
 		\label{def: closedMonoCat}
 		\todo{lengthy, rambling... maybe cut into three definitions?}
@@ -419,7 +425,7 @@
 		$- \multimapinv -: \category{C} \times \category{C}^\opp \rightarrow \category{C} $
 		are called \emph{internal hom} functors.
 	\end{definition}
-	
+	\fi 
 	
 \iffalse	
 	\todo[inline]{following definitions prolly unnötig:}
@@ -819,6 +825,11 @@
 	\end{lemma}
 	
 	\todo[inline]{proof }
+	
+	\begin{proof}
+		
+	\end{proof}
+	
 	%(BCS: "Feedback for linearly distributive categories: traces and fixpoints)
 	%comment..............................................................................................................................
 	
@@ -830,8 +841,9 @@
 		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
 	\end{definition}
 	
-\todo[inline]{cut Barr's following stuff as it doesn't lead to anything right now?}	
 	
+	%cut content......................................................................................................................................................
+	\iffalse
 	\begin{definition}[*-autonomous categories (\cite{barr95}, A)]
 		\label{def: autoCatBarrA}
 		A *-autonomous category is a biclosed monoidal category $\category{C} $ with a closed functor $(-)^*: \category{C} \rightarrow \category{C}^\opp $, which is a strong equivalence of categories.     
@@ -842,7 +854,7 @@
 	\begin{definition}[Dualizing object]
 		\label{def: dualizingObj}
 		Let $\category{C} $ be a biclosed monoidal category. 
-		\todo{details (Barr, 99)}
+		%\todo{details (Barr, 99)}
 		An object $\bot $ is called a dualizing object if for every $A \in \Obj(\category{C}) $ the natural map $A \rightarrow \bot \multimapinv (A \multimap \bot) $ gotten by transposing $\id: A \multimap \bot \rightarrow A\multimap \bot $ twice is an isomorphism. 
 	\end{definition}
 	
@@ -859,7 +871,7 @@
 			\Hom(A, B^*) \rightarrow \Hom(1, (A \oplus B)^*)
 		\end{align*}
 	\end{definition}
-	
+	\fi 
 
 
 
@@ -925,7 +937,42 @@
 	\begin{definition}[Proof (tree)]
 		A \emph{proof tree} (often just \emph{proof}) is a rooted tree with sequents of the form $\Gamma \vdash \Delta $ as \emph{edges} and the following sequent rules as \emph{vertices} (except for the root).
 	\end{definition}
-	\todo[]{add example with more graph-like proof tree}
+	
+	\begin{remark}
+		Normally, proof trees are not written in a very "graph-like" way, which might obfuscate their nature as trees. The proof tree
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$A, B \vdash A \otimes B$}
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+		\end{center}
+		can be displayed more graph-like as
+		\begin{center}
+			\begin{tikzpicture}
+				\begin{scope}[every node/.style={circle,draw}]
+					\node (id1) at (0,0) {id};
+					\node (id2) at (4,0) {id};
+					\node (otimesR) at (2,-2) { $\otimes_R$ };
+					\node (otimesL) at (2,-4) {$\otimes_L $};
+					\node (root) at (2,-6) {$\surd$};
+				\end{scope}
+				\begin{scope}
+					\path [-] (id1) edge node[left] {$A \vdash A $} (otimesR);
+					\path [-] (id2) edge node[right] {$B \vdash B $} (otimesR);
+					\path [-] (otimesR) edge node[right] {$A, B \vdash A \otimes B$} (otimesL);
+					\path [-] (otimesL) edge node[right] {$A \otimes B \vdash A \otimes B$} (root);
+				\end{scope}
+			\end{tikzpicture}
+		\end{center}
+		with $\surd$ marking the root. As this is neither efficient nor pretty, we will stick with the traditional display.
+	\end{remark}
 	
 	
 	\paragraph{Structural rules}
@@ -1003,7 +1050,7 @@
 		
 		\AxiomC{$\Gamma \vdash \Delta $}
 		\RightLabel{$1_L$}
-		\UnaryInfC{$\Gamma, 1 \vdash \Delta $}
+		\UnaryInfC{$\Gamma_1, 1, \Gamma_2 \vdash \Delta $}
 		\DisplayProof
 		\quad
 		\AxiomC{\vphantom{$\frac{a}{b}$ } }
@@ -1018,10 +1065,10 @@
 		\quad
 		\AxiomC{$\Gamma \vdash \Delta $ }
 		\RightLabel{$\bot_R $}
-		\UnaryInfC{$\Gamma \vdash \bot , \Delta $}
+		\UnaryInfC{$\Gamma \vdash \Delta_1, \bot , \Delta_2 $}
 		\DisplayProof
 	\end{center}
-	%Bedeutung
+	Note that $\Gamma = \Gamma_1 \Vert \Gamma_2 $ and $\Delta = \Delta_1 \Vert \Delta_2$ for $1_L$ and $\bot_R$.
 	
 	
 	\begin{remark}
@@ -1115,8 +1162,6 @@
 	
 	\begin{remark}
 		Similarly to the multiplicative connectives above, the additive connectives have a invertibility statement: $\Gamma \vdash A \with B $ is provable iff $\Gamma \vdash A$ and $\Gamma \vdash B$ are provable. Dually, $A \oplus B \vdash \Delta $ iff $A \vdash \Delta $ and $B \vdash \Delta $.
-		
-		\notimportantnote[noline]{remark unnötig?}
 		
 	\end{remark}
 	
@@ -1451,9 +1496,14 @@
 	%================================================================================================================================================
 	\subsection{Cut elimination }
 	\label{cut-elimination}
-	\todo[inline]{add "spoiler" to categoru theoru}
 	
-	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can find a \emph{cut-free} proof $\pi'$ of that same sequent. We will prove this for the multiplicative fragment by simplifying the proof due to Braüner \cite[Appendix B]{brauner}. Baüner's proof includes the exponentials which require additional care because of the contraction rule. The general strategy consists of either, moving a cut upwards in a proof or replacing it with cuts of simpler formulas. To do this, we need two definitions:
+	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. 
+	That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can construct a \emph{cut-free} proof $\pi'$ of that same sequent.  
+	We will prove this for the multiplicative fragment by simplifying the proof due to Braüner \cite[Appendix B]{brauner}. 
+	The transformations used in this construction will later form the basis for the categorical semantics of this fragment. 
+	Braüner's proof includes the exponentials which require additional care because of the contraction rule. 
+	The general strategy consists of either, moving a cut upwards in a proof or replacing it with cuts of simpler formulas. 
+	To do this, we need two definitions:
 	
 	%	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can find a \emph{cut-free} proof $\pi'$ of that same sequent. We will prove this for the multiplicative fragment by adapting the cut-elimination procedure for intuitionistic linear logic by 
 	%	\urgentnote{add literature} 
@@ -1504,6 +1554,28 @@
 		with 
 		$\partial(\tau') < \partial(\tau) $.
 	\end{lemma}
+	
+	\begin{remark}
+		We write 
+		\AxiomC{$\pi$}
+		\RightLabel{$r$}
+		\UnaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		and 
+		\AxiomC{$\pi$}
+		\AxiomC{$\pi'$}
+		\RightLabel{$r$}
+		\BinaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		for the proof that we get when applying the rule $r$ on the last sequent(s) of the proof(s) $\pi$ (and $\pi'$).
+		Furthermore, for the proof $\tau$ that ends in the sequent $\Gamma \vdash \Delta$, we write
+		\AxiomC{$\tau$} 
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		. 
+	\end{remark}
 	
 	
 	\begin{proof}
@@ -1558,15 +1630,105 @@
 			
 			\item $\tau_1$ does not introduce the principal formula in its last rule. Depending on the subcase, we perform one of the following transformations, pushing $\tau_2$ upwards, and use the induction hypothesis on the resulting subproof.
 			
-			\urgentnote[inline]{Problem: Resulting proofs for the $\parr_L$-cases are illegal under current formulation of the $\parr_L$-rule. (Also: they're kinda the same?)
-				Possible solutions: \\
-				1: add exchanges to transformation (easy; ugly)\\ 
-				2: find generalized $\parr_L$-rule (more difficult; possibly uglier)}
 			
-			\todo[inline]{To be added: $\otimes_R$-cases.\\
-				Maybe combine $\parr_L$- and $\otimes_R$-cases into one? (Requires generalized formulation of the rules)}
 			
 			\begin{tabularx}{\textwidth}{x c x}
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, C, \Delta'_1, A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_1,\Gamma_2 \vdash \Delta_1, C, \Delta'_1, A \otimes B, \Delta_2 $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1, A \otimes B, \Delta_2$}
+					\DisplayProof
+				}
+				&
+				$\rightsquigarrow$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, C, \Delta'_1, A $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3,\Gamma_1, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1, A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma'_3, \Gamma_2 \vdash \Delta_1, \Delta_3, \Delta'_1, A \otimes B, \Delta_2 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1, A \otimes B, \Delta_2 $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2, C, \Delta'_2, $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_1,\Gamma_2 \vdash \Delta_1, A \otimes B, \Delta_2, C, \Delta_2' $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, A \otimes B, \Delta_2, \Delta_3, \Delta_2' $}
+					\DisplayProof
+				}
+				&
+				$\rightsquigarrow$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2, C, \Delta_2' $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3,\Gamma_2, \Gamma'_3 \vdash B, \Delta_2, \Delta_3, \Delta_2' $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_1, \Gamma_3, \Gamma_2, \Gamma'_3 \vdash \Delta_1, A\otimes B, \Delta_2, \Delta_3, \Delta_2' $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, A \otimes B, \Delta_2, \Delta_3, \Delta_2' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
 				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
 					\UnaryInfC{$\Gamma_1, A \vdash \Delta_1, C, \Delta'_1 $}
@@ -1582,6 +1744,7 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 \Delta_2$}
 					\DisplayProof
 				}
@@ -1597,12 +1760,19 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_3,\Gamma_1, A , \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3,\Gamma_1, \Gamma'_3, A \vdash \Delta_1, \Delta_3, \Delta'_1 $}
 					
 					\AxiomC{$\pi_2$}
 					\UnaryInfC{$B, \Gamma_2 \vdash \Delta_2 $}
 					
-					\BinaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 \Delta_2 $}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma'_3, A \parr B, \Gamma_2 \vdash \Delta_1, \Delta_3, \Delta'_1 \Delta_2 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 \Delta_2 $}
 					\DisplayProof
 				}
 				
@@ -1624,6 +1794,7 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2 $}
 					\DisplayProof
 				}
@@ -1642,9 +1813,16 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_3, B, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$B, \Gamma_3, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
 					
-					\BinaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2 $}
+					\BinaryInfC{$\Gamma_1, A \parr B, \Gamma_3, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2 $}
 					\DisplayProof
 				}
 				
@@ -1686,9 +1864,210 @@
 			
 			\item $\tau_2$ does not introduce  the principal formula in its last rule. Dually to the case above, we perform one of the following transformations, pushing $\tau_1$ upwards, and use the induction hypothesis on the resulting subproof.
 			
-			\todo[inline]{To be added: $\parr_L$- and $\otimes_R$-cases (same problems as above)}
-			
 			\begin{tabularx}{\textwidth}{x c x}
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, C, \Gamma_2', A \vdash \Delta_2$}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_3\vdash \Delta_3 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, C, \Gamma_2', A \parr B, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2',  A \parr B, \Gamma_3  \vdash \Delta_1, \Delta_2, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				&
+				$\rightsquigarrow$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, C, \Gamma_2', A \vdash \Delta_2$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', A \vdash \Delta_1, \Delta_2, \Delta_1' $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', A \parr B, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_1', \Delta_3 $}
+					
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', A\parr B, \Gamma_3  \vdash \Delta_1, \Delta_2, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_3, C, \Gamma_3' \vdash \Delta_3 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3, C, \Gamma_3' \vdash \Delta_2, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3, \Gamma_1, \Gamma_3'  \vdash \Delta_1, \Delta_2, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				&
+				$\rightsquigarrow$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
+					
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_3, C, \Gamma_3' \vdash \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$B, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, \Delta_3, \Delta_1' $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, \Delta_2, \Delta_1', \Delta_3 $}
+					
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, A \parr B, \Gamma_3, \Gamma_1, \Gamma_3'  \vdash \Delta_1, \Delta_2, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, C, \Gamma_2' \vdash \Delta_2, A$}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_3\vdash B, \Delta_3 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_2, C, \Gamma_2', \Gamma_3 \vdash \Delta_2, A \otimes B, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', \Gamma_3  \vdash \Delta_1, \Delta_2, A \otimes B, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				&
+				$\rightsquigarrow$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, C, \Gamma_2' \vdash \Delta_2, A$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2' \vdash \Delta_1, \Delta_2, A, \Delta_1' $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2' \vdash \Delta_1, \Delta_2, \Delta_1', A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_3\vdash B, \Delta_3 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_1',A \otimes B, \Delta_3 $}
+					
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', \Gamma_3  \vdash \Delta_1, \Delta_2, A \otimes B, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2 \vdash \Delta_2, A$}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_3 , C, \Gamma_3' \vdash B, \Delta_3 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_2, \Gamma_3, C, \Gamma_3' \vdash \Delta_2, A \otimes B, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, \Delta_2, A \otimes B, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				&
+				$\rightsquigarrow$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, \vdash \Delta_2, A$}
+					
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma_3'  \vdash B, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, B, \Delta_3, \Delta_1' $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, \Gamma_3' \vdash B, \Delta_1, \Delta_3, \Delta_1' $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_2, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_2, A \otimes B, \Delta_1, \Delta_3, \Delta_1' $}
+					
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, \Delta_2, A \otimes B, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				
 				\AxiomC{$\tau_1$}
 				\noLine
 				\UnaryInfC{$\svdots$}
@@ -2012,19 +2391,131 @@
 		\end{tabularx}
 	\end{definition}
 	
-	\begin{remark}
-		From now on, when talking about "cut elimination procedure" or "modulo cut elimination", we mean the above mentioned transformations and the proof transformations from Lemma \ref{key-cases}. 
-	\end{remark}
+	\begin{definition}
+		From now on, when talking about "cut elimination procedure" or "modulo cut elimination", we mean the above mentioned transformations, the proof transformations from Lemma \ref{key-cases} as well as the following commuting cuts:
+			
+		\begin{tabularx}{\textwidth}{X c X}
+			\scalebox{.6}{
+				\AxiomC{$\pi_1 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+				
+				\AxiomC{$\pi_2 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\AxiomC{$\pi_3 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_2, A, \Gamma'_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+				\DisplayProof
+			}
+			&
+			$\leftrightsquigarrow$
+			&
+			\scalebox{.6}{
+				\AxiomC{$\pi_1 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+				
+				\AxiomC{$\pi_2 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\AxiomC{$\pi_3 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+				\DisplayProof
+			}
+			
+			\\
+			%..............................................................
+			
+			\scalebox{.6}{
+				\AxiomC{$\pi_1 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+				
+				\AxiomC{$\pi_2 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\AxiomC{$\pi_3 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, A, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+				\DisplayProof
+			}
+			&
+			$\leftrightsquigarrow$
+			&
+			\scalebox{.6}{		
+				\AxiomC{$\pi_2 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\AxiomC{$\pi_1 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+				
+				\AxiomC{$\pi_3 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_1, B, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_1, \Delta_3, \Delta'_1, \Delta'_2 $}
+				\DisplayProof
+			}
+			
+			\\
+			%..............................................................
+			
+		\end{tabularx}
+		
+		
+%		\urgentnote[inline]{think about the deltas...: aufteilen in zwei Regeln mit einseitigen Deltas für A und B oder allgemein halten und viele exchanges drunter klatschen (was es asymmetrisch macht und damit)?}
+		
+	\end{definition}
 	
-	We will now define proof invariants as outlined by \urgentnote{add citation} Milliès.
+	We will now define proof invariants as outlined by Melliès \cite{mellies}.
 	
 	\begin{definition}[Proof invariant]
-		Let $\pi$ be a proof tree. We call any function
+		Let $\pi$ be a proof tree ending in a sequent of the form $A \vdash B$, i.e. with a single formula on either side of the turnstile. We call any function
 		\begin{align*}
 			\pi \mapsto [\pi]
 		\end{align*}
 		that remains constant under cut elimination \emph{proof invariant}. The entity $[\pi]$ is called \emph{denotation} of the proof $\pi$.
-		\urgentnote{restrict definition on proofs of singular formula sequents}
 	\end{definition}
 	
 	
@@ -2066,7 +2557,6 @@
 	
 	\begin{proposition}
 		A modular invariant of proofs forms a category with the formulae as objects and the proof denotations as morphisms.
-		\todo{more like polycategory if we allow general sequents...}
 	\end{proposition}
 	
 	\begin{proof}
@@ -2316,7 +2806,6 @@
 		\end{center}
 		
 		while the unitors $\lambda$ and $\rho$ are given by
-		\todo{requires generalized unit rules}
 		\begin{center}
 			\AxiomC{\strut}
 			\RightLabel{$\id$}
@@ -2409,120 +2898,8 @@
 	\end{proof}
 	
 	
-	%.........................................................
-	\subsubsection{Commuting cuts}
+	\todo[inline]{talk about poly-category}
 	
-	\todo[inline]{is a separate definition even needed? integrate that stuff into expansions.}
-	
-	\begin{tabularx}{\textwidth}{X c X}
-		\scalebox{.6}{
-			\AxiomC{$\pi_1 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
-			
-			\AxiomC{$\pi_2 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
-			
-			\AxiomC{$\pi_3 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
-			
-			\RightLabel{Cut}
-			\BinaryInfC{$\Gamma_3, \Gamma_2, A, \Gamma'_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
-			
-			\RightLabel{Cut}
-			\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
-			\DisplayProof
-		}
-		&
-		$\leftrightsquigarrow$
-		&
-		\scalebox{.6}{
-			\AxiomC{$\pi_1 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
-			
-			\AxiomC{$\pi_2 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
-			
-			\RightLabel{Cut}
-			\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
-			
-			\AxiomC{$\pi_3 $}
-			\noLine
-			\UnaryInfC{$\svdots$}
-			\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
-			
-			\RightLabel{Cut}
-			\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
-			\DisplayProof
-		}
-	\end{tabularx}
-	
-	\todo[]{put that stuff back into a normal center instead of tabularx?}
-	
-	
-	The proof
-	
-	\begin{center}
-		\AxiomC{$\pi_1 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
-		
-		\AxiomC{$\pi_2 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
-		
-		\AxiomC{$\pi_3 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
-		
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma_3, A, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
-		
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
-		\DisplayProof
-	\end{center}
-	
-	is transformed into
-	
-	\begin{center}
-		\AxiomC{$\pi_2 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
-		
-		\AxiomC{$\pi_1 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
-		
-		\AxiomC{$\pi_3 $}
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
-		
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma_3, \Gamma_1, B, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 $}
-		
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_1, \Delta_3, \Delta'_1, \Delta'_2 $}
-		\DisplayProof
-	\end{center}
-	
-	and vice versa
-	\urgentnote[inline]{think about the deltas...: aufteilen in zwei Regeln mit einseitigen Deltas für A und B oder allgemein halten und viele exchanges drunter klatschen (was es asymmetrisch macht und damit)?}
 	
 	
 	%---------------------------------------------------------------------------------------------------------------------
