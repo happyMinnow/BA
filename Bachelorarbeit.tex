@@ -1582,6 +1582,8 @@
 		Induction on $h(\tau_1) + h(\tau_2)$. The immediate subproofs of $\tau_i$ are denoted by $\pi_j$.
 		We perform transformations case by case:
 		
+		\todo[inline]{give transformations names?}
+		
 		\begin{itemize}
 			\item If one of the the subproofs is an axiom, we just take the remaining one, resulting in a proof with lower degree:
 			
@@ -1597,7 +1599,7 @@
 				\BinaryInfC{$A, \Gamma \vdash \Delta $}
 				\DisplayProof
 				&
-				$\rightsquigarrow$
+				$\overset{(\id , -)}{\rightsquigarrow}$
 				&
 				\AxiomC{$\tau_2$}
 				\noLine
@@ -1619,7 +1621,7 @@
 				\BinaryInfC{$\Gamma \vdash \Delta, A $}
 				\DisplayProof
 				&
-				$\rightsquigarrow$
+				$\overset{(-, \id)}{\rightsquigarrow}$
 				&
 				\AxiomC{$\tau_1$}
 				\noLine
@@ -1653,7 +1655,7 @@
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(\downarrow \otimes_R, -)}{\rightsquigarrow}$
 				&
 				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
@@ -1701,7 +1703,7 @@
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(\downarrow \otimes_R, -)}{\rightsquigarrow}$
 				&
 				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
@@ -1749,7 +1751,7 @@
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(\downarrow \parr_L, -)}{\rightsquigarrow}$
 				&
 				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
@@ -1799,7 +1801,7 @@
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(\downarrow \parr_L, -)}{\rightsquigarrow}$
 				&
 				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
@@ -1842,7 +1844,7 @@
 				\BinaryInfC{$\Gamma, \Phi_1, \Gamma' \vdash \Phi_2, \Delta, \Phi'_2 $}
 				\DisplayProof
 				&
-				$\rightsquigarrow$
+				$\overset{(\downarrow r, -)}{\rightsquigarrow}$
 				&
 				\AxiomC{$\pi$}
 				\UnaryInfC{$\Psi_1 \vdash \Psi_2, A, \Psi'_2 $}
@@ -1885,7 +1887,7 @@
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(-, \downarrow \parr_L)}{\rightsquigarrow}$
 				&
 				\scalebox{0.6}{
 					\AxiomC{$\tau_1$}
@@ -1934,7 +1936,7 @@
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(-, \downarrow \parr_L)}{\rightsquigarrow}$
 				&
 				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
@@ -1983,7 +1985,7 @@
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(-, \downarrow \otimes_R)}{\rightsquigarrow}$
 				&
 				\scalebox{0.6}{
 					\AxiomC{$\tau_1$}
@@ -2035,7 +2037,7 @@
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(-, \downarrow \otimes_R)}{\rightsquigarrow}$
 				&
 				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
@@ -2081,7 +2083,7 @@
 				\BinaryInfC{$\Phi_1, \Gamma, \Phi'_1 \vdash \Delta, \Phi_2, \Delta' $}
 				\DisplayProof
 				&
-				$\rightsquigarrow$
+				$\overset{(-, \downarrow r)}{\rightsquigarrow}$
 				&
 				\AxiomC{$\tau_1$}
 				\noLine
@@ -2105,7 +2107,7 @@
 			
 			\begin{tabularx}{\textwidth}{x c x}
 				%cut otimes intro vs otimes intro
-				\scalebox{0.7}{
+				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
 					\noLine
 					\UnaryInfC{$\svdots$}
@@ -2116,21 +2118,24 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2$}
 					
+					\RightLabel{$\otimes_R$}
 					\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, A\otimes B, \Delta_2 $}
 					
 					\AxiomC{$\pi_3$}
 					\noLine
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3$}
+					\RightLabel{$\otimes_L$}
 					\UnaryInfC{$\Gamma_3, A \otimes B, \Gamma'_3 \vdash \Delta_3 $}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta_2 $}
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow$
+				$\overset{(\otimes_L, \otimes_R)}{\rightsquigarrow}$
 				&
-				\scalebox{0.7}{
+				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
 					\noLine
 					\UnaryInfC{$\svdots$}
@@ -2146,8 +2151,10 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3$}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_3, A, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3 $}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta_2 $}
 					\DisplayProof
 				}
@@ -2156,11 +2163,12 @@
 				%.............................................
 				
 				%cut par intro vs par intro
-				\scalebox{0.7}{			
+				\scalebox{0.6}{			
 					\AxiomC{$\pi_1$}
 					\noLine
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, B, \Delta'_1 $}
+					\RightLabel{$\parr_R$}
 					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A \parr B, \Delta'_1 $}
 					
 					\AxiomC{$\pi_2$}
@@ -2173,15 +2181,17 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
 					
+					\RightLabel{$\parr_L$}
 					\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_1 $}
 					\DisplayProof
 				}
 				&
-				$\rightsquigarrow $
+				$\overset{(\parr_R, \parr_L)}{\rightsquigarrow} $
 				&
-				\scalebox{0.7}{
+				\scalebox{0.6}{
 					\AxiomC{$\pi_1$}
 					\noLine
 					\UnaryInfC{$\svdots$}
@@ -2192,6 +2202,7 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2, B, \Delta'_1 $}
 					
 					\AxiomC{$\pi_3$}
@@ -2199,6 +2210,7 @@
 					\UnaryInfC{$\svdots$}
 					\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
 					
+					\RightLabel{Cut}
 					\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_1 $}
 					\DisplayProof
 				}
@@ -2218,7 +2230,7 @@
 				\BinaryInfC{$\Gamma \vdash \Delta$}
 				\DisplayProof
 				&
-				$\rightsquigarrow$
+				$\overset{(1_R, 1_L)}{\rightsquigarrow}$
 				&
 				\AxiomC{$\pi$}
 				\noLine
@@ -2241,7 +2253,7 @@
 				\BinaryInfC{$\Gamma \vdash \Delta$}
 				\DisplayProof
 				&
-				$\rightsquigarrow$
+				$\overset{(\bot_L, \bot_R)}{\rightsquigarrow}$
 				&
 				
 				\AxiomC{$\pi$}
@@ -2637,7 +2649,7 @@
 	
 	
 	\begin{lemma}
-		A (co-)tensorial, modular proof invariant forms a monoidal category.
+		A (co-)tensorial, modular proof invariant forms a symmetric monoidal category.
 	\end{lemma}
 	
 	\begin{proof}
@@ -2859,7 +2871,7 @@
 		\begin{center}
 			\AxiomC{\strut}
 			\RightLabel{$1_R$}
-			\UnaryInfC{$1 \vdash $}
+			\UnaryInfC{$\vdash 1$}
 %			
 			\AxiomC{\strut}
 			\RightLabel{$\id$}
@@ -2871,23 +2883,423 @@
 			\quad 
 			and 
 			\quad
-			\AxiomC{\strut}
-			\RightLabel{$1_R$}
-			\UnaryInfC{$1 \vdash $}
 %
 			\AxiomC{\strut}
 			\RightLabel{$\id$}
 			\UnaryInfC{$A \vdash A $}
+%			
+			\AxiomC{\strut}
+			\RightLabel{$1_R$}
+			\UnaryInfC{$\vdash 1$}
 %
 			\RightLabel{$\otimes_R$}
-			\BinaryInfC{$A \vdash 1 \otimes A$}
+			\BinaryInfC{$A \vdash A \otimes 1$}
 			\DisplayProof
 		\end{center}
 		
-		\urgentnote[inline]{finish: naturality example on $\alpha$, isomorphy with $\id_{A \otimes B} \circ \rho^{-1} \circ \rho = \id_{A \otimes B} $}
+		The equation $\lambda\circ\lambda^{-1} = \id_A $ is easily shown:
+		
+		\begin{tabularx}{\textwidth}{c x c x}
+			
+			&
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$A \vdash 1 \otimes A$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash A$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$A \vdash A $}
+				\DisplayProof
+			}
+			&
+			$\overset{(\otimes_R, \otimes_L)}{\rightsquigarrow}$
+			&
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, A \vdash A $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$A \vdash A $}
+				\DisplayProof
+			}
+			%......................................
+			\\
+			
+			
+			$\overset{(-, \id)}{\rightsquigarrow}$
+			&
+			
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$A \vdash A $}
+				\DisplayProof
+			}
+			
+			&
+			$\overset{(1_R, 1_L)}{\rightsquigarrow}$
+			&
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\DisplayProof
+			
+		\end{tabularx}
+		
+		The equation $\lambda^{-1} \circ \lambda = \id_{1 \otimes A} $ requires additional steps. First, we eliminate the cut in $\lambda^{-1} \circ \lambda$:
+		
+		\begin{tabularx}{\textwidth}{x c x}
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash A$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$A \vdash 1 \otimes A$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				\DisplayProof
+			}
+			&
+			$\overset{\downarrow \otimes_L, \downarrow \otimes_R, (-, \id) }{\rightsquigarrow}$
+			&
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash A$}
+				
+				\DisplayProof
+			}
+						
+		\end{tabularx}
+		
+		Then, cut $\lambda^{-1} \circ \lambda$ against the $\eta$-expansion of $\id_{1 \otimes A}$:
+		
+		\begin{tabularx}{\textwidth}{x c x}
+			
+			\scalebox{.65}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash A$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				
+				\BinaryInfC{$1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\DisplayProof
+			}
+			&
+			$\overset{(\downarrow \otimes_L, -) , (\otimes_R, \otimes_L)}{\rightsquigarrow}$
+			&
+			\scalebox{.7}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+					\AxiomC{\strut}
+					\UnaryInfC{$A \vdash A $}
+					\RightLabel{$1_L$}
+					\UnaryInfC{$1, A\vdash A$}
+					
+							\AxiomC{\strut}
+							\UnaryInfC{$1 \vdash 1$}
+							
+							\AxiomC{\strut}
+							\UnaryInfC{$A \vdash A $}
+							
+						\RightLabel{$\otimes_R$}
+						\BinaryInfC{$1, A \vdash 1 \otimes A $}
+						
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, 1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1 , A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\DisplayProof
+			}
+			
+		\end{tabularx}
+		
+		%tabularx wollte nicht passend formatieren
+		
+		\begin{tabularx}{\textwidth}{c x c x}
+			
+			$\overset{(-, \downarrow \otimes_R) , (-, \id)}{\rightsquigarrow}$
+			&
+			
+			\scalebox{.7}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, 1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, A \vdash A$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\DisplayProof
+			}
+			
+			&
+			$\overset{(-, \downarrow \otimes_R) , (1_R, 1_L)}{\rightsquigarrow}$
+			&
+			\scalebox{.7}{
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, 1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\DisplayProof
+			}
+			
+		\end{tabularx}
+		
+		Thus, we have 
+		$\id_{1 \otimes A} \circ (\lambda^{-1} \circ \lambda) = \id_{1 \otimes A}$ 
+		and by modularity 
+		$\lambda^{-1} \circ \lambda = \id_{1 \otimes A}$.
+		
+		Naturality for $\lambda$ means that for any $\pi: A \rightarrow B $ the equation $\lambda_B \circ (\id_1 \otimes \pi) = \pi \circ \lambda_A $ holds.
+		Cut elimination on $\lambda_B \circ (\id_1 \otimes \pi)$ gives us:
+		
+		\begin{tabularx}{\textwidth}{x c x}			
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				\AxiomC{$\pi $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A \vdash B$} 
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, A \vdash 1 \otimes B$}
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes B$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$B \vdash B $}
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, B\vdash B$}
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes B \vdash B$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1 \otimes A \vdash B$}
+				
+				\DisplayProof
+			}
+			&
+			$\overset{(\downarrow \otimes_L, -) , (\otimes_R, \otimes_L)}{\rightsquigarrow}$
+			&
+			\scalebox{1}{
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				
+				\AxiomC{$\pi $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A \vdash B$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$B \vdash B $}
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, B\vdash B$}
+				 
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, A\vdash B$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, A\vdash B$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash B$}
+				
+				\DisplayProof
+			}
+		\end{tabularx}
+		
+		\begin{tabularx}{\textwidth}{x x x}
+			
+			$\underset{ (-, \id) }{\overset{(-, \downarrow 1_L)(\id, -)}{\rightsquigarrow}} $
+			&
+			
+			\scalebox{}{
+				\AxiomC{$\pi $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A \vdash B$} 
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash B$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash B$}
+				
+				\DisplayProof
+			}
+			&
+		\end{tabularx}
+		
+		Which is the same result as cut elimination on $\pi \circ \lambda_A$:
+		
+		\begin{tabularx}{\textwidth}{x c x}	
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\RightLabel{$1_L$}
+			\UnaryInfC{$1, A\vdash A$}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$1 \otimes A \vdash A$}
+			
+			\AxiomC{$\pi $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash B$}
+			
+			\BinaryInfC{$1 \otimes A \vdash B $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{$\pi $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash B$} 
+			
+			\RightLabel{$1_L$}
+			\UnaryInfC{$1, A\vdash B$}
+			
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$1 \otimes A \vdash B$}
+			
+			\DisplayProof
+			
+		\end{tabularx}
+		
+		Naturality and isomorphy of $\alpha$ and $\rho$ as well as the coherence conditions are shown the same way.
 	\end{proof}
 	
-	%______________________________________________________________Baustelle
+	
 	\begin{theorem}
 		A proof invariant that is modular, tensorial and cotensorial forms a linearly distributive category.
 	\end{theorem}
