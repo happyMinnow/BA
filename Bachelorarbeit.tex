@@ -137,7 +137,50 @@
 	
 	\section{Introduction}
 	
-	\todo[inline]{what am I even writing about?}
+%	\subsection{Intuition}
+%	\label{sec: intuition}
+	
+	%................................
+	%\todo[inline, color=green!50]{feels kinda rambling... combine intuition with syntax definition below}
+	%comment..............................................................................
+	
+	Classical (and intuitionistic) logic deals with the propagation of stable truth values. If one has a true sentence $A$ and an an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. However, real-life implications are often causal and modify their premises. They cannot therefore be iterated arbitrarily. For example if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
+	
+	While such dealings with resources can of course be modeled in classical logic, it is easier in the resource-sensitive \emph{linear logic}, first described by Girard in 1987 \cite{girard87}. 
+	
+	Here, we have two conjunctions simultaneously $\otimes$ ("times" or "tensor") and $\with$ ("with"), which describe the availability of resources:
+	
+	Suppose $C$ is the ownership of a cookie and it costs also 1\euro\ (i.e. we have $A\multimap C$). Then $B \otimes C$ states that one owns both a chocolate bar and a cookie. The implication $A \multimap B \otimes C$ is not possible, as it would mean that you are buying both, cookie and chocolate bar at the same time, for just 1\euro\ total. However, from $A \multimap B$ and $A\multimap C$ we get $A \otimes A \multimap B \otimes C$, i.e. the process of buying both for 2\euro.
+	
+	On the other hand, $B \with C$ states that one has a choice between either $B$ or $C$ (imagine a token). From the implications $A\multimap B$ and $A\multimap C$ we get the implication $A \multimap B \with C$, i.e. the process of buying a token to be exchanged for a chocolate bar or a cookie at a later time (with the choice lying with oneself). While this may  seem like a disjunction, both implications $B\with C \multimap B$ and $B \with C \multimap C$ (exchanging the token for either product) are provable from $B \with C$, although not simultaneously. 
+	
+	Dually, we have two disjunctions $\parr$ ("par") and $\oplus$ ("plus"):
+	
+	Suppose now that $B$ and $C$ are the ownership of a figurine of Pikachu or Mew respectively. Then $B \oplus C$ may be the ownership of a Kinder Egg containing either figurine. This means when buying that egg ($A \multimap B \oplus C$) we do not know which one we will get. 
+	
+	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(\cdot)^\bot$): Under the interpretation of ownership the linear negation is no interpreted as the absence of ownership but as negative ownership, i.e. debt. That means the negation of owning 1\euro, $A$, is owing someone 1\euro, $A^\bot$. With the par operator we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
+	%\todo[inline]{(explicit interpretation?! shared pool between people containing Pika and Mew -> you have to get rid of one to use the other?)}
+	%Interpretation von par...............................................................................................................................
+	%comment...............................................................................................................................................
+	
+	In order to regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ ("of course" or "bang") and $\wn$ ("why not"). 
+	The bang operator informs us that there is an possibly infinite amount of a resource: 
+	The statement $\oc A$ translates into the ownership of an amount of money that is large enough for us to ignore resource sensitivity. 
+	Imagine for example a billionaire buying a Pokemon figurine: His amount of money will not be noticeably smaller after buying the figurine. We can informally say $\oc A = (1 \with A) \otimes (1 \with A) \otimes \cdots $ and therefore view classical and intuitionistic logic as some sort of limit of linear logic, just as classical mechanics is a limit of quantum mechanics and the theory of relativity. 
+	
+	%......................................................
+	%\todo[inline]{interpretation of ?wn and constants.}
+	%comment........................................................................................................................................
+	
+	
+	Various fragments of linear logic can be modeled by monoidal categories with additional structures. We will see this with the multiplicative fragment and linearly distributive categories.
+	
+%	\urgentnote[inline]{mono cat as model for various fragments}
+%	\urgentnote[inline]{applications}
+	
+	
+	
+	
 	
 
 	%---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -148,8 +191,6 @@
 	\subsection{Categories}
 	\label{sec: catSec}
 	%Tensorcats?
-	
-	\todo[inline]{sources for basic definitions. (nlab prolly doesn't suffice)}
 	
 	\begin{definition}[Category]
 		\label{def: cat}
@@ -231,7 +272,8 @@
 	
 	\begin{definition}[Adjunction]
 		\label{def: adjunction}
-		\notimportantnote[]{source: Brandenburg}
+%		\notimportantnote[]{source: Brandenburg}
+%		comment.....................................................................................................
 		Let $\category{C}$ and $\category{D} $ be categories. We call $\functor{F}: \category{C} \rightarrow \category{D} $ the \emph{left adjoint} of $\functor{G}: \category{D} \rightarrow \category{C} $ and $\functor{G} $ the \emph{right adjoint} of $\functor{F} $ if there is an isomorphism that is natural in $A \in \category{C} $ and $B \in \category{D} $:
 		\begin{align*}
 			\forall A \in \category{C}, \forall B \in \category{D}:
@@ -539,7 +581,7 @@
 
 	
 %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
-	\subsection{LinDisCats}
+	\subsection{Linearly distributive category}
 	\label{sec: linDisCats}
 	%LDCs
 	%*-auto. Cats
@@ -754,7 +796,7 @@
 	\end{definition}
 	
 	
-	\subsection{*-aut. cats}
+	\subsection{*-autonomous Categories}
 	\label{sec: autoCats}
 	
 	\begin{definition}[Dual object]
@@ -794,10 +836,10 @@
 				A \otimes 1
 				\arrow[d, "\id \otimes \tau " ]
 				\\
-				(A^* \parr A) \otimes A^*
+				(A \otimes A^*) \parr A
 				\arrow[u, "\gamma \parr \id " ]
 				&
-				A^* \parr (A \otimes A^*)
+				A \otimes (A^* \parr A)
 				\arrow[l, "\partial_L " ]
 			\end{tikzcd}
 		\end{center}
@@ -811,7 +853,7 @@
 	
 	\begin{lemma}
 		\label{lemma: isoLinDisCat}
-		{ }
+		
 		\begin{enumerate}
 			\item In an LDC: if 
 			$A^* \dashV A $ and $A' \dashV A $, 
@@ -824,11 +866,11 @@
 		\end{enumerate}
 	\end{lemma}
 	
-	\todo[inline]{proof }
+%	\todo[inline]{proof }
 	
-	\begin{proof}
+%	\begin{proof}
 		
-	\end{proof}
+%	\end{proof}
 	
 	%(BCS: "Feedback for linearly distributive categories: traces and fixpoints)
 	%comment..............................................................................................................................
@@ -877,44 +919,13 @@
 
 %__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	
-	\section{LinLog Preliminaries}
-	
-	\subsection{Intuition}
-	\label{sec: intuition}
-	
-	%................................
-	\todo[inline, color=green!50]{feels kinda rambling... combine intuition with syntax definition below}
-	%comment..............................................................................
-	
-	Classical (and intuitionistic) logic deals with the propagation of stable truth values. If one has a true sentence $A$ and an an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. However, real-life implications are often causal and modify their premises. They cannot therefore be iterated arbitrarily. For example if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
-	
-	While such dealings with resources can of course be modeled in classical logic, it is easier done in the resource-sensitive \emph{linear logic}, first described by Girard in 1987 \cite{girard87}. 
-	
-	Here, we have two conjunctions simultaneously $\otimes$ ("times" or "tensor") and $\with$ ("with"), which describe the availability of resources:
-	
-	Suppose $C$ is the ownership of a cookie and it costs also 1\euro\ (i.e. we have $A\multimap C$). Then $B \otimes C$ states that one owns both a chocolate bar and a cookie. The implication $A \multimap B \otimes C$ is not possible, as it would mean that you are buying both, cookie and chocolate bar at the same time, for just 1\euro\ total. However, from $A \multimap B$ and $A\multimap C$ we get $A \otimes A \multimap B \otimes C$, i.e. the process of buying both for 2\euro.
-	
-	On the other hand, $B \with C$ states that one has a choice between either $B$ or $C$ (imagine a token). From the implications $A\multimap B$ and $A\multimap C$ we get the implication $A \multimap B \with C$, i.e. the process of buying a token to be exchanged for a chocolate bar or a cookie at a later time (with the choice lying with oneself). While this may  seem like a disjunction, both implications $B\with C \multimap B$ and $B \with C \multimap C$ (exchanging the token for either product) are provable from $B \with C$, although not simultaneously. 
-	
-	Dually, we have two disjunctions $\parr$ ("par") and $\oplus$ ("plus"):
-	
-	Suppose now that $B$ and $C$ are the ownership of a figurine of Pikachu or Mew respectively. Then $B \oplus C$ may be the ownership of a Kinder Egg containing either figurine. This means when buying that egg ($A \multimap B \oplus C$) we do not know which one we will get. 
-	
-	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(\cdot)^\bot$): Under the interpretation of ownership the linear negation is no interpreted as the absence of ownership but as negative ownership, i.e. debt. That means the negation of owning 1\euro, $A$, is owing someone 1\euro, $A^\bot$. With the par operator we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
-	\todo[inline]{(explicit interpretation?! shared pool between people containing Pika and Mew -> you have to get rid of one to use the other?)}
-	%Interpretation von par...............................................................................................................................
-	
-	In order to regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ ("of course" or "bang") and $\wn$ ("why not"). The bang operator informs us that there is an infinite amount of a resource: The statement $\oc A$ translates into the ownership of an amount of money that is large enough for us to ignore resource sensitivity. Imagine for example a billionaire buying a Pokemon figurine instead of a social media site: His amount of money will not be noticeably smaller after buying the figurine. We can informally say $\oc A = (1 \with A) \otimes (1 \with A) \otimes \cdots $ and therefore view classical and intuitionistic logic as some sort of limit of linear logic, just as classical mechanics is a limit of quantum mechanics and the theory of relativity. 
-	
-	%......................................................
-	\todo[inline]{interpretation of ?wn and constants.}
-	%comment........................................................................................................................................
+	\section{Linear Logic Preliminaries}
 	
 	
 	%=============================================================================================================================
 	\subsection{Syntax}
-	\urgentnote[inline]{Quellen, Quellen, Quellen!!!}
-	\todo[inline]{main source: IntroLinLog}
+%	\urgentnote[inline]{Quellen, Quellen, Quellen!!!}
+%	\todo[inline]{main source: IntroLinLog}
 	%comments..............................................................................................
 	
 	
@@ -1102,8 +1113,9 @@
 			\BinaryInfC{$A  , B \vdash C , D$}
 			\DisplayProof
 		\end{center}
+		
+		\phantom{blabla}
 	\end{proof}
-	\formatnote[]{proofsymbol :/ }
 	
 	\paragraph{Additives}
 	The calculus rules for the \emph{additive} conjunction $\with$ and disjunction $\oplus$ ("plus") are as follows:
@@ -1582,7 +1594,6 @@
 		Induction on $h(\tau_1) + h(\tau_2)$. The immediate subproofs of $\tau_i$ are denoted by $\pi_j$.
 		We perform transformations case by case:
 		
-		\todo[inline]{give transformations names?}
 		
 		\begin{itemize}
 			\item If one of the the subproofs is an axiom, we just take the remaining one, resulting in a proof with lower degree:
@@ -2265,7 +2276,8 @@
 			
 		\end{itemize}
 		
-		\formatnote[]{proofsymbol} testing for proofsymbol
+		\phantom{bla}
+%		\formatnote[]{proofsymbol} testing for proofsymbol
 	\end{proof}	
 	
 	
@@ -2314,15 +2326,13 @@
 	
 	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	
-	\section{CatSem of LinLog}
+	\section{Categorical Semantics of Linear Logic}
 	%Cats as LinLog semantics
 	
 	
 	
-	\subsection{Proof invariants}
-	
-	\todo[inline]{text}
-	
+%	\subsection{Proof invariants}
+		
 	\begin{definition}[$\eta$-expansion]
 		We call the following proof transformations \emph{$\eta$-expansions}: 
 		\begin{tabularx}{\textwidth}{x c x}
@@ -2523,6 +2533,7 @@
 	We will now define proof invariants as outlined by Melliès \cite{mellies}.
 	
 	\begin{definition}[Proof invariant]
+		\label{def: invariant}
 		Let $\pi$ be a proof tree ending in a sequent of the form $A \vdash B$, i.e. with a single formula on either side of the turnstile. We call any function
 		\begin{align*}
 			\pi \mapsto [\pi]
@@ -3306,11 +3317,62 @@
 	
 	\begin{proof}
 		The distributors $\partial_L$ and $\partial_R$ are given by:
-		\urgentnote[inline]{write $\partial$ proofs and maybe show coherence.}
+		
+		\begin{center}
+			\AxiomC{\strut}
+			\UnaryInfC{$A \vdash A$}
+%			
+			\AxiomC{\strut}
+			\UnaryInfC{$B \vdash B$}
+%			
+			\AxiomC{\strut}
+			\UnaryInfC{$C \vdash C $}
+%			
+			\RightLabel{$ \parr_L$}
+			\BinaryInfC{$B \parr C \vdash B, C $}
+%			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A , B \parr C \vdash A \otimes B, C $}
+%			
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$ A \otimes (B \parr C ) \vdash A \otimes B , C$}
+			\RightLabel{$\parr_R $}
+			\UnaryInfC{$ A \otimes (B \parr C ) \vdash (A \otimes B ) \parr C $}
+			\DisplayProof
+%			
+			\quad
+			and
+			\quad
+%			
+			\AxiomC{\strut}
+			\UnaryInfC{$A \vdash A$}
+			%			
+			\AxiomC{\strut}
+			\UnaryInfC{$B \vdash B$}
+			%
+			\RightLabel{$ \parr_L$}
+			\BinaryInfC{$A \parr B \vdash A, B $}
+%						
+			\AxiomC{\strut}
+			\UnaryInfC{$C \vdash C $}
+%			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A \parr B , C \vdash A, B \otimes C $}
+%			
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$ (A \parr B) \parr C \vdash A , B \otimes C$}
+			\RightLabel{$\parr_R $}
+			\UnaryInfC{$ (A \parr B) \parr C  \vdash A \parr (B \otimes C) $}
+			\DisplayProof
+		\end{center}
+		
+		Coherence and naturality are shown the same way as for the associator and unitors above.
 	\end{proof}
 	
 	
-	\todo[inline]{talk about poly-category}
+	\begin{remark}
+		As noted in Def. \ref{def: invariant}, we have been only dealing with sequents of the form $A \vdash B $. For arbitrary sequents of the form $\Gamma \vdash \Delta $ with $\Gamma = A_1, ... , A_n $ and $\Delta = B_1, ..., B_m $, a natural model are two-tensor-poly-categories as defined by Cockett and Seely \cite{cockett&seely97}. These are (2-categorically) equivalent to linearly distributive categories by identifying $\Gamma$ with $\bigoplus\Gamma = A_1 \oplus \cdots \oplus A_n $ and $\Delta$ with $\bigparr \Delta = B_1 \parr \cdots \parr B_m $ \cite[Theorem 2.1]{cockett&seely97}.
+	\end{remark}
 	
 	
 	
@@ -3329,11 +3391,11 @@
 	
 	
 	
-	\todo[inline]{add refs}
-	
+	%\todo[inline]{add refs}
+	%comment..............................................................................
 	\printbibliography
 	
-	\newpage
-	\listoftodos
+%	\newpage
+%	\listoftodos
 	
 \end{document}
