@@ -188,6 +188,14 @@
 	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	\section{Categorical Preliminaries}
 	
+	In order to model linear logic with certain categories, we require a short introduction into category theory. 
+	We will first define the fundamental concepts such as \emph{categories}, \emph{functors} and \emph{natural} \emph{transformations}. 
+	Using these, we then introduce \emph{monoidal} \emph{categories}, categories with a tensor product, which form the foundation for any categorical model of linear logic. 
+	As we ultimately want to model multiplicative linear logic, we arrive at the definition of \emph{linearly} \emph{distributive} \emph{categories}, first introduced by Cocket and Seely \cite{cockett&seely97} as \emph{weakly} \emph{distributive} \emph{categories}. 
+	Finally, we will take a quick look at \emph{*-autonomous} \emph{categories}, which form a model of multiplicative linear logic with linear negation \notimportantnote{", and their relation to LDCs"}.
+	
+	\todo[inline]{Einleitung geht besser}
+	
 	\subsection{Categories}
 	\label{sec: catSec}
 	%Tensorcats?
@@ -196,19 +204,24 @@
 		\label{def: cat}
 		A Category $\category{C}$ consists of the following data: 
 		\begin{itemize}
-			\item A class $\Obj(\category{C})$ of \emph{objects}.
-			\item For every pair of objects $A, B \in \Obj(\category{C})$ there is a class $\Hom(A, B)$ of \emph{morphisms} $f: A \rightarrow B$ from $A$ to $B$. We denote the class of all morphisms of $\category{C}$ with $\Morph{(\category{C}X)}$
-			\item Morphisms \emph{compose}: For $f \in \Hom(A, B)$ and $g \in \Hom(B, C)$ there is a morphism $g \circ  f \in \Hom(A, C)$. 
-			That composition is associative: 
-			\begin{align*}
-				h \circ (g \circ f) = (h \circ g) \circ f
-			\end{align*}
-			We will write $gf$ for $g\circ f$ when appropriate.
-			\item For every object $A$ there is an \emph{identity morphism} $\id_A \in \Hom(A, A)$:
-			\begin{align*}
-				f \circ \id_A = f, \quad \id_B \circ f = f
-			\end{align*}
-			for $f \in \Hom(A, B)$
+			\item 
+				A class $\Obj(\category{C})$ of \emph{objects}.
+			\item 
+				For every pair of objects $A, B \in \Obj(\category{C})$ there is a class $\Hom(A, B)$ of \emph{morphisms} $f: A \rightarrow B$ from $A$ to $B$. 
+				We denote the class of all morphisms of $\category{C}$ with $\Morph{(\category{C})}$
+			\item 
+				Morphisms \emph{compose}: For $f \in \Hom(A, B)$ and $g \in \Hom(B, C)$ there is a morphism $g \circ  f \in \Hom(A, C)$. 
+				That composition is associative: 
+				\begin{align*}
+					h \circ (g \circ f) = (h \circ g) \circ f
+				\end{align*}
+				We will write $gf$ for $g\circ f$ when appropriate.
+			\item 
+				For every object $A$ there is an \emph{identity morphism} $\id_A \in \Hom(A, A)$:
+				\begin{align*}
+					f \circ \id_A = f, \quad \id_B \circ f = f
+				\end{align*}
+				for $f \in \Hom(A, B)$
 		\end{itemize}
 		If the hom-classes are sets, we call the category \emph{locally small}. If the object class is a set, we call the category \emph{small}. Otherwise, we call the category \emph{large}.
 		
@@ -220,6 +233,7 @@
 		\end{itemize}
 	\end{definition}
 	
+	We are often interested in the relationship between categories and how their structures can be translated into one another. Functors serve this purpose:
 	
 	\begin{definition}[Functor]
 		\label{def: functor}
@@ -235,10 +249,11 @@
 		We will drop the parentheses when appropriate.
 	\end{definition}
 	
+	\todo[inline]{Übergangssatz}
 	
 	\begin{definition}[Natural transformation]
 		\label{def: natTrans}
-		A \emph{natural transformation} $\tau: F \rightarrow G $ between two functors $\functor{F}, \functor{G}: \category{C} \rightarrow \category{D} $ is family of morphisms in $\category{D}$:
+		A \emph{natural transformation} $\tau: \functor{F} \rightarrow \functor{G} $ between two functors $\functor{F}, \functor{G}: \category{C} \rightarrow \category{D} $ is family of morphisms in $\category{D}$:
 		\begin{align*}
 			\tau = \{ \tau_A : \functor{F}A \rightarrow \functor{G}A \,| A \in \Obj(\category{C})\}
 		\end{align*}
@@ -261,7 +276,10 @@
 		\end{center}
 		
 		If $\tau_A$ is an isomorphism for all $A \in \Obj(\category{C}) $, we call $\tau$ a \emph{natural} \emph{isomorphism}.
-		We will often represent a natural transformation by a single one of its members and also drop the index when appropriate.
+		We will often represent a natural transformation by a single one of its members and also drop the index when appropriate, i.e. denoting 
+		$\tau: \functor{F} \rightarrow \functor{G} $ 
+		by 
+		$\tau : \functor{F}A \rightarrow \functor{G}A $ .
 	\end{definition}
 	
 	
@@ -339,11 +357,16 @@
 		\label{def: monoCat}
 		A \emph{monoidal category} $(\category{C}, \otimes, \Unit, \alpha, \lambda, \rho)$ is a category $\category{C}$ with the following additional data:
 		\begin{itemize}
-			\item a functor $\otimes : \category{C} \times \category{C} \rightarrow \category{C} $, called \emph{monoidal} or \emph{tensor product};
-			\item an object $\Unit \in  \Obj(\category{C})$, called \emph{unit object};
-			\item a natural isomorphism $\alpha: A \otimes (B \otimes C ) \rightarrow (A \otimes B) \otimes C$, called \emph{associator};
-			\item a natural isomorphism $\lambda: \Unit \otimes A \rightarrow A$, called left unitor;
-			\item a natural isomorphism $\rho: A \otimes \Unit \rightarrow A$, called right unitor;
+			\item 
+				a functor $\otimes : \category{C} \times \category{C} \rightarrow \category{C} $, called \emph{monoidal} or \emph{tensor product};
+			\item 
+				an object $\Unit \in  \Obj(\category{C})$, called \emph{unit object};
+			\item 
+				a natural isomorphism $\alpha: A \otimes (B \otimes C ) \rightarrow (A \otimes B) \otimes C$, called \emph{associator};
+			\item 
+				a natural isomorphism $\lambda: \Unit \otimes A \rightarrow A$, called left unitor;
+			\item 
+				a natural isomorphism $\rho: A \otimes \Unit \rightarrow A$, called right unitor;
 		\end{itemize}
 		such that the following diagrams commute:
 		\begin{itemize}
@@ -394,45 +417,48 @@
 		\end{align*}
 		satisfying the following conditions:
 		\begin{itemize}
-			\item the hexagon law:
-			\begin{center}
-				\begin{tikzcd}
-					A \otimes (B \otimes C)
-					\arrow[d, "\id \otimes s_{B, C}"]
-					\arrow[r, "\alpha " ]
-					&
-					(A \otimes B) \otimes C
-					\arrow[r, "s_{A\otimes B, C} "]
-					&
-					C \otimes (A \otimes B)
-					\arrow[d, "\alpha" ]
-					\\
-					A \otimes (C \otimes B)
-					\arrow[r, "\alpha"' ]
-					&
-					(A \otimes C) \otimes B 
-					\arrow[r, "s_{A, C} \otimes B"' ]
-					&
-					(C \otimes A) \otimes B
-				\end{tikzcd}
-			\end{center}
-			\item the inverse law: $s_{A, B}^{-1} = s_{B, A} $
-			\item the unit law: $\lambda = \rho s$
-			\begin{center}
-				\begin{tikzcd}
-					\Unit \otimes A 
-					\arrow[rr, "s_{\Unit, A} "]
-					\arrow[rd, "\lambda "' ]
-					&
-					&
-					A \otimes \Unit
-					\arrow[ld, "\rho" ]
-					\\
-					&
-					A
-					&
-				\end{tikzcd}
-			\end{center}
+			\item 
+				the hexagon law:
+				\begin{center}
+					\begin{tikzcd}
+						A \otimes (B \otimes C)
+						\arrow[d, "\id \otimes s_{B, C}"]
+						\arrow[r, "\alpha " ]
+						&
+						(A \otimes B) \otimes C
+						\arrow[r, "s_{A\otimes B, C} "]
+						&
+						C \otimes (A \otimes B)
+						\arrow[d, "\alpha" ]
+						\\
+						A \otimes (C \otimes B)
+						\arrow[r, "\alpha"' ]
+						&
+						(A \otimes C) \otimes B 
+						\arrow[r, "s_{A, C} \otimes B"' ]
+						&
+						(C \otimes A) \otimes B
+					\end{tikzcd}
+				\end{center}
+			\item 
+				the inverse law: $s_{A, B}^{-1} = s_{B, A} $
+			\item 
+				the unit law: $\lambda = \rho s$
+				\begin{center}
+					\begin{tikzcd}
+						\Unit \otimes A 
+						\arrow[rr, "s_{\Unit, A} "]
+						\arrow[rd, "\lambda "' ]
+						&
+						&
+						A \otimes \Unit
+						\arrow[ld, "\rho" ]
+						\\
+						&
+						A
+						&
+					\end{tikzcd}
+				\end{center}
 		\end{itemize}
 		%............................................................................................
 		%\notimportantnote[inline]{Diagramme verschönern}
@@ -581,12 +607,12 @@
 
 	
 %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
-	\subsection{Linearly distributive category}
+	\subsection{Linearly distributive categories }
 	\label{sec: linDisCats}
 	%LDCs
 	%*-auto. Cats
 	
-	\begin{definition}[Linearly distributive category]
+	\begin{definition}[Linearly distributive category \cite{srinavsan-thesis}]
 		\label{def: linDisCat}
 		A \emph{linearly} \emph{distributive} \emph{category} $(\category{C}, \otimes, 1, \parr, \bot)$ is a category $\category{C}$ consisting of:
 		\begin{itemize}
@@ -601,197 +627,200 @@
 		\end{itemize}
 		satisfying the following coherence conditions:
 		\begin{itemize}
-			\item coherence between the distributors and unitors:
-			\begin{center}
-				\begin{tikzcd}
-					1 \otimes (A \parr B)
-					\arrow[rr, "\partial_L " ]
-					\arrow[rd, "\lambda_\otimes "' ]
-					&
-					&
-					(1 \otimes A) \parr B
-					\arrow[ld, "\lambda_\otimes \parr \id " ]
-					\\
-					&
-					A \parr B
-					&
-				\end{tikzcd}
-				\begin{tikzcd}
-					(A \parr B) \otimes 1
-					\arrow[rr, "\partial_R " ]
-					\arrow[rd, " \rho_\otimes "' ]
-					&
-					&
-					A \parr (B \otimes 1)
-					\arrow[ld, "\id \otimes \rho_\otimes " ]
-					\\
-					&
-					A \parr B
-					&
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					A \otimes (B \parr \bot ) 
-					\arrow[rr, "\partial_L " ]
-					\arrow[dr, "\id \otimes \rho_\parr "' ]
-					&
-					&
-					(A \otimes B) \parr \bot
-					\arrow[dl, "\rho_\parr " ]
-					\\
-					&
-					A\otimes B
-					&
-				\end{tikzcd}
-				\begin{tikzcd}
-					(\bot \parr A) \otimes B
-					\arrow[rr, "\partial_R " ]
-					\arrow[dr, "\lambda_\parr \otimes \id "' ]
-					&
-					&
-					\bot \parr (A \otimes B)
-					\arrow[dl, "\lambda_\parr " ]
-					\\
-					&
-					A \otimes B
-					&
-				\end{tikzcd}
-			\end{center}
-%			\formatnote{Diagramme besser alignen}
-			%comment.............................................................................................................
-			\item coherence between distributors and associators:
-			\begin{center}
-				\begin{tikzcd}
-					&
-					(A \otimes B) \otimes (C \parr D)
-					\arrow[rd, "\partial_L " ]
-					\arrow[ld, "\alpha_\otimes " ]
-					&
-					\\
-					A \otimes (B \otimes (C \parr D))
-					\arrow[d, "\id \otimes \partial_L " ]
+			\item 
+				coherence between the distributors and unitors:
+				\begin{center}
+					\begin{tikzcd}
+						1 \otimes (A \parr B)
+						\arrow[rr, "\partial_L " ]
+						\arrow[rd, "\lambda_\otimes "' ]
+						&
+						&
+						(1 \otimes A) \parr B
+						\arrow[ld, "\lambda_\otimes \parr \id " ]
+						\\
+						&
+						A \parr B
+						&
+					\end{tikzcd}
+					\begin{tikzcd}
+						(A \parr B) \otimes 1
+						\arrow[rr, "\partial_R " ]
+						\arrow[rd, " \rho_\otimes "' ]
+						&
+						&
+						A \parr (B \otimes 1)
+						\arrow[ld, "\id \otimes \rho_\otimes " ]
+						\\
+						&
+						A \parr B
+						&
+					\end{tikzcd}
 					
-					&
-					&
-					((A \otimes B) \otimes C) \parr D
-					\arrow[d, "\alpha_\otimes \parr \id " ]
-					\\
-					A \otimes ((B \otimes C) \parr D)
-					\arrow[rr, "\partial_L " ]
-					&
-					&
-					(A \otimes (B \otimes C)) \parr D
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					A \otimes (B \parr (C \parr D))
-					\arrow[ld, "\id \otimes \alpha_\parr " ]
-					\arrow[rd, "\partial_L " ]
-					&
-					\\
-					A \otimes ((B \parr C) \parr D)
-					\arrow[d, "\partial_L " ]
-					&
-					&
-					(A \otimes B) \parr (C \parr D)
-					\arrow[d, "\alpha_\parr " ]
-					\\
-					(A \otimes (B \parr C)) \parr D
-					\arrow[rr, "\partial_L \parr \id " ]
-					&
-					&
-					((A \otimes B) \parr C) \parr D    \end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					(A \parr B) \otimes (C \otimes D)
-					\arrow[ld, "\alpha_\otimes " ]
-					\arrow[rd, "\partial_R " ]
-					&
-					\\
-					((A \parr B) \otimes C) \otimes D
-					\arrow[d, "\partial_R \otimes \id " ]
-					&
-					&
-					A \parr (B \otimes (C \otimes D))
-					\arrow[d, "\id \parr \alpha_\otimes " ]
-					\\
-					(A \parr (B \otimes C)) \otimes D
-					\arrow[rr, "\partial_R " ]
-					&
-					&
-					A \parr ((B \otimes C) \otimes D)
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					((A \parr B) \parr C) \otimes D
-					\arrow[ld, "\alpha_\parr \otimes \id " ]
-					\arrow[rd, "\partial_R " ]
-					&
-					\\
-					(A \parr (B \parr C)) \otimes D
-					\arrow[d, "\partial_R " ]
-					&
-					&
-					(A \parr B) \parr (C \otimes D)
-					\arrow[d, "\alpha_\parr " ]
-					\\
-					A \parr ((B \parr C) \otimes D)
-					\arrow[rr, "\id \parr \partial_R " ]
-					&
-					&
-					A \parr (B \parr (C \otimes D))
-				\end{tikzcd}
-			\end{center}
-			\item coherence between the distributors:
-			\begin{center}
-				\begin{tikzcd}
-					&
-					(A \parr B) \otimes (C \parr D)
-					\arrow[rd, "\partial_L " ]
-					\arrow[ld, "\partial_R " ]
-					&
-					\\
-					((A \parr B) \otimes C) \parr D
-					\arrow[d, "\partial_R \parr \id " ]
-					&
-					&
-					A \parr (B \otimes (C \parr D))
-					\arrow[d, "\id \parr \partial_L " ]
-					\\
-					(A \parr (B \otimes C)) \parr D
-					&
-					&
-					A \parr ((B \otimes C) \parr D)
-					\arrow[ll, "\alpha_\parr " ]
-				\end{tikzcd}
+					\begin{tikzcd}
+						A \otimes (B \parr \bot ) 
+						\arrow[rr, "\partial_L " ]
+						\arrow[dr, "\id \otimes \rho_\parr "' ]
+						&
+						&
+						(A \otimes B) \parr \bot
+						\arrow[dl, "\rho_\parr " ]
+						\\
+						&
+						A\otimes B
+						&
+					\end{tikzcd}
+					\begin{tikzcd}
+						(\bot \parr A) \otimes B
+						\arrow[rr, "\partial_R " ]
+						\arrow[dr, "\lambda_\parr \otimes \id "' ]
+						&
+						&
+						\bot \parr (A \otimes B)
+						\arrow[dl, "\lambda_\parr " ]
+						\\
+						&
+						A \otimes B
+						&
+					\end{tikzcd}
+				\end{center}
+	%			\formatnote{Diagramme besser alignen}
 				%comment.............................................................................................................
-				%\formatnote[inline]{obiges Diagramm rumdrehen}
-				%comment.......................................................................................................
-				%\formatnote[inline]{\textbackslash parr \textbackslash id sieht kacke aus...}    %..................................................................................
-				\begin{tikzcd}
-					&
-					A \otimes ((B \parr C) \otimes D)
-					\arrow[ld, "\alpha_\otimes " ]
-					\arrow[rd, "\id \otimes \partial_R " ]
-					&
-					\\
-					(A \otimes (B \parr C)) \otimes D
-					\arrow[d, "\partial_L \otimes \id " ]
-					&
-					&
-					A \otimes (B \parr (C \otimes D))
-					\arrow[d, "\partial_L " ]
-					\\
-					((A \otimes B) \parr C) \otimes D
-					\arrow[rr, "\partial_R " ]
-					&
-					&
-					(A \otimes B) \parr (C \otimes D)
-				\end{tikzcd}
-			\end{center}
+			\item 
+				coherence between distributors and associators:
+				\begin{center}
+					\begin{tikzcd}
+						&
+						(A \otimes B) \otimes (C \parr D)
+						\arrow[rd, "\partial_L " ]
+						\arrow[ld, "\alpha_\otimes " ]
+						&
+						\\
+						A \otimes (B \otimes (C \parr D))
+						\arrow[d, "\id \otimes \partial_L " ]
+						
+						&
+						&
+						((A \otimes B) \otimes C) \parr D
+						\arrow[d, "\alpha_\otimes \parr \id " ]
+						\\
+						A \otimes ((B \otimes C) \parr D)
+						\arrow[rr, "\partial_L " ]
+						&
+						&
+						(A \otimes (B \otimes C)) \parr D
+					\end{tikzcd}
+					
+					\begin{tikzcd}
+						&
+						A \otimes (B \parr (C \parr D))
+						\arrow[ld, "\id \otimes \alpha_\parr " ]
+						\arrow[rd, "\partial_L " ]
+						&
+						\\
+						A \otimes ((B \parr C) \parr D)
+						\arrow[d, "\partial_L " ]
+						&
+						&
+						(A \otimes B) \parr (C \parr D)
+						\arrow[d, "\alpha_\parr " ]
+						\\
+						(A \otimes (B \parr C)) \parr D
+						\arrow[rr, "\partial_L \parr \id " ]
+						&
+						&
+						((A \otimes B) \parr C) \parr D    \end{tikzcd}
+					
+					\begin{tikzcd}
+						&
+						(A \parr B) \otimes (C \otimes D)
+						\arrow[ld, "\alpha_\otimes " ]
+						\arrow[rd, "\partial_R " ]
+						&
+						\\
+						((A \parr B) \otimes C) \otimes D
+						\arrow[d, "\partial_R \otimes \id " ]
+						&
+						&
+						A \parr (B \otimes (C \otimes D))
+						\arrow[d, "\id \parr \alpha_\otimes " ]
+						\\
+						(A \parr (B \otimes C)) \otimes D
+						\arrow[rr, "\partial_R " ]
+						&
+						&
+						A \parr ((B \otimes C) \otimes D)
+					\end{tikzcd}
+					
+					\begin{tikzcd}
+						&
+						((A \parr B) \parr C) \otimes D
+						\arrow[ld, "\alpha_\parr \otimes \id " ]
+						\arrow[rd, "\partial_R " ]
+						&
+						\\
+						(A \parr (B \parr C)) \otimes D
+						\arrow[d, "\partial_R " ]
+						&
+						&
+						(A \parr B) \parr (C \otimes D)
+						\arrow[d, "\alpha_\parr " ]
+						\\
+						A \parr ((B \parr C) \otimes D)
+						\arrow[rr, "\id \parr \partial_R " ]
+						&
+						&
+						A \parr (B \parr (C \otimes D))
+					\end{tikzcd}
+				\end{center}
+			\item 
+				coherence between the distributors:
+				\begin{center}
+					\begin{tikzcd}
+						&
+						(A \parr B) \otimes (C \parr D)
+						\arrow[rd, "\partial_L " ]
+						\arrow[ld, "\partial_R " ]
+						&
+						\\
+						((A \parr B) \otimes C) \parr D
+						\arrow[d, "\partial_R \parr \id " ]
+						&
+						&
+						A \parr (B \otimes (C \parr D))
+						\arrow[d, "\id \parr \partial_L " ]
+						\\
+						(A \parr (B \otimes C)) \parr D
+						&
+						&
+						A \parr ((B \otimes C) \parr D)
+						\arrow[ll, "\alpha_\parr " ]
+					\end{tikzcd}
+					%comment.............................................................................................................
+					%\formatnote[inline]{obiges Diagramm rumdrehen}
+					%comment.......................................................................................................
+					%\formatnote[inline]{\textbackslash parr \textbackslash id sieht kacke aus...}    %..................................................................................
+					\begin{tikzcd}
+						&
+						A \otimes ((B \parr C) \otimes D)
+						\arrow[ld, "\alpha_\otimes " ]
+						\arrow[rd, "\id \otimes \partial_R " ]
+						&
+						\\
+						(A \otimes (B \parr C)) \otimes D
+						\arrow[d, "\partial_L \otimes \id " ]
+						&
+						&
+						A \otimes (B \parr (C \otimes D))
+						\arrow[d, "\partial_L " ]
+						\\
+						((A \otimes B) \parr C) \otimes D
+						\arrow[rr, "\partial_R " ]
+						&
+						&
+						(A \otimes B) \parr (C \otimes D)
+					\end{tikzcd}
+				\end{center}
 		\end{itemize}
 	\end{definition}
 	
@@ -987,7 +1016,7 @@
 	
 	
 	\paragraph{Structural rules}
-	We only have the exchange rule as a structural, missing the (general) weakening and contraction rules known from classical logic:
+	We only have the exchange rule as a structural rule, missing the (general) weakening and contraction rules known from classical logic:
 	
 	\begin{center}
 		\AxiomC{$\Gamma, A, B, \Gamma' \vdash \Delta$}
