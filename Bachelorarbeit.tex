@@ -192,7 +192,8 @@
 	We will first define the fundamental concepts such as \emph{categories}, \emph{functors} and \emph{natural} \emph{transformations}. 
 	Using these, we then introduce \emph{monoidal} \emph{categories}, categories with a tensor product, which form the foundation for any categorical model of linear logic. 
 	As we ultimately want to model multiplicative linear logic, we arrive at the definition of \emph{linearly} \emph{distributive} \emph{categories}, first introduced by Cocket and Seely \cite{cockett&seely97} as \emph{weakly} \emph{distributive} \emph{categories}. 
-	Finally, we will take a quick look at \emph{*-autonomous} \emph{categories}, which form a model of multiplicative linear logic with linear negation \notimportantnote{", and their relation to LDCs"}.
+	Finally, we will take a quick look at \emph{*-autonomous} \emph{categories}, which form a model of multiplicative linear logic with linear negation.
+	\notimportantnote{", and their relation to LDCs"}
 	
 	\todo[inline]{Einleitung geht besser}
 	
@@ -233,7 +234,7 @@
 		\end{itemize}
 	\end{definition}
 	
-	We are often interested in the relationship between categories and how their structures can be translated into one another. Functors serve this purpose:
+	We are often interested in the relation \notimportantnote{"relationship"?} between categories and how their structures can be translated into one another. Functors serve this purpose:
 	
 	\begin{definition}[Functor]
 		\label{def: functor}
@@ -249,7 +250,7 @@
 		We will drop the parentheses when appropriate.
 	\end{definition}
 	
-	\todo[inline]{Übergangssatz}
+	Just as we are interested in the relation between two categories, we can look into the relation between two functors. These can be described by natural transformations:
 	
 	\begin{definition}[Natural transformation]
 		\label{def: natTrans}
@@ -286,7 +287,7 @@
 	%\todo[inline]{definition: equivalence of categories}
 	%definition only relevant for Barr's definitions of *-auto. cats
 	%comment.....................................................................................................................................
-
+	
 	
 	\begin{definition}[Adjunction]
 		\label{def: adjunction}
@@ -909,7 +910,7 @@
 	
 	\begin{definition}[*-autonomous categories \cite{srinavsan-thesis}]
 		\label{def: autoCatSrinivasan}
-		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
+		An LDC $\category{C} $ in which for every object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
 	\end{definition}
 	
 	
@@ -951,6 +952,11 @@
 	\section{Linear Logic Preliminaries}
 	
 	
+	We now delve into propositional linear logic, first defining a Gentzen-style sequent calculus and proving some basic properties.
+	We then show that the Cut-rule is admissible in the multiplicative fragment of linear logic (MLL), meaning that any sequent that can be derived using the Cut-rule can be derived without it. 
+	For that proof we develop a cut-elimination procedure that will form the basis for the categorical model of MLL.
+	That procedure can be extended to general linear logic \cite{brauner} and form the basis for further categorical models \cite{mellies}.
+	
 	%=============================================================================================================================
 	\subsection{Syntax}
 %	\urgentnote[inline]{Quellen, Quellen, Quellen!!!}
@@ -958,8 +964,12 @@
 	%comments..............................................................................................
 	
 	
+	\begin{definition}[Atomic formula]
+		Let $\mathcal{A}$ be a countable set of symbols. We call its elements \emph{atoms} or \emph{atomic formulas}. 
+	\end{definition}
+	
 	\begin{definition}[Formula]
-		Formulas are defined inductively from atomic formulas and four constants $1$, $\bot$, $\top$ and $0$:
+		Formulas are defined inductively from atomic formulas and four constants $1$, $\bot$, $\top$ and $0$ with logical  connectives the following way:
 		\begin{itemize}
 			\item Every constant is a formula.
 			\item Every atomic formula is a formula.
@@ -969,13 +979,18 @@
 		%It is customary in linear logic to call $p^\bot$ atomic, for an atom $p$.
 	\end{definition}
 	
-	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite lists of formulas (e.g.: $\Gamma = p_1, ..., p_n$), and $A$, $B$ etc. formulas.
+	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite (possibly empty) lists of formulas (e.g.: $\Gamma = p_1, ..., p_n$), and $A$, $B$ etc. formulas.
 	
-	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. 
+	As we will later consider fragments of linear logic without negation, we shall define it with a two-sided calculus. 
 	
+	\begin{definition}[Sequent]
+		A \emph{sequent} consists of two Lists $\Gamma$ and $\Delta$ combined by a turnstile $\vdash$. 
+		Either $\Gamma$ or $\Delta$ may be empty. 
+		While that turnstile serve a purely syntactic function, we will later see that it is correctly interpreted as an implication.
+	\end{definition}
 	
 	\begin{definition}[Proof (tree)]
-		A \emph{proof tree} (often just \emph{proof}) is a rooted tree with sequents of the form $\Gamma \vdash \Delta $ as \emph{edges} and the following sequent rules as \emph{vertices} (except for the root).
+		A \emph{proof tree} (often just \emph{proof}) is a rooted tree with sequents as \emph{edges} and the sequent rules defined on the following pages as \emph{vertices} (except for the root).
 	\end{definition}
 	
 	\begin{remark}
@@ -1011,7 +1026,7 @@
 				\end{scope}
 			\end{tikzpicture}
 		\end{center}
-		with $\surd$ marking the root. As this is neither efficient nor pretty, we will stick with the traditional display.
+		with $\surd$ marking the root. $\id$, $\otimes_R$ and $\otimes_L$ are sequent rules defined below. As this form is neither efficient nor pretty, we will stick with the traditional display.
 	\end{remark}
 	
 	
@@ -1543,6 +1558,8 @@
 	We will prove this for the multiplicative fragment by simplifying the proof due to Braüner \cite[Appendix B]{brauner}. 
 	The transformations used in this construction will later form the basis for the categorical semantics of this fragment. 
 	Braüner's proof includes the exponentials which require additional care because of the contraction rule. 
+	As we are strictly restricted to multiplicative linear logic, the procedure becomes streamlined.
+	
 	The general strategy consists of either, moving a cut upwards in a proof or replacing it with cuts of simpler formulas. 
 	To do this, we need two definitions:
 	
@@ -1561,6 +1578,28 @@
 		\end{itemize} 
 		The degree of a cut is the degree of the cut formula. The cut formula is called \emph{principal formula}. The degree $\partial(\pi)$ of a proof $\pi$ is the supremum of the degrees of the cuts in the proof. 
 	\end{definition}
+	
+	\begin{remark}
+		We write 
+		\AxiomC{$\pi$}
+		\RightLabel{$r$}
+		\UnaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		and 
+		\AxiomC{$\pi$}
+		\AxiomC{$\pi'$}
+		\RightLabel{$r$}
+		\BinaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		for the proof that we get when applying the rule $r$ on the last sequent(s) of the proof(s) $\pi$ (and $\pi'$).
+		Furthermore, for the proof $\tau$ that ends in the sequent $\Gamma \vdash \Delta$, we write
+		\AxiomC{$\tau$} 
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		. 
+	\end{remark}
 	
 	\begin{definition}[Height]
 		The \emph{height} $h(\pi)$ of a proof $\pi$ is just its height as a rooted tree: 
@@ -1595,29 +1634,6 @@
 		with 
 		$\partial(\tau') < \partial(\tau) $.
 	\end{lemma}
-	
-	\begin{remark}
-		We write 
-		\AxiomC{$\pi$}
-		\RightLabel{$r$}
-		\UnaryInfC{$\Gamma \vdash \Delta$}
-		\DisplayProof
-		and 
-		\AxiomC{$\pi$}
-		\AxiomC{$\pi'$}
-		\RightLabel{$r$}
-		\BinaryInfC{$\Gamma \vdash \Delta$}
-		\DisplayProof
-		for the proof that we get when applying the rule $r$ on the last sequent(s) of the proof(s) $\pi$ (and $\pi'$).
-		Furthermore, for the proof $\tau$ that ends in the sequent $\Gamma \vdash \Delta$, we write
-		\AxiomC{$\tau$} 
-		\noLine
-		\UnaryInfC{$\svdots$}
-		\UnaryInfC{$\Gamma \vdash \Delta$}
-		\DisplayProof
-		. 
-	\end{remark}
-	
 	
 	\begin{proof}
 		Induction on $h(\tau_1) + h(\tau_2)$. The immediate subproofs of $\tau_i$ are denoted by $\pi_j$.
@@ -2348,7 +2364,8 @@
 	\end{theorem}
 	
 	\begin{proof}
-		Iteration of Lemma \ref{cut-reduction} on a non-cut-free proof.
+		For any proof $\pi$ with $\del(\pi)>0$ we can construct a proof $\pi'$ with $\del(\pi')=0$ by a finitely iterated application of Lemma \ref{cut-reduction}. 
+		For $\del(\pi)=0$ there is nothing to show.
 	\end{proof}
 	
 	
