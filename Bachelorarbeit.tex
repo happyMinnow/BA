@@ -299,7 +299,13 @@
 			\Hom_\category{D}(\functor{F}A, B) 
 			\cong \Hom_\category{C}(A, \functor{G}B)
 		\end{align*}
-		Equivalently, we call $\functor{F} $ the left adjoint of $\functor{G} $ if there are natural transformations 
+		
+		We write $F \dashv G$.
+	\end{definition}
+	
+	\begin{proposition}
+		The definition above is equivalent to the following: 
+		We call $\functor{F} $ the left adjoint of $\functor{G} $ if there are natural transformations 
 		\begin{align*}
 			\eta &: \id_\category{C} \rightarrow \functor{G} \circ \functor{F}
 			\\
@@ -350,9 +356,14 @@
 		\fi
 		%end of cut content.............................................................................................
 		
-		We write $F \dashv G$.
-	\end{definition}
+	\end{proposition}
 	
+	\begin{proof}
+		The proof can be found in most more extensive introductory works. \cite{brandenburg}
+	\end{proof}	
+		
+	
+	\todo[inline]{Zwischensatz}
 	
 	\begin{definition}[Monoidal category]
 		\label{def: monoCat}
@@ -615,7 +626,7 @@
 	
 	\begin{definition}[Linearly distributive category \cite{srinavsan-thesis}]
 		\label{def: linDisCat}
-		A \emph{linearly} \emph{distributive} \emph{category} $(\category{C}, \otimes, 1, \parr, \bot)$ is a category $\category{C}$ consisting of:
+		A \emph{linearly} \emph{distributive} \emph{category} (LDC) $(\category{C}, \otimes, 1, \parr, \bot)$ is a category $\category{C}$ consisting of:
 		\begin{itemize}
 			\item a monoidal category $(\category{C}, \otimes, 1, \alpha_\otimes, \lambda_\otimes, \rho_\otimes)$, with $\otimes$ called "tensor";
 			\item a monoidal  category $(\category{C}, \parr, \bot, \alpha_\parr, \lambda_\parr, \rho_\parr)$, with $\parr$ called "par";
@@ -823,8 +834,25 @@
 					\end{tikzcd}
 				\end{center}
 		\end{itemize}
+		
+		A \emph{symmetric} LDC is an LDC where both $\otimes$ and $\parr$ are symmetric with symmetry isomorphisms 
+		$s_\otimes : A \otimes B \rightarrow B \otimes A $ 
+		and 
+		$s_\parr : A \parr B \rightarrow B \parr A $ 
+		such that:
+		\begin{align*}
+			\partial_L = s_\parr (s_\otimes \parr \id) \partial_R (\id \otimes s_\parr) s_\otimes
+		\end{align*}
 	\end{definition}
 	
+	\begin{example}
+		\begin{itemize}
+			\item 
+				Any monoidal category is a linearly distributive category with $\parr = \otimes$
+			\item 
+				\todo[inline]{more examples \cite[Definition 2.2]{srinavsan-thesis}}
+		\end{itemize}
+	\end{example}
 	
 	\subsection{*-autonomous Categories}
 	\label{sec: autoCats}
