@@ -848,7 +848,7 @@
 	\begin{example}
 		\begin{itemize}
 			\item 
-				Any monoidal category is a linearly distributive category with $\parr = \otimes$
+				Trivially, any monoidal category is a linearly distributive category with $\parr = \otimes$.
 			\item 
 				\todo[inline]{more examples \cite[Definition 2.2]{srinavsan-thesis}}
 		\end{itemize}
@@ -983,7 +983,7 @@
 	We now delve into propositional linear logic, first defining a Gentzen-style sequent calculus and proving some basic properties.
 	We then show that the Cut-rule is admissible in the multiplicative fragment of linear logic (MLL), meaning that any sequent that can be derived using the Cut-rule can be derived without it. 
 	For that proof we develop a cut-elimination procedure that will form the basis for the categorical model of MLL.
-	That procedure can be extended to general linear logic \cite{brauner} and form the basis for further categorical models \cite{mellies}.
+	That procedure can be extended to general linear logic \cite{brauner} and form the basis for further categorical models of different fragments of linear logic \cite{mellies}.
 	
 	%=============================================================================================================================
 	\subsection{Syntax}
@@ -1012,9 +1012,11 @@
 	As we will later consider fragments of linear logic without negation, we shall define it with a two-sided calculus. 
 	
 	\begin{definition}[Sequent]
-		A \emph{sequent} consists of two Lists $\Gamma$ and $\Delta$ combined by a turnstile $\vdash$. 
+		A \emph{sequent} $\Gamma \vdash \Delta $ consists of two Lists $\Gamma$ and $\Delta$ combined by a turnstile $\vdash$. 
 		Either $\Gamma$ or $\Delta$ may be empty. 
-		While that turnstile serve a purely syntactic function, we will later see that it is correctly interpreted as an implication.
+		While that turnstile serves a purely syntactic purpose, we will later see that it is correctly interpreted as an implication.
+		
+		For a sequent $\Gamma_1, A, \Gamma_2 \vdash \Delta_1, B, \Delta_2$ we call $\Gamma_i$ and $\Delta_i$ \emph{context} (of $A$ (resp. $B$)).
 	\end{definition}
 	
 	\begin{definition}[Proof (tree)]
@@ -1054,7 +1056,7 @@
 				\end{scope}
 			\end{tikzpicture}
 		\end{center}
-		with $\surd$ marking the root. $\id$, $\otimes_R$ and $\otimes_L$ are sequent rules defined below. As this form is neither efficient nor pretty, we will stick with the traditional display.
+		with $\surd$ marking the root. The nodes $\id$, $\otimes_R$ and $\otimes_L$ are sequent rules defined below. As this form is neither efficient nor pretty, we will stick with the traditional display.
 	\end{remark}
 	
 	
