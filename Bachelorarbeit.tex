@@ -188,14 +188,13 @@
 	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	\section{Categorical Preliminaries}
 	
-	In order to model linear logic with certain categories, we require a short introduction into category theory. 
+	Before modeling linear logic with categories, we require a short introduction into category theory. 
 	We will first define the fundamental concepts such as \emph{categories}, \emph{functors} and \emph{natural} \emph{transformations}. 
 	Using these, we then introduce \emph{monoidal} \emph{categories}, categories with a tensor product, which form the foundation for any categorical model of linear logic. 
 	As we ultimately want to model multiplicative linear logic, we arrive at the definition of \emph{linearly} \emph{distributive} \emph{categories}, first introduced by Cocket and Seely \cite{cockett&seely97} as \emph{weakly} \emph{distributive} \emph{categories}. 
 	Finally, we will take a quick look at \emph{*-autonomous} \emph{categories}, which form a model of multiplicative linear logic with linear negation.
 	\notimportantnote{", and their relation to LDCs"}
 	
-	\todo[inline]{Einleitung geht besser}
 	
 	\subsection{Categories}
 	\label{sec: catSec}
@@ -234,7 +233,7 @@
 		\end{itemize}
 	\end{definition}
 	
-	We are often interested in the relation \notimportantnote{"relationship"?} between categories and how their structures can be translated into one another. Functors serve this purpose:
+	We are often interested in the relation between categories and how their structures can be translated into one another. Functors serve this purpose:
 	
 	\begin{definition}[Functor]
 		\label{def: functor}
@@ -625,7 +624,7 @@
 	%LDCs
 	%*-auto. Cats
 	
-	\todo[inline]{Erklärsatz}
+	We now arrive at the categories that we will use to later model multiplicative linear logic.
 	
 	\begin{definition}[Linearly distributive category \cite{srinavsan-thesis}]
 		\label{def: linDisCat}
@@ -849,9 +848,18 @@
 	\end{definition}
 	
 	\begin{example}
+		Some examples for LDCs \cite[Definition 2.2]{srinavsan-thesis}:
 		\begin{itemize}
 			\item 
-				Trivially, any monoidal category is a linearly distributive category with $\parr = \otimes$.
+				Trivially, any monoidal category is a linearly distributive category with $\parr = \otimes$ and $\partial = \alpha$.
+			\item 
+				A bounded distributive lattice $(L, \leq, \wedge, \top, \vee, \bot ) $ viewed as a category with its elements as objects and the pre-order forming the morphisms. The tensor is given by $\wedge$ with its unit being $\top$, the par is given by $\vee$ with its unit being $\bot$.
+				
+				The right distributor is given by the following relation:
+				\begin{align*}
+					(a \vee b) \wedge c = (a \wedge c) \vee (b \wedge c) \leq a \vee (b \wedge c)
+				\end{align*}
+				
 			\item 
 				\todo[inline]{more examples \cite[Definition 2.2]{srinavsan-thesis}}
 		\end{itemize}
@@ -860,7 +868,7 @@
 	\subsection{*-autonomous Categories}
 	\label{sec: autoCats}
 	
-	\todo[inline]{Erklärsatz}
+	While linearly distributive categories are enough to  model multiplicative linear logic, if we want to include negation in our model we need additional structures. Those structures are given by *-autonomous categories, which can defined in various ways.
 	
 	\begin{definition}[Dual object]
 		\label{def: dualObj}
@@ -920,12 +928,12 @@
 		\begin{enumerate}
 			\item In an LDC: if 
 			$A^* \dashV A $ and $A' \dashV A $, 
-			then $A^*$ and $A'$ are isomorphic. 
+			then $A^*$ and $A'$ are uniquely isomorphic. 
 			We will from now on only talk about \emph{the} dual object, when equality up to isomorphism is sufficient.
 			\item In a symmetric LDC: 
 			$(\tau, \gamma): A^* \dashV A 
 			\Longleftrightarrow 
-			(\tau s_{\parr}, s_{\otimes} \gamma): A \dashV A^* $ 
+			(s_{\parr} \tau , \gamma s_{\otimes} ): A \dashV A^* $ 
 		\end{enumerate}
 	\end{lemma}
 	
