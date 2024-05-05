@@ -25,6 +25,9 @@
 \usepackage{mathabx} %for dashV etc. conflict with amssymb
 \usepackage{eurosym}
 \usepackage{leftindex} 
+
+\usepackage{rotating}
+
 \usepackage{graphicx}
 \usepackage{pgf}
 \usepackage{tikz}
@@ -51,8 +54,8 @@
 \usepackage{tabularx}
 \newcolumntype{x}{>{\centering\arraybackslash}X}
 
-\usepackage{graphicx}
-\usepackage{tikz}
+
+\usepackage{relsize} %relative fontsize
 
 %scalable prooftrees:
 \newenvironment{scprooftree}[1]%
@@ -927,8 +930,10 @@
 		
 		\begin{enumerate}
 			\item In an LDC: if 
-			$A^* \dashV A $ and $A' \dashV A $, 
+			$(\tau^*, \gamma^*): A^* \dashV A $ and $(\tau', \gamma'): A' \dashV A $, 
 			then $A^*$ and $A'$ are uniquely isomorphic. 
+			The same is true for 
+			$A \dashV {^*A} $ and $A \dashV {'A} $.
 			We will from now on only talk about \emph{the} dual object, when equality up to isomorphism is sufficient.
 			\item In a symmetric LDC: 
 			$(\tau, \gamma): A^* \dashV A 
@@ -936,6 +941,194 @@
 			(s_{\parr} \tau , \gamma s_{\otimes} ): A \dashV A^* $ 
 		\end{enumerate}
 	\end{lemma}
+	
+	\begin{proof}
+		As the term "linearly adjoint" might suggest, it is straightforward, albeit a bit tedious, to translate a proof for the uniqueness of adjoint functors.
+		
+		\begin{center}
+			\begin{tikzcd}[cramped, sep=small, ]%every label/.append style = {font = \tiny}
+					&	
+					(A^* \parr A) \otimes A^* 	
+						\arrow[rr, equal ] 
+						\arrow[dr, "\id \otimes ( (\tau' \otimes \id ) \lambda_\otimes^{-1}) "' {font=\tiny, shift right}  ] % 	
+					&		
+					&	
+					(A^* \parr A) \otimes A		
+						\drar{\rho_\parr (\id \parr \gamma^*) \partial_R}
+					&	
+				\\
+					A^* 
+						\arrow[ur, "(\tau^* \otimes \id) \lambda_\otimes^{-1} " ]
+						\arrow[dr, "(\tau' \otimes \id) \lambda_\otimes^{-1} "' ] 
+					&		
+					&	
+					(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+						\urar
+						\arrow[dr, "\id \otimes (\rho_\parr (\id \otimes \gamma^*) \partial_R) "' font=\tiny ]
+					&		
+					&		
+					A^*
+				\\
+					&	
+					(A' \parr A) \otimes A^*	
+						\arrow[ur, "(\tau^* \otimes \id) \lambda_\otimes^{-1} "' ]
+						\arrow[dr, "\rho_\parr(\id \parr \gamma^*)\partial_R "' ]
+					&		
+					&		
+					(A^* \parr A) \otimes A'	
+						\arrow[ur, "\rho_\parr (\id \parr \gamma') \partial_R"']
+					&
+				\\
+					&
+					&
+					A'
+						\arrow[ur, "(\tau^* \otimes \id) \lambda_\otimes^{-1} "' ]
+					&
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		The upper path is the identity as per definition of $\gamma^*$ and $\tau^*$, while the lower path gives us our isomorphisms $A^* \xlongrightarrow{\sim} A'$ and $A' \xlongrightarrow{\sim} A^*$. 
+		Commutativity of the left square follows immediately from the naturality of $\lambda$ and the functoriality of $\otimes$:
+		
+		\begin{center}
+			\begin{tikzcd}
+					(A' \parr A) \otimes A^*	
+						\arrow[d, "\lambda_\otimes^{-1} " ]
+					&
+					1 \otimes A^*
+						\arrow[l, "\tau' \otimes \id "' ]
+						\arrow[r, "\tau^* \otimes \id " ]
+						\arrow[d, "\lambda_\otimes^{-1} "' shift right, shift right]
+						\arrow[d, "\id \otimes \lambda_\otimes^{-1} " shift left , shift left]
+					&
+					(A^* \parr A ) \otimes A^*
+						\arrow[d, " \id \otimes \lambda_\otimes^{-1} " ]
+				\\
+					1\otimes ((A' \parr A ) \otimes A^* )
+						\arrow[dr, "\tau^* \otimes \id "' ]
+					&
+					1 \otimes (1 \otimes A^*)
+						\arrow[d, "\tau^* \otimes (\tau' \otimes \id) " ]
+						\arrow[l, "\id \otimes (\tau' \otimes \id ) " ' ]
+						\arrow[r, " \tau^* \otimes \id " ]
+					&
+					(A^* \parr A ) \otimes (1 \otimes A)
+						\arrow[dl, "\id \otimes (\tau' \otimes \id) " ]
+				\\
+					&
+					(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		The middle square also commutes because of naturality:
+		
+		\begin{center}
+			\begin{tikzcd}
+					(A' \parr A) \otimes A^*
+						\arrow[r, "\lambda_\otimes^{-1} " ]
+						\arrow[d, "\partial_R "' ]
+					&
+					1 \otimes ((A' \parr A) \otimes A^*)
+						\arrow[r, "\tau^* \otimes \id " ]
+						\arrow[d, "\id \otimes \partial_R "' ]
+					&
+					(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+						\arrow[d, "\id \otimes \partial_R "' ]
+				\\
+					A' \parr (A \otimes A^* )
+						\arrow[r, "\lambda_\otimes^{-1} " ]
+						\arrow[d, "\id \parr \gamma^* "' ]
+					&
+					1 \otimes (A' \parr (A \otimes A^* ))
+						\arrow[r, "\tau^* \otimes \id " ]
+						\arrow[d, "\id \otimes (\id \parr \gamma^*) "' ]
+					&
+					(A^* \parr A) \otimes (A' \parr (A \otimes A^* ))
+						\arrow[d, "\id \otimes (\id \parr \gamma^*) "' ]
+				\\
+					A' \parr \bot
+						\arrow[r, "\lambda_\otimes^{-1} " ]
+						\arrow[d, "\rho_\parr "' ]
+					&
+					1 \otimes (A \parr \bot)
+						\arrow[r, "\tau^* \otimes \id " ]
+						\arrow[d, "\id \otimes \rho_\parr "' ]
+					&
+					(A^* \parr A ) \otimes (A' \parr \bot )
+						\arrow[d, "\id \otimes \rho_\parr "' ]
+				\\
+					A'
+						\arrow[r, "\lambda_\otimes^{-1} " ]
+					&
+					1 \otimes A'
+						\arrow[r, "\tau^* \otimes \id " ]
+					&
+					(A^* \parr A) \otimes A'
+			\end{tikzcd}
+		\end{center}
+		
+		For the right square we need the coherence conditions of our transformations:
+		
+		
+		
+		\begin{sideways}
+			\begin{tikzcd}[column sep=small, row sep=huge]				
+					&[-20pt]
+					(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+						\arrow[rr, "\alpha" ]
+						\arrow[dl, "\id \otimes \partial_R "' ]
+					&[-10pt]
+					&[-20pt]
+					((A^* \parr A) \otimes (A' \parr A)) \otimes A^*
+						\arrow[dr, "\partial_L \otimes \id " ]
+					&[-20pt]
+				\\
+					(A^* \parr A) \otimes (A' \parr (A \otimes A^*))	
+						\arrow[rr, "\partial_L " ]
+						\arrow[d, "\id \otimes (\id \parr \gamma^*) "' ]
+					&
+					&
+					((A^* \parr A) \otimes A') \parr (A\otimes A^*)	
+						\arrow[dl, "\id \parr \gamma^* "' ]
+						\arrow[d, "\partial_R \parr \id "']
+					&
+					&
+					(((A^* \parr A) \otimes A') \parr A) \otimes A^*
+						\arrow[ll, "\partial_R "' ]
+						\arrow[d, "(\partial_R \parr \id ) \otimes \id " ]
+				\\
+					(A^* \parr A) \otimes (A' \parr \bot )
+					&
+					((A^* \parr A) \otimes A') \parr \bot 
+					&
+					(A^* \parr (A \otimes A')) \parr (A\otimes A^*)				
+					&
+					&
+					((A^* \parr (A \otimes A')) \parr A)\otimes A^*		
+				\\
+					(A^* \parr A) \otimes A'
+					&
+					(A^* \parr (A \otimes A')) \parr \bot 	
+					&
+					(A^* \parr \bot) \parr \bot 				
+					&
+					(A^* \parr \bot) \parr (A\otimes A^*)	
+					&
+					((A^* \parr \bot) \parr A) \otimes A^*
+				\\
+					A^* \parr (A \otimes A')
+					&
+					A^* \parr \bot
+					&
+					A^* \parr (A \otimes A^*)
+					&
+					(A^* \parr A ) \otimes A^*
+			\end{tikzcd}
+		\end{sideways}
+		
+	\end{proof}
 	
 %	\todo[inline]{proof }
 	
@@ -951,7 +1144,7 @@
 	
 	\begin{definition}[*-autonomous categories \cite{srinavsan-thesis}]
 		\label{def: autoCatSrinivasan}
-		An LDC $\category{C} $ in which for every object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
+		An LDC $\category{C} $ in which for every object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV {^*A} $, is called \emph{*-autonomous category}.
 	\end{definition}
 	
 	
