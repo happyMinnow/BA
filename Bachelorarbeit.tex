@@ -1072,61 +1072,138 @@
 		For the right square we need the coherence conditions of our transformations:
 		
 		
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}[column sep=small, row sep=huge]				
+						&[-20pt]
+						(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+							\arrow[rr, "\alpha" ]
+							\arrow[dl, "\id \otimes \partial_R "' ]
+						&[-10pt]
+						&[-20pt]
+						((A^* \parr A) \otimes (A' \parr A)) \otimes A^*
+							\arrow[dr, "\partial_L \otimes \id " ]
+						&[-20pt]
+					\\
+						(A^* \parr A) \otimes (A' \parr (A \otimes A^*))	
+							\arrow[rr, "\partial_L " ]
+							\arrow[d, "\id \otimes (\id \parr \gamma^*) "' ]
+						&
+						&
+						((A^* \parr A) \otimes A') \parr (A\otimes A^*)	
+							\arrow[dl, "\id \parr \gamma^* "' ]
+							\arrow[d, "\partial_R \parr \id "']
+						&
+						&
+						(((A^* \parr A) \otimes A') \parr A) \otimes A^*
+							\arrow[ll, "\partial_R "' ]
+							\arrow[d, "(\partial_R \parr \id ) \otimes \id " ]
+					\\
+						(A^* \parr A) \otimes (A' \parr \bot )
+							\arrow[r, "\partial_L " ]
+							\arrow[d, "\id \otimes \rho_\parr "' ]
+						&
+						((A^* \parr A) \otimes A') \parr \bot 
+							\arrow[ld, "\rho_\parr "' ]
+							\arrow[d, "\partial_R \parr \id " ]
+						&
+						(A^* \parr (A \otimes A')) \parr (A\otimes A^*)	
+							\arrow[dl, "\id \parr \gamma^* " ]
+							\arrow[dr, "(\id \parr \gamma' ) \parr \id " ]			
+						&
+						&
+						((A^* \parr (A \otimes A')) \parr A)\otimes A^*	
+							\arrow[ll, "\partial_L "' ]
+							\arrow[d, " ((\id \parr \gamma' ) \parr \id ) \otimes \id "' ]
+					\\
+						(A^* \parr A) \otimes A'
+							\arrow[d, "\partial_R"]
+						&
+						(A^* \parr (A \otimes A')) \parr \bot
+							\arrow[r, "(\id \parr \gamma') \otimes \id "' ] 	
+							\arrow[dl, "\rho_\parr " ]
+						&
+						(A^* \parr \bot) \parr \bot 
+							\arrow[dl, "\rho_\parr " ]				
+						&
+						(A^* \parr \bot) \parr (A\otimes A^*)	
+							\arrow[l, "\id \otimes \gamma^* "' ]
+							\arrow[dl , "\rho_\parr \parr \id " ]
+						&
+						((A^* \parr \bot) \parr A) \otimes A^*
+							\arrow[l, " \partial_R " ]
+							\arrow[dl, " (\rho_\parr \parr \id) \otimes \id " ]
+					\\
+						A^* \parr (A \otimes A')
+							\arrow[r, "\id \parr \gamma' " ]
+						&
+						A^* \parr \bot
+						&
+						A^* \parr (A \otimes A^*)
+							\arrow[l, "\id \parr \gamma^* "']
+						&
+						(A^* \parr A ) \otimes A^*
+							\arrow[l, "\partial_R "' ]
+				\end{tikzcd}
+			\end{sideways}
+			
+		\end{center}
 		
-		\begin{sideways}
-			\begin{tikzcd}[column sep=small, row sep=huge]				
-					&[-20pt]
-					(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
-						\arrow[rr, "\alpha" ]
-						\arrow[dl, "\id \otimes \partial_R "' ]
-					&[-10pt]
-					&[-20pt]
+		Finally, the triangle gives us the identity we want:
+		
+		\begin{center}
+			\begin{tikzcd}
+					(A^* \parr A) \otimes ((A' \parr A ) \otimes A^* )
+						\arrow[d, "\alpha_\otimes "' ]
+					&
+					(A^* \parr A) \otimes (1 \otimes A^* )
+						\arrow[l, "\id \otimes (\tau' \otimes \id ) "']
+						\arrow[d, "\alpha "' ]
+					&
+					(A^* \parr A) \otimes A^*
+						\arrow[l, "\id \otimes \lambda_\otimes^{-1} "' ]
+						\arrow[dl, "\rho_\otimes^{-1} \otimes \id " ]
+						\arrow[dd, "(\id \parr \rho_\otimes^{-1}) \otimes \id " ]
+				\\
 					((A^* \parr A) \otimes (A' \parr A)) \otimes A^*
-						\arrow[dr, "\partial_L \otimes \id " ]
-					&[-20pt]
+						\arrow[d, "\partial_L \otimes \id "' ]
+						\arrow[dr, "\partial_R \otimes \id " ]
+					&
+					((A^* \parr A) \otimes 1) \otimes A^*
+						\arrow[l, "(\id \otimes \tau') \otimes \id  "']
+						\arrow[dr, "\partial_R \otimes \id " ]
+					&
 				\\
-					(A^* \parr A) \otimes (A' \parr (A \otimes A^*))	
-						\arrow[rr, "\partial_L " ]
-						\arrow[d, "\id \otimes (\id \parr \gamma^*) "' ]
-					&
-					&
-					((A^* \parr A) \otimes A') \parr (A\otimes A^*)	
-						\arrow[dl, "\id \parr \gamma^* "' ]
-						\arrow[d, "\partial_R \parr \id "']
-					&
-					&
 					(((A^* \parr A) \otimes A') \parr A) \otimes A^*
-						\arrow[ll, "\partial_R "' ]
-						\arrow[d, "(\partial_R \parr \id ) \otimes \id " ]
+						\arrow[d, "(\partial_R \parr \id) \otimes \id "' ]
+					&
+					(A^* \parr (A \otimes (A' \parr A))) \otimes A^*
+						\arrow[d, "(\id \parr \partial_L) \otimes \id "' ]
+					&
+					(A^* \parr (A \otimes 1)) \otimes A^*
+						\arrow[l, "(\id \parr (\id \otimes \tau')) \otimes \id " {yshift=-3pt} ]
 				\\
-					(A^* \parr A) \otimes (A' \parr \bot )
+					((A^* \parr (A \otimes A')) \parr A) \otimes A^*
+						\arrow[r, "\alpha_\parr \otimes \id "]
+						\arrow[d, "((\id \parr \gamma') \parr \id) \otimes \id "' ]
 					&
-					((A^* \parr A) \otimes A') \parr \bot 
+					(A^* \parr ((A \otimes A') \parr A)) \otimes A^*
+						\arrow[d, "(\id \parr (\gamma' \parr \id)) \otimes \id "' ]
 					&
-					(A^* \parr (A \otimes A')) \parr (A\otimes A^*)				
-					&
-					&
-					((A^* \parr (A \otimes A')) \parr A)\otimes A^*		
 				\\
-					(A^* \parr A) \otimes A'
-					&
-					(A^* \parr (A \otimes A')) \parr \bot 	
-					&
-					(A^* \parr \bot) \parr \bot 				
-					&
-					(A^* \parr \bot) \parr (A\otimes A^*)	
-					&
 					((A^* \parr \bot) \parr A) \otimes A^*
+						\arrow[r, "\alpha_\parr \otimes \id "]
+						\arrow[dr, " (\rho_\parr \parr \id) \otimes \id "' ]
+					&
+					(A^* \parr (\bot \parr A)) \otimes A^*
+						\arrow[d, "(\id \parr \rho_\parr) \otimes \id " ]
+					&
 				\\
-					A^* \parr (A \otimes A')
 					&
-					A^* \parr \bot
+					(A^* \parr A) \otimes A^*
 					&
-					A^* \parr (A \otimes A^*)
-					&
-					(A^* \parr A ) \otimes A^*
 			\end{tikzcd}
-		\end{sideways}
+		\end{center}
 		
 	\end{proof}
 	
@@ -3675,7 +3752,7 @@
 	
 	%\todo[inline]{add refs}
 	%comment..............................................................................
-	\printbibliography
+ 	\printbibliography
 	
 %	\newpage
 %1	\listoftodos
