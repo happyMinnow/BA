@@ -1120,7 +1120,7 @@
 							\arrow[d, "\partial_R"]
 						&
 						(A^* \parr (A \otimes A')) \parr \bot
-							\arrow[r, "(\id \parr \gamma') \otimes \id "' ] 	
+							\arrow[r, "(\id \parr \gamma') \parr \id "' ] 	
 							\arrow[dl, "\rho_\parr " ]
 						&
 						(A^* \parr \bot) \parr \bot 
@@ -1204,14 +1204,67 @@
 					&
 			\end{tikzcd}
 		\end{center}
+		The right strand of the above diagram is, again, the identity by definition of the dual object. 
 		
+		Putting it all together we gain the equation:
+		\begin{align*}
+			\rho_\parr (\id \parr \gamma') \partial_R (\tau^* \otimes \id) \lambda_\otimes^{-1}
+			\rho_\parr (\id \parr \gamma^*) \partial_R (\tau' \otimes \id) \lambda_\otimes^{-1}
+			=\id_{A^*}
+		\end{align*} 
+		
+		Switching $A^*$ for $A'$ and vice versa in our diagram gives us the analog equation for $\id_{A'}$. 
+		Thus, we have $A^* \cong A'$ with the unique isomorphism 
+		$d = \rho_\parr (\id \parr \gamma^*) \partial_R (\tau' \otimes \id) \lambda_\otimes^{-1}$. 
+		For the units and counits we obtain: 
+		$\tau' = (d \parr \id) \tau^*$ and $\gamma^* = \gamma' (\id \otimes d)$.
+		
+		An analog proof shows the same for right duals.
 	\end{proof}
 	
-%	\todo[inline]{proof }
+	With above lemma we motivated the name "linearly adjoint". We will now motivate the name "dual":
 	
-%	\begin{proof}
+	\begin{lemma}
+		\label{lemma: deMorgan}
+		For any objects $A$ and $B$ of an LDC: if $A^*$ and $B^*$ exist, the De-Morgan equations hold:
+		\begin{align*}
+			(A \otimes B)^* & \cong B^* \parr A^* 
+			\\
+			(A \parr B)^* & \cong B^* \otimes A^*
+		\end{align*}
+		The same is true for the right dual.
+	\end{lemma}
+	
+	\begin{proof}
+		The unit and counit for $A \otimes B$ are given by 
+		\begin{align*}
+			\tau_{A\otimes B} 
+			&= 
+			\alpha_\parr
+			\left(
+				\id \parr (\partial_R(\tau_A \otimes \id)\lambda_\otimes^{-1}) 
+			\right)
+			\tau_B : 
+			1 \longrightarrow (B^* \parr A^*) \parr (A \otimes B) 
+			\\
+			\gamma_{A \otimes B} 
+			&= 
+			\gamma_A 
+			\left(
+				\id \otimes 
+				\left(
+					\lambda_\parr (\gamma_B \parr \id) \partial_L 
+				\right)
+			\right)
+			\alpha_\otimes :
+			(A \otimes B) \otimes (B^* \parr A^*) \longrightarrow \bot
+		\end{align*}
 		
-%	\end{proof}
+		A straightforward diagram chase shows that these fulfill the conditions of Def. \ref{def: dualObj}.
+		\todo[inline]{include diagramm?}
+		
+		The same is done for the other equations.
+	\end{proof}
 	
 	%(BCS: "Feedback for linearly distributive categories: traces and fixpoints)
 	%comment..............................................................................................................................
@@ -1223,6 +1276,248 @@
 		\label{def: autoCatSrinivasan}
 		An LDC $\category{C} $ in which for every object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV {^*A} $, is called \emph{*-autonomous category}.
 	\end{definition}
+	
+	As mentioned, there are various ways to define *-autonomous categories:
+	
+	\begin{definition}[*-autonomous categories \cite{barr95}]
+		\label{def: autoCatBarrC}
+		A *-autonomous category is a monoidal category $\category{C} $ equipped with an equivalence $(-)^* : \category{C} \rightarrow \category{C}^\opp $ such that there is a natural isomorphism 
+		\begin{align*}
+			\Hom(A, B^*) \rightarrow \Hom(1, (B \parr A)^*)
+		\end{align*}
+	\end{definition}
+	
+	Barr lists three more ways to define *-autonomous categories, all equivalent to the definition above \cite{barr95}. We will now show that these are equivalent to Srinivasan's definition:
+	
+	\begin{theorem}
+		Definition \ref{def: autoCatSrinivasan} and definition \ref{def: autoCatBarrC} are equivalent.
+	\end{theorem}
+	
+	\begin{proof}
+		A sketch for the symmetric case was given by Cocket and Seely \cite[theorem 4.5]{cockett&seely97}. 
+		
+		Asume $\category{C}$ to be a category fulfilling definition \ref{def: autoCatSrinivasan}.
+		The object functions $(-)^*$ and ${^*(-)}$ can be extended to contravariant functors by the following maps:
+		
+		\begin{center}
+			$(A \xlongrightarrow{f} B) \mapsto f^* := \; $
+			\begin{tikzcd}
+					&
+					B^*
+						\arrow[d, "(\tau^*_A \otimes \id) \lambda_\otimes^{-1} " ]
+					&
+				\\
+					&
+					(A^* \parr A) \otimes B^*
+						\arrow[dr, "\partial_R " ]
+						\arrow[dl, "(\id \parr f) \otimes \id "]
+					&
+				\\
+					(A^* \parr B) \otimes B^*
+						\arrow[dr, "\partial_R " ]
+					&
+					&
+					A^* \parr (A \otimes B^*)
+						\arrow[dl, "\id \parr (f \otimes \id) " ]
+				\\
+					&
+					A^* \parr (B \otimes B^*)
+						\arrow[d, "\rho_\parr (\id \parr \gamma_B^*) " ]
+					&
+				\\
+					&
+					A^*
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		\begin{center}
+			$(A \xlongrightarrow{f} B) \mapsto {^*f} := \; $
+			\begin{tikzcd}
+					&
+					{^*B}
+					\arrow[d, "({^*}\tau_A \otimes \id) \rho_\otimes^{-1} " ]
+					&
+				\\
+					&
+					{^*B} \otimes (A \parr {^*A})
+					\arrow[dr, "\partial_R " ]
+					\arrow[dl, "\id \otimes (f \parr \id) "]
+					&
+				\\
+					{^*B} \otimes (B \parr {^*A})
+					\arrow[dr, "\partial_R " ]
+					&
+					&
+					({^*B} \otimes A) \parr {^*A}
+					\arrow[dl, "(\id \otimes f) \parr \id " ]
+				\\
+					&
+					A^* \parr (B \otimes B^*)
+					\arrow[d, "\lambda_\parr (\id \parr {^*\gamma_B}) " ]
+					&
+				\\
+					&
+					A^*
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		As the squares commute, the order of distributor and $f$ does not matter. For duality to be functor, it needs to preserve composition, leading to the following diagram in the case of $(-)^*$ (surprassing $\alpha_\otimes$ and some identities for better readability):
+		
+		\begin{center}
+			\begin{tikzcd}[sep=small]
+					&
+					(A^* \parr A) \otimes C^*
+						\arrow[rr, "(\id \parr f ) \otimes \id" ]
+						\arrow[dr, "\id \otimes (\tau^*_A \otimes \id) \lambda^{-1} "' ]
+					&
+					&
+					(A^* \parr B) \otimes C^*
+					\arrow[dr, "(\id \parr \gamma^*_C) \partial_R ((\id \parr g) \otimes \id) " ]
+					&
+				\\
+					C^*
+						\arrow[ur, "(\tau^*_A \otimes \id) \lambda^{-1} " ]
+						\arrow[dr, "(\tau^*_B \otimes \id) \lambda^{-1} "' ]
+					&
+					&
+					(A^* \parr A) \otimes (B^* \parr B) \otimes C^*
+						\arrow[ur, "\cdots\gamma^*_B\cdots \circ \cdots\partial_R\partial_L\cdots \circ \cdots f \cdots " {shift right}]
+						\arrow[dr, "(\id \parr \gamma^*_C) \partial_R ((\id \parr g) \otimes \id) "']
+					&
+					&
+					A^*
+				\\
+					&
+					(B^* \parr B) \otimes C^*
+						\arrow[ur, "(\tau^*_A \otimes \id) \lambda^{-1} " ]
+						\arrow[dr, "(\id \parr \gamma^*_C) \partial_R ((\id \parr g) \otimes \id) "' ]
+					&
+					&
+					(A^* \parr A) \otimes B^*
+						\arrow[ur, "(\id \parr \gamma^*_B) \partial_R ((\id \parr f) \otimes \id) "' ]
+					&
+				\\
+					&
+					&
+					B^*
+						\arrow[ur, "(\tau^*_A \otimes \id) \lambda^{-1} "']
+					&
+					&					
+			\end{tikzcd}
+		\end{center} 
+		
+		The path at the top of the diagram is $(gf)^*$ while the path at the bottom is $f^*g^*$. Commutativity of the diagram is shown the same way as in lemma \ref{lemma: isoLinDisCat}.
+		The preservation of identities follows directly from the properties of the (co-) units.
+		
+		Thus, $(-)^* : \category{C} \rightarrow \category{C}^\opp $ is a functor.
+		
+		By lemma \ref{lemma: isoLinDisCat} we know ${^*(A^*)} \cong ({^*A})^* \cong A$ and that the following diagram commutes:
+		
+		\begin{center}
+			${^*(f^*)} = $
+			\begin{tikzcd}
+					{^*(A^*)}
+						\arrow[r, "\sim "]
+						\arrow[d, "(\id \otimes {^*\tau}_{B^*}) \lambda_\otimes^{-1} "' ]
+					&
+					A
+						\arrow[d, "(\id \otimes \tau^*_B) \lambda_\otimes^{-1} " ]
+				\\
+					{^*(A^*)} \otimes (B^* \parr {^*(B^*))}
+						\arrow[r, "\sim "]
+						\arrow[d, "\id \otimes (f^* \parr \id) "' ]
+					&
+					A \otimes (B^* \parr B)
+						\arrow[d, "\id \otimes (f^* \parr \id) " ]
+				\\
+					{^*(A^*)} \otimes (A^* \parr {^*(B^*)})
+						\arrow[r, "\sim "]
+						\arrow[d, "\partial_L "' ]
+					&
+					A \otimes (A^* \parr B)
+						\arrow[d, "\partial_L "]
+				\\
+					({^*(A^*)} \otimes A^*) \parr {^*(B^*)}
+						\arrow[r, "\sim "]
+						\arrow[d, "\rho_\parr ({^*\gamma}_{A^*} \parr \id) "' ]
+					&
+					(A \otimes A^*) \parr B
+						\arrow[d, "\rho_\parr (\gamma^*_{A} \parr \id) " ]
+				\\
+					{^*(B^*)}
+					&
+					B
+					\arrow[l, "\sim "']
+			\end{tikzcd}
+		\end{center}
+		
+		Thus, in order to check ${^*(f^*)} \cong f $, it is sufficient to check if the following diagram commutes:
+		
+		\begin{center}
+			\begin{tikzcd}
+					A
+						\arrow[r, "f"]
+						\arrow[d, "(\id \otimes \tau^*_B) \rho_\otimes^{-1} "' ]
+					&
+					B
+						\arrow[d, "(\id \otimes \tau^*_B) \rho_\otimes^{-1} " ]
+				\\
+					A \otimes (B^* \parr B)
+						\arrow[d, "\partial_L "' ]
+						\arrow[r, "f \otimes \id " ]
+					&
+					B \otimes (B^* \parr B)
+						\arrow[d, "\partial_L " ]
+				\\
+					(A \otimes B^*) \parr B
+						\arrow[d, "(\id \otimes f^*) \parr \id "' ]
+						\arrow[r, "(f\otimes \id) \parr \id " ]
+					&
+					(B \otimes B^*) \parr B
+						\arrow[d, "\lambda_\parr (\gamma_B \parr \id) " ]
+				\\
+					(A \otimes A^*) \parr B
+						\arrow[r,  "\lambda_\parr (\gamma_A \parr \id) " ]
+					&
+					B
+			\end{tikzcd}
+		\end{center}
+		
+		\todo[inline]{big diagram for last square?}
+		
+		By lemma \ref{lemma: deMorgan} we know 
+		$\Hom(1, (B \otimes A)^* ) \cong \Hom(1, A^* \parr B^*) $. 
+		Therefore, it is enough to check whether 
+		$\Hom(A, B^*) \cong \Hom(1, A^* \parr B^*) $.
+		The isomorphism is given by the following map:
+		\begin{align*}
+			(f: A\rightarrow B^*) 
+			\mapsto 
+			\left((\id \otimes f)\tau^*_A : 1 \rightarrow A^* \parr B^* \right)
+		\end{align*} 
+		and its inverse:
+		\begin{align*}
+			(g: 1\rightarrow A^* \parr B^*) 
+			\mapsto 
+			\left(\lambda_\parr(\gamma_A^*  \parr \id) \partial_L (\id \otimes g) \rho_\otimes^{-1} : A \rightarrow B^* \right)
+		\end{align*}
+		Thus, we obtain a monoidal category with an equivalence 
+		$(-)^*:\category{C}^\opp \rightarrow \category{C} $ 
+		such that 
+		$\Hom(A, B^*) \cong \Hom(1, (B \otimes A)^* )$.
+		
+		%---------------------------------------------------------------------------------------------------------------
+		Now, assume we have a category $\category{C}$ fulfilling definition \ref{def: autoCatBarrC}. As $(-)^*$ is an equivalence, it has an inverse ${^*(-)}$.
+		We can therefore define a second tensor product: 
+		\begin{align*}
+			A \parr B := ({^*B} \otimes {^*A})^*
+		\end{align*} 
+		The associator and unitors are inherited from $\otimes$:
+		
+		\todo[inline]{continue}
+	\end{proof}
 	
 	
 	%cut content......................................................................................................................................................
@@ -1246,14 +1541,6 @@
 		A *-autonomous category is a biclosed category with a dualizing object.
 	\end{definition}
 	
-	
-	\begin{definition}[*-autonomous categories (Barr, C)]
-		\label{def: autoCatBarrC}
-		A *-autonomous category is a monoidal category $\category{C} $ equipped with an equivalence $(-)^* : \category{C} \rightarrow \category{C}^\opp $ such that there is a natural isomorphism 
-		\begin{align*}
-			\Hom(A, B^*) \rightarrow \Hom(1, (A \oplus B)^*)
-		\end{align*}
-	\end{definition}
 	\fi 
 
 
@@ -3730,7 +4017,7 @@
 	
 	
 	\begin{remark}
-		As noted in Def. \ref{def: invariant}, we have been only dealing with sequents of the form $A \vdash B $. For arbitrary sequents of the form $\Gamma \vdash \Delta $ with $\Gamma = A_1, ... , A_n $ and $\Delta = B_1, ..., B_m $, a natural model are two-tensor-poly-categories as defined by Cockett and Seely \cite{cockett&seely97}. These are (2-categorically) equivalent to linearly distributive categories by identifying $\Gamma$ with $\bigoplus\Gamma = A_1 \oplus \cdots \oplus A_n $ and $\Delta$ with $\bigparr \Delta = B_1 \parr \cdots \parr B_m $ \cite[Theorem 2.1]{cockett&seely97}.
+		As noted in Def. \ref{def: invariant}, we have been only dealing with sequents of the form $A \vdash B $. For arbitrary sequents of the form $\Gamma \vdash \Delta $ with $\Gamma = A_1, ... , A_n $ and $\Delta = B_1, ..., B_m $, a natural model are two-tensor-poly-categories as defined by Cockett and Seely \cite{cockett&seely97}. These are (2-categorically) equivalent to linearly distributive categories by identifying $\Gamma$ with $\bigotimes\Gamma = A_1 \otimes \cdots \otimes A_n $ and $\Delta$ with $\bigparr \Delta = B_1 \parr \cdots \parr B_m $ \cite[Theorem 2.1]{cockett&seely97}.
 	\end{remark}
 	
 	
