@@ -147,21 +147,36 @@
 	%\todo[inline, color=green!50]{feels kinda rambling... combine intuition with syntax definition below}
 	%comment..............................................................................
 	
-	Classical (and intuitionistic) logic deals with the propagation of stable truth values. If one has a true sentence $A$ and an an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. However, real-life implications are often causal and modify their premises. They cannot therefore be iterated arbitrarily. For example if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
+	Classical (and intuitionistic) logic deals with the propagation of stable truth values. 
+	If one has a true sentence $A$ and an an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. 
+	However, real-life implications are often causal and modify their premises. 
+	They cannot therefore be iterated arbitrarily. 
+	For example if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
 	
 	While such dealings with resources can of course be modeled in classical logic, it is easier in the resource-sensitive \emph{linear logic}, first described by Girard in 1987 \cite{girard87}. 
 	
 	Here, we have two conjunctions simultaneously $\otimes$ ("times" or "tensor") and $\with$ ("with"), which describe the availability of resources:
 	
-	Suppose $C$ is the ownership of a cookie and it costs also 1\euro\ (i.e. we have $A\multimap C$). Then $B \otimes C$ states that one owns both a chocolate bar and a cookie. The implication $A \multimap B \otimes C$ is not possible, as it would mean that you are buying both, cookie and chocolate bar at the same time, for just 1\euro\ total. However, from $A \multimap B$ and $A\multimap C$ we get $A \otimes A \multimap B \otimes C$, i.e. the process of buying both for 2\euro.
+	Suppose $C$ is the ownership of a cookie and it costs also 1\euro\ (i.e. we have $A\multimap C$).
+	Then $B \otimes C$ states that one owns both a chocolate bar and a cookie. 
+	The implication $A \multimap B \otimes C$ is not possible, as it would mean that you are buying both, cookie and chocolate bar at the same time, for just 1\euro\ total. 
+	However, from $A \multimap B$ and $A\multimap C$ we get $A \otimes A \multimap B \otimes C$, i.e. the process of buying both for 2\euro.
 	
-	On the other hand, $B \with C$ states that one has a choice between either $B$ or $C$ (imagine a token). From the implications $A\multimap B$ and $A\multimap C$ we get the implication $A \multimap B \with C$, i.e. the process of buying a token to be exchanged for a chocolate bar or a cookie at a later time (with the choice lying with oneself). While this may  seem like a disjunction, both implications $B\with C \multimap B$ and $B \with C \multimap C$ (exchanging the token for either product) are provable from $B \with C$, although not simultaneously. 
+	On the other hand, $B \with C$ states that one has a choice between either $B$ or $C$ (imagine a token). 
+	From the implications $A\multimap B$ and $A\multimap C$ we get the implication $A \multimap B \with C$, i.e. the process of buying a token to be exchanged for a chocolate bar or a cookie at a later time (with the choice lying with oneself). 
+	While this may  seem like a disjunction, both implications $B\with C \multimap B$ and $B \with C \multimap C$ (exchanging the token for either product) are provable from $B \with C$, although not simultaneously. 
 	
 	Dually, we have two disjunctions $\parr$ ("par") and $\oplus$ ("plus"):
 	
-	Suppose now that $B$ and $C$ are the ownership of a figurine of Pikachu or Mew respectively. Then $B \oplus C$ may be the ownership of a Kinder Egg containing either figurine. This means when buying that egg ($A \multimap B \oplus C$) we do not know which one we will get. 
+	Suppose now that $B$ and $C$ are the ownership of a figurine of Pikachu or Mew respectively. 
+	Then $B \oplus C$ may be the ownership of a Kinder Egg containing either figurine. 
+	This means when buying that egg ($A \multimap B \oplus C$) we do not know which one we will get. 
 	
-	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(\cdot)^\bot$): Under the interpretation of ownership the linear negation is no interpreted as the absence of ownership but as negative ownership, i.e. debt. That means the negation of owning 1\euro, $A$, is owing someone 1\euro, $A^\bot$. With the par operator we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
+	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(\cdot)^\bot$): 
+	Under the interpretation of ownership the linear negation is no interpreted as the absence of ownership but as negative ownership, i.e. debt. 
+	That means the negation of owning 1\euro, $A$, is owing someone 1\euro, $A^\bot$. 
+	With the par operator we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
+	It can be viewed as a shared pool of resources, where in order to access one resource, we have to get rid of the other.
 	%\todo[inline]{(explicit interpretation?! shared pool between people containing Pika and Mew -> you have to get rid of one to use the other?)}
 	%Interpretation von par...............................................................................................................................
 	%comment...............................................................................................................................................
@@ -190,6 +205,7 @@
 	
 	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	\section{Categorical Preliminaries}
+	\label{sec: catPrel}
 	
 	Before modeling linear logic with categories, we require a short introduction into category theory. 
 	We will first define the fundamental concepts such as \emph{categories}, \emph{functors} and \emph{natural} \emph{transformations}. 
@@ -199,7 +215,7 @@
 	
 	
 	\subsection{Categories}
-	\label{sec: catSec}
+	\label{subsec: catSec}
 	%Tensorcats?
 	
 	\begin{definition}[Category]
@@ -622,7 +638,7 @@
 	
 %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 	\subsection{Linearly distributive categories }
-	\label{sec: linDisCats}
+	\label{subsec: linDisCats}
 	%LDCs
 	%*-auto. Cats
 	
@@ -869,7 +885,7 @@
 	\end{example}
 	
 	\subsection{*-autonomous Categories}
-	\label{sec: autoCats}
+	\label{subsec: autoCats}
 	
 	While linearly distributive categories are enough to  model multiplicative linear logic, if we want to include negation in our model we need additional structures. Those structures are given by *-autonomous categories, which can defined in various ways.
 	
@@ -1261,7 +1277,18 @@
 		\end{align*}
 		
 		A straightforward diagram chase shows that these fulfill the conditions of Def. \ref{def: dualObj}.
-		\todo[inline]{include diagramm?}
+		
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}
+						A\otimes B
+						&
+						(A \otimes B) \otimes 1
+						&
+						(A \otimes B) \otimes (B^* \parr B)
+				\end{tikzcd}
+			\end{sideways}
+		\end{center}
 		
 		The same is done for the other equations.
 	\end{proof}
@@ -1290,6 +1317,7 @@
 	Barr lists three more ways to define *-autonomous categories, all equivalent to the definition above \cite{barr95}. We will now show that these are equivalent to Srinivasan's definition:
 	
 	\begin{theorem}
+		\label{equivalenceAutoCats}
 		Definition \ref{def: autoCatSrinivasan} and definition \ref{def: autoCatBarrC} are equivalent.
 	\end{theorem}
 	
@@ -4091,6 +4119,12 @@
 	\end{remark}
 	
 	
+	\begin{remark}
+		Modifying the cut elimination in such a way  that it can handle the negation rule, we obtain a symmetrical *-autonomous category as in definition \ref{def: autoCatSrinivasan}. 
+		On the other hand, when starting with intuitionistic multiplicative linear logic (cf. Melliès for a list of its calculus rules \cite[p43, fig. 2]{mellies}), which forms a (bi-)closed monoidal category, we obtain a *-autonomous category as defined by Barr \cite{barr95}\cite{barr91} when we adopt a classical negation, thus giving additional motivation to theorem \ref{equivalenceAutoCats}.
+		
+		Accordingly, when we give up on the exchange rule, we need to introduce a second negation ${^\bot A}$ corresponding to the non-symmetric defintions in section \ref{sec: catPrel}.
+	\end{remark}
 	
 	%---------------------------------------------------------------------------------------------------------------------
 	
