@@ -1279,7 +1279,7 @@
 		A straightforward diagram chase shows that these fulfill the conditions of Def. \ref{def: dualObj}.
 		
 		We focus on the second diagram of the definition, i.e. on creating the identity $\id_{A \otimes B} $. The process for $\id_{B^* \parr A^*} $ works the same way.
-		By  naturality of $\alpha_\otimes $ (and coherence with $\rho_\otimes$) we first obtain:
+		By  naturality of $\alpha_\otimes $ (and coherence with $\rho_\otimes$) we first obtain for the unit:
 		
 		\begin{center}
 			\begin{tikzcd}
@@ -1302,6 +1302,124 @@
 					(A \otimes B) \otimes \left( (B^* \parr A^*) \parr (A \otimes B) \right) 
 			\end{tikzcd}
 		\end{center}
+		
+		On the other hand, we obtain for the co-unit by naturality of $\partial_L$ (and coherence with $\alpha_\otimes$):
+		
+		\begin{center}
+			\begin{tikzcd}
+					A \otimes \left( B \otimes \left( (B^* \parr A^*) \parr (A \otimes B) \right) \right)
+						\arrow[rr, "\sim " , "\alpha_\otimes "' ]
+						\arrow[dd, "\id \otimes \partial_L "' ]
+					&&
+					(A \otimes B) \otimes \left( (B^* \parr A^*) \parr (A \otimes B) \right) 
+						\arrow[d, "\partial_L " ]
+				\\
+					&&
+					((A \otimes B) \otimes (B^* \parr A^*)) \parr (A \otimes B) 
+						\arrow[d, "\alpha_\otimes \parr \id " ]
+				\\
+					A \otimes \left( ( B \otimes (B^* \parr A^*) ) \parr (A \otimes B) \right)
+						\arrow[rr, "\partial_L " ]
+						\arrow[d, "\id \otimes (\partial_L \parr \id) "' ]
+					&&
+					(A \otimes ( B \otimes (B^* \parr A^*) )) \parr (A \otimes B) 
+						\arrow[d, "(\id \otimes \partial_L) \parr \id " ]
+				\\
+					A \otimes \left( ( (B \otimes B^*) \parr A^* ) \parr (A \otimes B) \right)
+						\arrow[rr, "\partial_L " ]
+						\arrow[d, "\id \otimes ((\lambda_\parr(\gamma_B \parr \id)) \parr \id) "' ]
+					&&
+					(A \otimes  ( (B \otimes B^*) \parr A^* )) \parr (A \otimes B) 
+						\arrow[d, "(\id \otimes( \lambda_\parr(\gamma_B \parr \id))) \parr \id " ]
+				\\
+					A \otimes (A^* \parr (A \otimes B))
+						\arrow[rr, " \partial_L " ]
+					&&
+					(A \otimes A^*) \parr (A \otimes B)
+						\arrow[d, "\gamma_A \parr \id " ]
+				\\
+					&&
+					\bot \parr (A \otimes B)
+						\arrow[d, "\lambda_\parr " ]
+				\\
+					&&
+					A \otimes B
+			\end{tikzcd}
+		\end{center}
+		
+		The path on the right is $\lambda_\parr (\gamma_{A \otimes B} \parr \id ) \partial_L $.
+		
+		Furthermore, using  the coherence between $\lambda$ and $\rho$ as well as $\partial_L$ and $\partial_R$, we can rewrite $\id_A \otimes \id_B $:
+		
+		\begin{center}
+			\begin{tikzcd}
+					&
+					A \otimes B 
+						\arrow[ld, "((\id \otimes \tau_A)\rho_\otimes^{-1}) \otimes \id "' ]
+						\arrow[rd, "\id \otimes ((\tau_A \otimes \id)\lambda_\otimes^{-1}) " ]
+					&
+				\\
+					(A \otimes (A^* \parr A) ) \otimes B
+						\arrow[rr, "\alpha_\otimes " ]
+						\arrow[dd, "\partial_L \otimes \id "' ]
+					&&
+					A \otimes  ((A^* \parr A) \otimes B)
+						\arrow[d, "\id \otimes \partial_R " ]
+				\\
+					&&
+					A \otimes (A^* \parr (A \otimes B))
+						\arrow[d, "\partial_L " ]
+				\\
+					((A \otimes A^*) \parr A) \otimes B
+						\arrow[rr, "\partial_R " ]
+						\arrow[dr, "(\lambda_\parr(\gamma_A \parr \id)) \otimes \id "' ]
+					&&
+					(A \otimes A^*) \parr (A \otimes B)
+						\arrow[dl, "\lambda_\parr (\gamma_A \parr \id) "]
+				\\
+					&
+					A \otimes B
+					&
+ 			\end{tikzcd}
+		\end{center}
+		
+		Thus, we can draw up the defining diagram (at times suppressing some identities):
+		
+		
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}[every label/.append style = {font = \tiny}, 
+					cells={nodes={font=\small}}]
+						A \otimes B
+							\arrow[d, equal ]
+							\arrow[r, "\id \otimes (\id \otimes \tau_B)\rho_\otimes^{-1} " ]
+						&
+						A \otimes (B \otimes (B^* \parr B) )
+							\arrow[r, "\id \otimes (\id \parr (\tau_A \otimes \id)\lambda_\otimes^{-1}) " {yshift=5pt} ]
+							\arrow[d, "\id \otimes \partial_L "' ]
+						&
+						A \otimes ( B \otimes ( B^* \parr ((A^* \parr A) \otimes B) ) )
+							\arrow[d, "\id \cdots \partial_R " ]
+							\arrow[ddl, "\id \otimes \partial_L "' ]
+					\\
+						A\otimes B
+							\arrow[d, "\id \otimes ( \tau_A \otimes \id ) \lambda_\otimes^{-1} "' ]
+						& 
+						A \otimes ( (B \otimes B^*) \parr B )
+							\arrow[l, "\id \otimes \lambda_\parr (\gamma_B \parr \id) " ]
+							\arrow[d, "\id \otimes (\id \parr (\tau_A \otimes \id)\lambda_\otimes^{-1}) "' ]
+						&
+						A \otimes ( B \otimes ( B^* \parr (A^* \parr (A \otimes B)) ) )
+					\\
+						A \otimes ( (A^*\parr A) \otimes B )
+						&
+						A \otimes ( (B \otimes B^*) \parr ((A^* \parr A) \otimes B) )
+							\arrow[l, "\id \otimes \lambda_\parr (\gamma_B \parr \id) " yshift=-5pt ]
+						&
+				\end{tikzcd}
+			\end{sideways}
+		\end{center}
+		\todo[inline]{finish diagram}
 		
 		The same is done for the other equations.
 	\end{proof}
