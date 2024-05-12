@@ -1220,7 +1220,7 @@
 					&
 			\end{tikzcd}
 		\end{center}
-		The right strand of the above diagram is, again, the identity by definition of the dual object. 
+		The right hand strand of the above diagram is, again, the identity by definition of the dual object. 
 		
 		Putting it all together we gain the equation:
 		\begin{align*}
@@ -1392,7 +1392,10 @@
 					cells={nodes={font=\small}}]
 						A \otimes B
 							\arrow[d, equal ]
-							\arrow[r, "\id \otimes (\id \otimes \tau_B)\rho_\otimes^{-1} " ]
+							\arrow[r, "\id \otimes \rho_\otimes^{-1} " ]
+						&
+						A \otimes (B \otimes 1)
+							\arrow[r, "\id \otimes (\id \otimes \tau_B) " {name=unitB} ]
 						&
 						A \otimes (B \otimes (B^* \parr B) )
 							\arrow[r, "\id \otimes (\id \parr (\tau_A \otimes \id)\lambda_\otimes^{-1}) " {yshift=5pt} ]
@@ -1400,26 +1403,128 @@
 						&
 						A \otimes ( B \otimes ( B^* \parr ((A^* \parr A) \otimes B) ) )
 							\arrow[d, "\id \cdots \partial_R " ]
-							\arrow[ddl, "\id \otimes \partial_L "' ]
+							\arrow[ddl, "\id \otimes \partial_L "' {yshift=5pt, xshift=4pt} ]
 					\\
 						A\otimes B
 							\arrow[d, "\id \otimes ( \tau_A \otimes \id ) \lambda_\otimes^{-1} "' ]
 						& 
-						A \otimes ( (B \otimes B^*) \parr B )
-							\arrow[l, "\id \otimes \lambda_\parr (\gamma_B \parr \id) " ]
+						A \otimes (\bot \parr B)
+							\arrow[l, "\id \otimes \lambda_\parr " ]
 							\arrow[d, "\id \otimes (\id \parr (\tau_A \otimes \id)\lambda_\otimes^{-1}) "' ]
 						&
+						A \otimes ( (B \otimes B^*) \parr B )
+							\arrow[l, "\id \otimes (\gamma_B \parr \id) " {name=counitB} ]
+							\arrow[d, "\id \otimes (\id \parr (\tau_A \otimes \id)\lambda_\otimes^{-1}) "' ]
+						\arrow[phantom, from=unitB, to=counitB, "\circlearrowleft: B^* \dashV B"]
+						&
 						A \otimes ( B \otimes ( B^* \parr (A^* \parr (A \otimes B)) ) )
+							\arrow[d, "\cdots \alpha_\parr "]
+							\arrow[ddl, "\id \otimes \partial_L "' {yshift=5pt, xshift=4pt, name=cohDisAss1} ]
 					\\
 						A \otimes ( (A^*\parr A) \otimes B )
+							\arrow[d, "\id \otimes \partial_R "' ]
+						&
+						A \otimes( \bot \parr ( (A^* \parr A) \otimes B ) )
+							\arrow[l, "\id \otimes \lambda_\parr " ]
+							\arrow[d, "\id \otimes (\id \parr \partial_R) "' ]
 						&
 						A \otimes ( (B \otimes B^*) \parr ((A^* \parr A) \otimes B) )
-							\arrow[l, "\id \otimes \lambda_\parr (\gamma_B \parr \id) " yshift=-5pt ]
+							\arrow[l, "\id \otimes (\gamma_B \parr \id) " yshift=-5pt ]
+							\arrow[d, "\id \otimes (\id \parr \partial_R) "' ]
 						&
+						A \otimes ( B \otimes (( B^* \parr A^*) \parr (A \otimes B) ) )
+							\arrow[d, "\id \otimes \partial_L " ]
+					\\
+						A \otimes (A^* \parr (A\otimes B))
+							\arrow[d, "\partial_L "' ]
+						&
+						A \otimes( \bot \parr ( A^* \parr (A \otimes B) ) )	
+							\arrow[l, "\id \otimes \lambda_\parr " ]
+							\arrow[d, "\id \otimes \alpha_\parr "' ]
+						&
+						A \otimes ( (B \otimes B^*) \parr (A^* \parr (A \otimes B) ) )
+							\arrow[l, "\id \otimes (\gamma_B \parr \id) " yshift=-5pt ]
+							\arrow[d, "\id \otimes \alpha_\parr "' ]
+						&
+						A \otimes ( (B \otimes (B^* \parr A^*)) \parr (A \otimes B))
+							\arrow[dl, "\id \otimes (\partial_L \parr \id) " {name=cohDisAss2} ]
+						\arrow[phantom, from=cohDisAss1, to=cohDisAss2, "\scriptstyle \circlearrowleft: { \text{ coh. } \partial_L \text{, } \alpha_\parr }" ]
+					\\
+						(A \otimes A^*) \parr (A \otimes B)
+							\arrow[d, "\gamma_A \parr \id "' ]
+						&
+						A \otimes ( ( \bot \parr A^* ) \parr (A \otimes B) )
+							\arrow[ul, "\id \otimes (\lambda_\parr \parr \id) " ]
+						&
+						A \otimes ( ( (B \otimes B^*) \parr A^* ) \parr (A \otimes B) )
+							\arrow[l, "\id \otimes ( (\gamma_B \parr \id) \parr \id ) " yshift=-5pt ]
+						&
+					\\
+						\bot \parr (A \otimes B)
+							\arrow[d, "\lambda_\parr "' ]
+						&
+						&&
+					\\
+						A \otimes B
+						&&&
 				\end{tikzcd}
 			\end{sideways}
 		\end{center}
-		\todo[inline]{finish diagram}
+		
+		The left hand path (in orientation of the writing) is the identity on 
+		$A \otimes B$, 
+		while the top-right-bottom path equals 
+		$\lambda_\parr (\gamma_{A \otimes B} \parr \id ) \partial_L (\id \otimes \tau_{A\otimes B}) \rho_\otimes^{-1} $,
+		as shown above,
+		thus proving that the following diagram commutes:
+		
+		\begin{center}
+			\begin{tikzcd}
+					A \otimes B
+					\arrow[r, equal, "\id " ]
+					&
+					A \otimes B
+					\arrow[d, "\rho_\otimes^{-1} " ]
+				\\
+					\bot \parr (A \otimes B)
+					\arrow[u, "\lambda_\parr " ]
+					&
+					(A \otimes B) \otimes 1
+					\arrow[d, "\id \otimes \tau_{A \otimes B} " ]
+				\\
+					( (A \otimes B) \otimes (B^* \parr A^*) ) \parr (A \otimes B)
+					\arrow[u, "\gamma_{A \otimes B} \parr \id " ]
+					&
+					(A \otimes B) \otimes ( (B^* \parr A^*) \parr (A \otimes B) )
+					\arrow[l, "\partial_L " ]
+			\end{tikzcd}
+		\end{center}
+		
+		A similar argument shows that the following diagram commutes:
+		
+		\begin{center}
+			\begin{tikzcd}
+					B^* \parr A^*
+					\arrow[r, equal, "\id" ]
+					&
+					B^* \parr A^*
+					\arrow[d, "\lambda_\otimes^{-1} " ]
+				\\
+					(B^* \parr A^*) \parr \bot
+					\arrow[u, "\rho_\parr " ]
+					&
+					1 \otimes (B^* \parr A^*)
+					\arrow[d, "\tau_{A \otimes B} \otimes \id " ]
+				\\
+					(B^* \parr A^*) \parr ( (A \otimes B) \otimes (B^* \parr A^*) )
+					\arrow[u, "\id \parr \gamma_{A \otimes B} " ]
+					&
+					( (B^* \parr A^*) \parr (A \otimes B) ) \otimes (B^* \parr A^*)
+					\arrow[l, "\partial_R " ]
+			\end{tikzcd}
+		\end{center}
+		
+		With definition \ref{def: dualObj} and lemma \ref{lemma: isoLinDisCat} it follows that $(A \otimes B)^* \cong B^* \parr A^* $.
 		
 		The same is done for the other equations.
 	\end{proof}
@@ -1432,7 +1537,7 @@
 	
 	\begin{definition}[*-autonomous categories \cite{srinavsan-thesis}]
 		\label{def: autoCatSrinivasan}
-		An LDC $\category{C} $ in which for every object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV {^*A} $, is called \emph{*-autonomous category}.
+		An LDC $\category{C} $ in which for every object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau_A, \gamma_A): A^* \dashV A $ and $({_A}\tau, {_A}\gamma): A \dashV {^*A} $, is called \emph{*-autonomous category}.
 	\end{definition}
 	
 	As mentioned, there are various ways to define *-autonomous categories:
@@ -1463,7 +1568,7 @@
 			\begin{tikzcd}
 					&
 					B^*
-						\arrow[d, "(\tau^*_A \otimes \id) \lambda_\otimes^{-1} " ]
+						\arrow[d, "(\tau_A \otimes \id) \lambda_\otimes^{-1} " ]
 					&
 				\\
 					&
@@ -1481,7 +1586,7 @@
 				\\
 					&
 					A^* \parr (B \otimes B^*)
-						\arrow[d, "\rho_\parr (\id \parr \gamma_B^*) " ]
+						\arrow[d, "\rho_\parr (\id \parr \gamma_B) " ]
 					&
 				\\
 					&
@@ -1495,25 +1600,25 @@
 			\begin{tikzcd}
 					&
 					{^*B}
-					\arrow[d, "({^*}\tau_A \otimes \id) \rho_\otimes^{-1} " ]
+					\arrow[d, "( \id \otimes {_A}\tau ) \rho_\otimes^{-1} " ]
 					&
 				\\
 					&
 					{^*B} \otimes (A \parr {^*A})
-					\arrow[dr, "\partial_R " ]
+					\arrow[dr, "\partial_L " ]
 					\arrow[dl, "\id \otimes (f \parr \id) "]
 					&
 				\\
 					{^*B} \otimes (B \parr {^*A})
-					\arrow[dr, "\partial_R " ]
+					\arrow[dr, "\partial_L " ]
 					&
 					&
 					({^*B} \otimes A) \parr {^*A}
 					\arrow[dl, "(\id \otimes f) \parr \id " ]
 				\\
 					&
-					A^* \parr (B \otimes B^*)
-					\arrow[d, "\lambda_\parr (\id \parr {^*\gamma_B}) " ]
+					({^*B} \otimes B) \parr A^*
+					\arrow[d, "\lambda_\parr ( {_B}\gamma \parr \id ) " ]
 					&
 				\\
 					&
@@ -1529,21 +1634,21 @@
 					&
 					(A^* \parr A) \otimes C^*
 						\arrow[rr, "(\id \parr f ) \otimes \id" ]
-						\arrow[dr, "\id \otimes (\tau^*_A \otimes \id) \lambda^{-1} "' ]
+						\arrow[dr, "\id \otimes (\tau_A \otimes \id) \lambda^{-1} "' ]
 					&
 					&
 					(A^* \parr B) \otimes C^*
-					\arrow[dr, "(\id \parr \gamma^*_C) \partial_R ((\id \parr g) \otimes \id) " ]
+					\arrow[dr, "(\id \parr \gamma_C) \partial_R ((\id \parr g) \otimes \id) " ]
 					&
 				\\
 					C^*
-						\arrow[ur, "(\tau^*_A \otimes \id) \lambda^{-1} " ]
-						\arrow[dr, "(\tau^*_B \otimes \id) \lambda^{-1} "' ]
+						\arrow[ur, "(\tau_A \otimes \id) \lambda^{-1} " ]
+						\arrow[dr, "(\tau_B \otimes \id) \lambda^{-1} "' ]
 					&
 					&
 					(A^* \parr A) \otimes (B^* \parr B) \otimes C^*
-						\arrow[ur, "\cdots\gamma^*_B\cdots \circ \cdots\partial_R\partial_L\cdots \circ \cdots f \cdots " {shift right}]
-						\arrow[dr, "(\id \parr \gamma^*_C) \partial_R ((\id \parr g) \otimes \id) "']
+						\arrow[ur, "\cdots\gamma_B\cdots \circ \cdots\partial_R\partial_L\cdots \circ \cdots f \cdots " {shift right}]
+						\arrow[dr, "(\id \parr \gamma_C) \partial_R ((\id \parr g) \otimes \id) "']
 					&
 					&
 					A^*
@@ -1551,24 +1656,24 @@
 					&
 					(B^* \parr B) \otimes C^*
 						\arrow[ur, "(\tau^*_A \otimes \id) \lambda^{-1} " ]
-						\arrow[dr, "(\id \parr \gamma^*_C) \partial_R ((\id \parr g) \otimes \id) "' ]
+						\arrow[dr, "(\id \parr \gamma_C) \partial_R ((\id \parr g) \otimes \id) "' ]
 					&
 					&
 					(A^* \parr A) \otimes B^*
-						\arrow[ur, "(\id \parr \gamma^*_B) \partial_R ((\id \parr f) \otimes \id) "' ]
+						\arrow[ur, "(\id \parr \gamma_B) \partial_R ((\id \parr f) \otimes \id) "' ]
 					&
 				\\
 					&
 					&
 					B^*
-						\arrow[ur, "(\tau^*_A \otimes \id) \lambda^{-1} "']
+						\arrow[ur, "(\tau_A \otimes \id) \lambda^{-1} "']
 					&
 					&					
 			\end{tikzcd}
 		\end{center} 
 		
 		The path at the top of the diagram is $(gf)^*$ while the path at the bottom is $f^*g^*$. Commutativity of the diagram is shown the same way as in lemma \ref{lemma: isoLinDisCat}.
-		The preservation of identities follows directly from the properties of the (co-) units.
+		The preservation of identities follows directly from the properties of the (co-)units.
 		
 		Thus, $(-)^* : \category{C} \rightarrow \category{C}^\opp $ is a functor.
 		
@@ -1579,10 +1684,10 @@
 			\begin{tikzcd}
 					{^*(A^*)}
 						\arrow[r, "\sim "]
-						\arrow[d, "(\id \otimes {^*\tau}_{B^*}) \lambda_\otimes^{-1} "' ]
+						\arrow[d, "(\id \otimes {_{B^*}}\tau) \lambda_\otimes^{-1} "' ]
 					&
 					A
-						\arrow[d, "(\id \otimes \tau^*_B) \lambda_\otimes^{-1} " ]
+						\arrow[d, "(\id \otimes \tau_B) \lambda_\otimes^{-1} " ]
 				\\
 					{^*(A^*)} \otimes (B^* \parr {^*(B^*))}
 						\arrow[r, "\sim "]
@@ -1600,10 +1705,10 @@
 				\\
 					({^*(A^*)} \otimes A^*) \parr {^*(B^*)}
 						\arrow[r, "\sim "]
-						\arrow[d, "\rho_\parr ({^*\gamma}_{A^*} \parr \id) "' ]
+						\arrow[d, "\rho_\parr ({_{A^*}}{\gamma} \parr \id) "' ]
 					&
 					(A \otimes A^*) \parr B
-						\arrow[d, "\rho_\parr (\gamma^*_{A} \parr \id) " ]
+						\arrow[d, "\rho_\parr (\gamma_{A} \parr \id) " ]
 				\\
 					{^*(B^*)}
 					&
@@ -1618,10 +1723,10 @@
 			\begin{tikzcd}
 					A
 						\arrow[r, "f"]
-						\arrow[d, "(\id \otimes \tau^*_B) \rho_\otimes^{-1} "' ]
+						\arrow[d, "(\id \otimes \tau_B) \rho_\otimes^{-1} "' ]
 					&
 					B
-						\arrow[d, "(\id \otimes \tau^*_B) \rho_\otimes^{-1} " ]
+						\arrow[d, "(\id \otimes \tau_B) \rho_\otimes^{-1} " ]
 				\\
 					A \otimes (B^* \parr B)
 						\arrow[d, "\partial_L "' ]
@@ -1644,7 +1749,95 @@
 			\end{tikzcd}
 		\end{center}
 		
-		\todo[inline]{big diagram for last square?}
+		The commutativity of the last square can be seen when zooming in:
+		
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}[]
+						(A \otimes B^*) \parr B
+							\arrow[d, "( \id \otimes (\tau_A \otimes \id)\lambda_\otimes^{-1} ) \parr \id "']
+							\arrow[dr, " \id \otimes ( (\tau_A \otimes \id)\rho_\otimes^{-1}  \parr \id ) "]
+						&&&
+					\\
+						( A \otimes ( (A^* \parr A) \otimes B ) ) \parr B
+							\arrow[r, "\alpha_\otimes \otimes \id " ]
+							\arrow[dd, "(\id \otimes \partial_R) \parr \id "' {name=cohDisAss1} ]
+						&
+						( ( A \otimes (A^* \parr A) ) \otimes B ) \parr B
+							\arrow[d, "(\partial_L \otimes \id) \parr \id " {name=cohDisAss2} ]
+						\arrow[phantom, from=cohDisAss1, to=cohDisAss2, "{ \scriptstyle \circlearrowleft: \text{ coh. } \partial_L, \partial_R }" {xshift=-10pt} ]
+						&&
+					\\
+						&
+						( ( (A \otimes A^*) \parr A ) \otimes B ) \parr B
+							\arrow[r, "\gamma_A \cdots " ]
+							\arrow[d, "\partial_R \parr \id " ]
+						&
+						( ( \bot \parr A ) ) \otimes B ) \parr B
+							\arrow[r, "\lambda_\parr \cdots "]
+							\arrow[d, "\partial_R \parr \id "]
+						&
+						(A \otimes B^*) \parr B
+							\arrow[dd, "(f \otimes \id) \parr \id " ]
+					\\
+						( A \otimes ( A^* \parr (A \otimes B) ) ) \parr B
+							\arrow[r, " \partial_L \parr \id " ]
+							\arrow[d, "( \id \otimes ( \id \parr (f \otimes \id) ) ) \parr \id "' ]
+						&
+						( (A \otimes A^*) \parr (A \otimes B^*) ) \parr B
+							\arrow[r, " (\gamma_A \parr \id) \otimes \id " ]
+							\arrow[d, "(\id \parr (f \otimes \id)) \parr \id "{name=funTen1} ]
+						&
+						( \bot \parr (A \otimes B^*) ) \parr B
+							\arrow[ur, "\lambda_\parr \parr \id "' ]
+							\arrow[d, "(\id \parr (f \otimes \id)) \parr \id "{name=funTen2} ]
+						\arrow[phantom, from=funTen2, to=funTen1, "\scriptstyle { \circlearrowleft: \text{ funct. } \otimes } " xshift=8pt ]
+						&
+					\\
+						( A \otimes ( A^* \parr (B \otimes B^*) ) ) \parr B
+							\arrow[r, "\partial_L \parr \id " ]
+							\arrow[d, "( \id \otimes ( \id \parr \gamma_B ) ) \parr \id "' ]
+						&
+						( (A \otimes A^*) \parr (B \otimes B^*) ) \parr B
+							\arrow[r, "(\gamma_A \parr \id) \parr \id " ]
+							\arrow[d, "(\id \parr \gamma_B) \parr \id " ]
+						&
+						( \bot \parr (B \otimes B^*) ) \parr B
+							\arrow[r, "\lambda_\parr \parr \id " ]
+							\arrow[d, "(\id \parr \gamma_B) \parr \id " ]
+						&
+						(B \otimes B^*) \parr B
+							\arrow[d, "\gamma_B \parr \id " ]
+					\\
+						( A \otimes  (A^* \parr \bot) ) \parr B
+							\arrow[r, "(\gamma_A \parr \id) \parr \id " ]
+							\arrow[dr, "(\id \otimes \lambda_\parr) \parr \id "' ]
+						&
+						( (A \otimes A^*) \parr \bot ) \parr B
+							\arrow[r, "(\gamma_A \parr \id) \parr \id " ]
+							\arrow[d, "\rho_\parr \parr \id " ]
+						&
+						(\bot \parr \bot) \parr B
+							\arrow[r, "\lambda_\parr \parr \id " ]
+							\arrow[d, "\rho_\parr \parr \id " {name=cohAssUni1} ]
+						&
+						\bot \parr B
+							\arrow[d, "\lambda_\parr " {name=cohAssUni2} ]
+						\arrow[phantom, from=cohAssUni1, to=cohAssUni2, "\scriptstyle \circlearrowleft: {\text{ coh. } \alpha \text{, } \lambda \text{, } \rho} " ]
+					\\
+						&
+						(A \otimes A^*) \parr B
+							\arrow[r, "\gamma_A \parr \id " ]
+						&
+						\bot \parr B
+							\arrow[r, "\lambda_\parr " ]
+						&
+						B
+				\end{tikzcd}
+			\end{sideways}
+		\end{center}
+		
+		The path on the left is $(\id \otimes f^*) \parr \id $ while the path at the top of the diagram is the identity on $A$ per definition of the dual object. With this, we see that ${^*}(f^*) \cong f$. The other direction, $({^*f})^*\cong f$, is shown similarly. That means $(-)^*$ is indeed an equivalence.  
 		
 		By lemma \ref{lemma: deMorgan} we know 
 		$\Hom(1, (B \otimes A)^* ) \cong \Hom(1, A^* \parr B^*) $. 
@@ -1654,13 +1847,13 @@
 		\begin{align*}
 			(f: A\rightarrow B^*) 
 			\mapsto 
-			\left((\id \otimes f)\tau^*_A : 1 \rightarrow A^* \parr B^* \right)
+			\left((\id \otimes f)\tau_A : 1 \rightarrow A^* \parr B^* \right)
 		\end{align*} 
 		and its inverse:
 		\begin{align*}
 			(g: 1\rightarrow A^* \parr B^*) 
 			\mapsto 
-			\left(\lambda_\parr(\gamma_A^*  \parr \id) \partial_L (\id \otimes g) \rho_\otimes^{-1} : A \rightarrow B^* \right)
+			\left(\lambda_\parr(\gamma_A  \parr \id) \partial_L (\id \otimes g) \rho_\otimes^{-1} : A \rightarrow B^* \right)
 		\end{align*}
 		Thus, we obtain a monoidal category with an equivalence 
 		$(-)^*:\category{C}^\opp \rightarrow \category{C} $ 
@@ -1668,11 +1861,14 @@
 		$\Hom(A, B^*) \cong \Hom(1, (B \otimes A)^* )$.
 		
 		%---------------------------------------------------------------------------------------------------------------
-		Now, assume we have a category $\category{C}$ fulfilling definition \ref{def: autoCatBarrC}. As $(-)^*$ is an equivalence, it has an inverse ${^*(-)}$.
+		Now, assume we have a category $\category{C}$ fulfilling definition \ref{def: autoCatBarrC}. As $(-)^*$ is an equivalence, it has an inverse ${^*(-)}$ and we can rewrite the hom-isomorphism as $\Hom(A, B) \cong \Hom( 1, ( {^*B} \otimes A )^* )$.
 		We can therefore define a second tensor product: 
 		\begin{align*}
 			A \parr B := ({^*B} \otimes {^*A})^*
 		\end{align*} 
+		
+		This gives us $\Hom(A, B) \cong \Hom(1, A^* \parr B) $.
+		
 		The unit is defined by $\bot := 1^*$. Using the equivalence, we obtain the following isomorphism:
 		
 		\begin{align*}
@@ -1680,6 +1876,8 @@
 			\\
 			&\Rightarrow \, \bot=1^* \cong {^*1}
 		\end{align*}
+		
+		Similarly, we obtain ${^*}(B^* \otimes A^*) \cong ({^*B} \otimes {^*A})^* = A\parr B $.
 		
 		The associator and unitors are inherited from $\otimes$:
 		
@@ -1742,6 +1940,18 @@
 		\end{center}
 		
 		Accordingly, they fulfill their respective coherence conditions.
+		
+		Candidates for the unit and co-unit of an object are the identities under the hom-isomorphism:
+		
+		\begin{center}
+			\begin{align*}
+				\Hom(A,A) &\cong \Hom(1, ({^*A} \otimes A)^*) = \Hom(1, A^* \parr A)\\
+				\id & \mapsto \tau_A\\
+				\Hom(A^*, A^*) &\cong \Hom(1, (A \otimes A^*)^*) \cong \Hom( A \otimes A^*, \bot) \\
+				\id & \mapsto \gamma_A
+			\end{align*}
+		\end{center}
+		
 		
 		What remains to be done is the construction of the distributors:
 		\todo[inline]{joa...}
@@ -4252,7 +4462,7 @@
 	
 	\begin{remark}
 		Modifying the cut elimination in such a way  that it can handle the negation rule, we obtain a symmetrical *-autonomous category as in definition \ref{def: autoCatSrinivasan}. 
-		On the other hand, when starting with intuitionistic multiplicative linear logic (cf. Melliès for a list of its calculus rules \cite[p43, fig. 2]{mellies}), which forms a (bi-)closed monoidal category, we obtain a *-autonomous category as defined by Barr \cite{barr95}\cite{barr91} when we adopt a classical negation, thus giving additional motivation to theorem \ref{equivalenceAutoCats}.
+		On the other hand, when starting with intuitionistic multiplicative linear logic (see Melliès for a short list of its calculus rules \cite[p43, fig. 2]{mellies}), which forms a (bi-)closed monoidal category, we obtain a *-autonomous category as defined by Barr \cite{barr95, barr91} when we adopt a classical negation, thus giving additional motivation to theorem \ref{equivalenceAutoCats}.
 		
 		Accordingly, when we give up on the exchange rule, we need to introduce a second negation ${^\bot A}$ corresponding to the non-symmetric defintions in section \ref{sec: catPrel}.
 	\end{remark}
