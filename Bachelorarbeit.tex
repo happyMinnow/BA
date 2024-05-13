@@ -148,7 +148,7 @@
 	%comment..............................................................................
 	
 	Classical (and intuitionistic) logic deals with the propagation of stable truth values. 
-	If one has a true sentence $A$ and an an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. 
+	If one has a true sentence $A$ and an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. 
 	However, real-life implications are often causal and modify their premises. 
 	They cannot therefore be iterated arbitrarily. 
 	For example if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
@@ -171,6 +171,7 @@
 	Suppose now that $B$ and $C$ are the ownership of a figurine of Pikachu or Mew respectively. 
 	Then $B \oplus C$ may be the ownership of a Kinder Egg containing either figurine. 
 	This means when buying that egg ($A \multimap B \oplus C$) we do not know which one we will get. 
+	It mirrors $\with$ except, that it is non-deterministic and therefore we cannot 
 	
 	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(-)^\bot$): 
 	Under the interpretation of ownership the linear negation is no interpreted as the absence of ownership but as negative ownership, i.e. debt. 
@@ -190,8 +191,9 @@
 	%\todo[inline]{interpretation of ?wn and constants.}
 	%comment........................................................................................................................................
 	
+	Linear logic has applications in various fields from linguistics to proof theory to quantum physics (as a quantum logic), all of which will be of no concern to us \cite{depaiva_et_al:DagSemRep.248, physicsApplication}.
 	
-	Various fragments of linear logic can be modeled by monoidal categories with additional structures. We will see this with the multiplicative fragment and linearly distributive categories.
+	Fragments of linear logic can be modeled by monoidal categories with various additional structures depending on the specific fragment. We will see this with multiplicative linear logic and linearly distributive categories, categories that have two tensor products linked with a "weak" distributive relation \cite{cockett&seely97}. We will start by laying the ground work in category theory in section \ref{sec: catPrel}, building toward the introduction of \emph{linearly} \emph{distributive} \emph{categories}. Section \ref{sec: LinLogPre} then presents a sequent calculus of linear logic. Finally, we will see in section \ref{sec: CatSem} how linearly distributive categories form a categorical semantic for multiplicative linear logic. 
 	
 %	\urgentnote[inline]{mono cat as model for various fragments}
 %	\urgentnote[inline]{applications}
@@ -208,7 +210,7 @@
 	\label{sec: catPrel}
 	
 	Before modeling linear logic with categories, we require a short introduction into category theory. 
-	We will first define the fundamental concepts such as \emph{categories}, \emph{functors} and \emph{natural} \emph{transformations}. 
+	We will first define fundamental concepts such as \emph{categories}, \emph{functors} and \emph{natural} \emph{transformations}. 
 	Using these, we then introduce \emph{monoidal} \emph{categories}, categories with a tensor product, which form the foundation for any categorical model of linear logic. 
 	As we ultimately want to model multiplicative linear logic, we arrive at the definition of \emph{linearly} \emph{distributive} \emph{categories}, first introduced by Cocket and Seely \cite{cockett&seely97} as \emph{weakly} \emph{distributive} \emph{categories}. 
 	Finally, we will take a quick look at \emph{*-autonomous} \emph{categories}, which form a model of multiplicative linear logic with linear negation, and their relation to LDCs.
@@ -1276,7 +1278,7 @@
 			(A \otimes B) \otimes (B^* \parr A^*) \longrightarrow \bot
 		\end{align*}
 		
-		A straightforward diagram chase shows that these fulfill the conditions of Def. \ref{def: dualObj}.
+		A straightforward diagram chase shows that these fulfill the conditions of definition \ref{def: dualObj}.
 		
 		We focus on the second diagram of the definition, i.e. on creating the identity $\id_{A \otimes B} $. The process for $\id_{B^* \parr A^*} $ works the same way.
 		By  naturality of $\alpha_\otimes $ (and coherence with $\rho_\otimes$) we first obtain for the unit:
@@ -1987,7 +1989,7 @@
 %__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	
 	\section{Linear Logic Preliminaries}
-	
+	\label{sec: LinLogPre}
 	
 	We now delve into propositional linear logic, first defining a Gentzen-style sequent calculus and proving some basic properties.
 	We then show that the Cut-rule is admissible in the multiplicative fragment of linear logic (MLL), meaning that any sequent that can be derived using the Cut-rule can be derived without it. 
@@ -2381,7 +2383,7 @@
 				& 
 				\bot^\bot \equiv 1 
 				\\
-				\top^\bot \equiv \quad 
+				\top^\bot \equiv 0 \quad 
 				& 
 				0^\bot \equiv \top
 			\end{align*}
@@ -3392,10 +3394,10 @@
 		with $\partial(\tau_1), \partial(\tau_2) < \partial(A)$. Note that $\Gamma = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$ and $\Delta = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$,
 %		\notimportantnote{just use commata instead of conc.?}
 		with $\Vert$ being the concatenation operator.
-		We then apply Lemma \ref{key-cases} to the proof tree.
+		We then apply lemma \ref{key-cases} to the proof tree.
 	\end{proof}
 	
-	With this we now obtain Gantzen's Hauptsatz:
+	With this we now obtain Gentzen's Hauptsatz:
 	
 	\begin{theorem}[Cut elimination]
 		\label{cut-elimination-theorem}
@@ -3403,7 +3405,7 @@
 	\end{theorem}
 	
 	\begin{proof}
-		For any proof $\pi$ with $\del(\pi)>0$ we can construct a proof $\pi'$ with $\del(\pi')=0$ by a finitely iterated application of Lemma \ref{cut-reduction}. 
+		For any proof $\pi$ with $\del(\pi)>0$ we can construct a proof $\pi'$ with $\del(\pi')=0$ by a finitely iterated application of lemma \ref{cut-reduction}. 
 		For $\del(\pi)=0$ there is nothing to show.
 	\end{proof}
 	
@@ -3413,6 +3415,7 @@
 	
 	\section{Categorical Semantics of Linear Logic}
 	%Cats as LinLog semantics
+	\label{sec: CatSem}
 	
 	
 	
@@ -3499,7 +3502,7 @@
 	\end{definition}
 	
 	\begin{definition}
-		From now on, when talking about "cut elimination procedure" or "modulo cut elimination", we mean the above mentioned transformations, the proof transformations from Lemma \ref{key-cases} as well as the following commuting cuts:
+		From now on, when talking about "cut elimination procedure" or "modulo cut elimination", we mean the above mentioned transformations, the proof transformations from lemma \ref{key-cases} as well as the following commuting cuts:
 			
 		\begin{tabularx}{\textwidth}{X c X}
 			\scalebox{.6}{
@@ -4456,7 +4459,7 @@
 	
 	
 	\begin{remark}
-		As noted in Def. \ref{def: invariant}, we have been only dealing with sequents of the form $A \vdash B $. For arbitrary sequents of the form $\Gamma \vdash \Delta $ with $\Gamma = A_1, ... , A_n $ and $\Delta = B_1, ..., B_m $, a natural model are two-tensor-poly-categories as defined by Cockett and Seely \cite{cockett&seely97}. These are (2-categorically) equivalent to linearly distributive categories by identifying $\Gamma$ with $\bigotimes\Gamma = A_1 \otimes \cdots \otimes A_n $ and $\Delta$ with $\bigparr \Delta = B_1 \parr \cdots \parr B_m $ \cite[Theorem 2.1]{cockett&seely97}.
+		As noted in definition \ref{def: invariant}, we have been only dealing with sequents of the form $A \vdash B $. For arbitrary sequents of the form $\Gamma \vdash \Delta $ with $\Gamma = A_1, ... , A_n $ and $\Delta = B_1, ..., B_m $, a natural model are two-tensor-poly-categories as defined by Cockett and Seely \cite{cockett&seely97}. These are (2-categorically) equivalent to linearly distributive categories by identifying $\Gamma$ with $\bigotimes\Gamma = A_1 \otimes \cdots \otimes A_n $ and $\Delta$ with $\bigparr \Delta = B_1 \parr \cdots \parr B_m $ \cite[Theorem 2.1]{cockett&seely97}.
 	\end{remark}
 	
 	
