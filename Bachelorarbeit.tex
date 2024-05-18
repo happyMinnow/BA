@@ -136,8 +136,47 @@
 %text starts 
 
 \begin{document}
-	\maketitle
+	\thispagestyle{empty}
 	
+	\begin{center}
+		{\large
+			JMU Würzburg\  \ \textbullet\ \ Faculty of Mathematics
+		}
+		\vfil
+		
+		{\bfseries\huge Categorical Semantics of Linear Logic\\}
+		
+		\vfil
+		\vspace{0.75cm}
+		
+		{\LARGE
+			Bachelor Thesis
+		}
+		\\
+		
+		\begin{figure}[h!]
+			\centering
+			\vspace*{0.75cm}
+			\includegraphics[width=0.6\textwidth]{unisiegel.png}
+			\vspace*{.75cm}
+		\end{figure}
+		
+		
+		by\\[\bigskipamount]
+		\textsc{Max Wiegand}\\[\bigskipamount]
+		\vspace{2cm}
+		Advisor:\\ \bigskip
+		Dr. Gregor Schaumann, Chair X
+	\end{center}
+	
+	\newpage\null\thispagestyle{empty}\newpage
+	
+	\tableofcontents
+	\newpage
+	%\cleardoublepage
+	
+	
+	%______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	\section{Introduction}
 	
 %	\subsection{Intuition}
@@ -155,7 +194,7 @@
 	
 	While such dealings with resources can of course be modeled in classical logic, it is easier in the resource-sensitive \emph{linear logic}, first described by Girard in 1987 \cite{girard87}. 
 	
-	Here, we have two conjunctions simultaneously $\otimes$ ("times" or "tensor") and $\with$ ("with"), which describe the availability of resources:
+	Here, we have two conjunctions simultaneously $\otimes$ (“times” or “tensor”) and $\with$ (“with”), which describe the availability of resources:
 	
 	Suppose $C$ is the ownership of a cookie and it costs also 1\euro\ (i.e. we have $A\multimap C$).
 	Then $B \otimes C$ states that one owns both a chocolate bar and a cookie. 
@@ -166,15 +205,15 @@
 	From the implications $A\multimap B$ and $A\multimap C$ we get the implication $A \multimap B \with C$, i.e. the process of buying a token to be exchanged for a chocolate bar or a cookie at a later time (with the choice lying with oneself). 
 	While this may  seem like a disjunction, both implications $B\with C \multimap B$ and $B \with C \multimap C$ (exchanging the token for either product) are provable from $B \with C$, although not simultaneously. 
 	
-	Dually, we have two disjunctions $\parr$ ("par") and $\oplus$ ("plus"):
+	Dually, we have two disjunctions $\parr$ (“par”) and $\oplus$ (“plus”):
 	
 	Suppose now that $B$ and $C$ are the ownership of a figurine of Pikachu or Mew respectively. 
-	Then $B \oplus C$ may be the ownership of a Kinder Egg containing either figurine. 
+	Then $B \oplus C$ may be interpreted as the ownership of a Kinder Egg containing either figurine. 
 	This means when buying that egg ($A \multimap B \oplus C$) we do not know which one we will get. 
-	It mirrors $\with$ except, that it is non-deterministic and therefore we cannot 
+	It mirrors $\with$ except, that it is non-deterministic and therefore we can prove neither $A \oplus B \multimap A$ nor $A \oplus B \multimap B$ from $A \oplus B$.
 	
 	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(-)^\bot$): 
-	Under the interpretation of ownership the linear negation is no interpreted as the absence of ownership but as negative ownership, i.e. debt. 
+	Under the interpretation of ownership the linear negation is interpreted as the absence of ownership but as negative ownership, i.e. debt. 
 	That means the negation of owning 1\euro, $A$, is owing someone 1\euro, $A^\bot$. 
 	With the par operator we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
 	It can be viewed as a shared pool of resources, where in order to access one resource, we have to get rid of the other.
@@ -182,7 +221,7 @@
 	%Interpretation von par...............................................................................................................................
 	%comment...............................................................................................................................................
 	
-	In order to regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ ("of course" or "bang") and $\wn$ ("why not"). 
+	In order to regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ (“of course” or “bang”) and $\wn$ (“why not”). 
 	The bang operator informs us that there is an possibly infinite amount of a resource: 
 	The statement $\oc A$ translates into the ownership of an amount of money that is large enough for us to ignore resource sensitivity. 
 	Imagine for example a billionaire buying a Pokemon figurine: His amount of money will not be noticeably smaller after buying the figurine. We can informally say $\oc A = (1 \with A) \otimes (1 \with A) \otimes \cdots $ and therefore view classical and intuitionistic logic as some sort of limit of linear logic, just as classical mechanics is a limit of quantum mechanics and the theory of relativity. 
@@ -193,17 +232,27 @@
 	
 	Linear logic has applications in various fields from linguistics to proof theory to quantum physics (as a quantum logic), all of which will be of no concern to us \cite{depaiva_et_al:DagSemRep.248, physicsApplication}.
 	
-	Fragments of linear logic can be modeled by monoidal categories with various additional structures depending on the specific fragment. We will see this with multiplicative linear logic and linearly distributive categories, categories that have two tensor products linked with a "weak" distributive relation \cite{cockett&seely97}. We will start by laying the ground work in category theory in section \ref{sec: catPrel}, building toward the introduction of \emph{linearly} \emph{distributive} \emph{categories}. Section \ref{sec: LinLogPre} then presents a sequent calculus of linear logic. Finally, we will see in section \ref{sec: CatSem} how linearly distributive categories form a categorical semantic for multiplicative linear logic. 
+	Fragments of linear logic can be modeled by monoidal categories with various additional structures depending on the specific fragment.
+	We will see this with multiplicative linear logic and linearly distributive categories, categories that have two tensor products linked with a “weak” distributive relation \cite{cockett&seely97}. 
+	We will start by laying the ground work in category theory in Section \ref{sec: catPrel}, building toward the introduction of \emph{linearly} \emph{distributive} \emph{categories}. 
+	With Theorem \ref{equivalenceAutoCats} we see that equipping LDCs with a duality is equivalent to other definitions of *-autonomous categories. 
+	Section \ref{sec: LinLogPre} then presents a sequent calculus of linear logic including an adaptation of Gentzen's Hauptsatz for the multiplicative fragment with Theorem \ref{cut-elimination-theorem}. 
+	Finally, we will see in Section \ref{sec: CatSem} how linearly distributive categories form a categorical semantic for multiplicative linear logic. 
 	
 %	\urgentnote[inline]{mono cat as model for various fragments}
 %	\urgentnote[inline]{applications}
 	
 	
-	
-	
-	
-
 	%---------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	\subsection{Zusammenfassung}
+	Fragmente der linearen Logik können durch monoidale Kategorien mit verschiedenen zusätzlichen Strukturen modelliert werden, die vom jeweiligen Fragment abhängen.
+	Wir werden dies anhand der multiplikativen linearen Logik und der linear distributiven Kategorien sehen, Kategorien, die zwei Tensorprodukte haben, die mit einer „schwachen“ distributiven Relation verknüpft sind \cite{cockett&seely97}. 
+	In Abschnitt \ref{sec: catPrel} werden zunächst die Grundlagen der Kategorientheorie gelegt, die zur Einführung von \emph{linearly} \emph{distributiv} \emph{Kategorien} führen. 
+	Mit Satz \ref{equivalenceAutoCats} sehen wir, dass die Ausstattung von LDCs mit einer Dualität äquivalent zu anderen Definitionen von *-autonomen Kategorien ist. 
+	Abschnitt \ref{sec: LinLogPre} stellt dann ein Sequenzkalkül der linearen Logik vor, einschließlich einer Adaption des Gentzenschen Hauptsatzes für das multiplikative Fragment mit Satz \ref{cut-elimination-theorem}. 
+	Schließlich werden wir in Abschnitt \ref{sec: CatSem}, wie linear distributive Kategorien eine kategorielle Semantik für multiplikative lineare Logik bilden. 
+	
 	
 	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	\section{Categorical Preliminaries}
@@ -251,6 +300,14 @@
 			\item $\forall A, B \in \Obj(\category{C}): 
 			\Hom_{\category{C}^\opp }(A,B) = \Hom_{\category{C}}(B,A)$
 		\end{itemize}
+	\end{definition}
+	
+	\begin{definition}[Isomorphism]
+		A morphism $f: A \rightarrow B$ is called \emph{isomorphism} if there is a morphism $f^{-1}: B \rightarrow A$ such that:
+		\begin{align*}
+			f^{-1} \circ f = \id_A , \quad
+			f \circ f^{-1} = \id_B
+		\end{align*}
 	\end{definition}
 	
 	We are often interested in the relation between categories and how their structures can be translated into one another. Functors serve this purpose:
@@ -380,7 +437,11 @@
 	\begin{proof}
 		The proof can be found in most more extensive introductory works. \cite{brandenburg}
 	\end{proof}	
+	
+	\begin{lemma}
 		
+	\end{lemma}
+	\todo[inline]{lemma transposed}
 	
 	Many useful categories have additional structures to their objects and morphisms and allow for the translation of these structures between similar categories. One such example is the category of vector spaces over a fixed field leading to the definition of monoidal or tensorial categories. That definition will form the basis for our categorical model of linear logic.
 	
@@ -443,9 +504,15 @@
 				\end{tikzcd}
 			\end{center}
 		\end{itemize}
-		A \emph{symmetric monoidal category} has an additional natural isomorphism:
+		
+	\end{definition}
+	
+	
+	
+	\begin{definition}[Symmetric monoidal category]
+		A \emph{symmetric monoidal category} is a monoidal category with an additional natural isomorphism:
 		\begin{align*}
-			s_{A,B}: A \otimes B \rightarrow B \otimes A
+			\sigma_{A,B}: A \otimes B \rightarrow B \otimes A
 		\end{align*}
 		satisfying the following conditions:
 		\begin{itemize}
@@ -454,11 +521,11 @@
 				\begin{center}
 					\begin{tikzcd}
 						A \otimes (B \otimes C)
-						\arrow[d, "\id \otimes s_{B, C}"]
+						\arrow[d, "\id \otimes \sigma_{B, C}"]
 						\arrow[r, "\alpha " ]
 						&
 						(A \otimes B) \otimes C
-						\arrow[r, "s_{A\otimes B, C} "]
+						\arrow[r, "\sigma_{A\otimes B, C} "]
 						&
 						C \otimes (A \otimes B)
 						\arrow[d, "\alpha" ]
@@ -467,19 +534,19 @@
 						\arrow[r, "\alpha"' ]
 						&
 						(A \otimes C) \otimes B 
-						\arrow[r, "s_{A, C} \otimes B"' ]
+						\arrow[r, "\sigma_{A, C} \otimes B"' ]
 						&
 						(C \otimes A) \otimes B
 					\end{tikzcd}
 				\end{center}
 			\item 
-				the inverse law: $s_{A, B}^{-1} = s_{B, A} $
+				the inverse law: $\sigma_{A, B}^{-1} = \sigma_{B, A} $
 			\item 
 				the unit law: $\lambda = \rho s$
 				\begin{center}
 					\begin{tikzcd}
 						\Unit \otimes A 
-						\arrow[rr, "s_{\Unit, A} "]
+						\arrow[rr, "\sigma_{\Unit, A} "]
 						\arrow[rd, "\lambda "' ]
 						&
 						&
@@ -650,8 +717,8 @@
 		\label{def: linDisCat}
 		A \emph{linearly} \emph{distributive} \emph{category} (LDC) $(\category{C}, \otimes, 1, \parr, \bot)$ is a category $\category{C}$ consisting of:
 		\begin{itemize}
-			\item a monoidal category $(\category{C}, \otimes, 1, \alpha_\otimes, \lambda_\otimes, \rho_\otimes)$, with $\otimes$ called "tensor";
-			\item a monoidal  category $(\category{C}, \parr, \bot, \alpha_\parr, \lambda_\parr, \rho_\parr)$, with $\parr$ called "par";
+			\item a monoidal category $(\category{C}, \otimes, 1, \alpha_\otimes, \lambda_\otimes, \rho_\otimes)$, with $\otimes$ called “tensor”;
+			\item a monoidal  category $(\category{C}, \parr, \bot, \alpha_\parr, \lambda_\parr, \rho_\parr)$, with $\parr$ called “par”;
 			\item two natural transformations called left and right \emph{linear distributors} respectively:
 			\begin{align*}
 				\partial_L:& A \otimes (B \parr C) \rightarrow (A\otimes B) \parr C
@@ -858,12 +925,12 @@
 		\end{itemize}
 		
 		A \emph{symmetric} LDC is an LDC where both $\otimes$ and $\parr$ are symmetric with symmetry isomorphisms 
-		$s_\otimes : A \otimes B \rightarrow B \otimes A $ 
+		$\sigma_\otimes : A \otimes B \rightarrow B \otimes A $ 
 		and 
-		$s_\parr : A \parr B \rightarrow B \parr A $ 
+		$\sigma_\parr : A \parr B \rightarrow B \parr A $ 
 		such that:
 		\begin{align*}
-			\partial_L = s_\parr (s_\otimes \parr \id) \partial_R (\id \otimes s_\parr) s_\otimes
+			\partial_L = \sigma_\parr (\sigma_\otimes \parr \id) \partial_R (\id \otimes \sigma_\parr) \sigma_\otimes
 		\end{align*}
 	\end{definition}
 	
@@ -879,6 +946,8 @@
 				\begin{align*}
 					(a \vee b) \wedge c = (a \wedge c) \vee (b \wedge c) \leq a \vee (b \wedge c)
 				\end{align*}
+			\item 
+				As we will see in Section \ref{sec: CatSem}, certain proof invariants of (multiplicative) linear logic form an LDC.
 
 %---------------------------------------------------------------------------------------------------------------------------------				
 %			\item 
@@ -956,12 +1025,12 @@
 			\item In a symmetric LDC: 
 			$(\tau, \gamma): A^* \dashV A 
 			\Longleftrightarrow 
-			(s_{\parr} \tau , \gamma s_{\otimes} ): A \dashV A^* $ 
+			(\sigma_{\parr} \tau , \gamma \sigma_{\otimes} ): A \dashV A^* $ 
 		\end{enumerate}
 	\end{lemma}
 	
 	\begin{proof}
-		As the term "linearly adjoint" might suggest, it is straightforward, albeit a bit tedious, to translate a proof for the uniqueness of adjoint functors.
+		As the term “linearly adjoint” might suggest, it is straightforward, albeit a bit tedious, to translate a proof for the uniqueness of adjoint functors.
 		
 		\begin{center}
 			\begin{tikzcd}[cramped, sep=small, ]%every label/.append style = {font = \tiny}
@@ -1240,9 +1309,17 @@
 		An analog proof shows the same for right duals.
 	\end{proof}
 	
-	\todo[inline]{remark adjoint}
 	
-	With above lemma we motivated the name "linearly adjoint". We will now motivate the name "dual":
+	\begin{remark}
+		As the structure of the proof above might suggest, we have the following (functorial) adjunctions \cite[Lemma 4.2]{cockett&seely97}:
+		\begin{align*}
+			{^*A} \otimes - \dashv A \parr - , 
+			&\quad
+			- \otimes B^* \dashv - \parr B
+		\end{align*}
+	\end{remark}
+	
+	With above lemma we motivated the name “linearly adjoint”. We will now motivate the name “dual”:
 	
 	\begin{lemma}
 		\label{lemma: deMorgan}
@@ -1280,7 +1357,7 @@
 			(A \otimes B) \otimes (B^* \parr A^*) \longrightarrow \bot
 		\end{align*}
 		
-		A straightforward diagram chase shows that these fulfill the conditions of definition \ref{def: dualObj}.
+		A straightforward diagram chase shows that these fulfill the conditions of Definition \ref{def: dualObj}.
 		
 		We focus on the second diagram of the definition, i.e. on creating the identity $\id_{A \otimes B} $. The process for $\id_{B^* \parr A^*} $ works the same way.
 		By  naturality of $\alpha_\otimes $ (and coherence with $\rho_\otimes$) we first obtain for the unit:
@@ -1528,7 +1605,7 @@
 			\end{tikzcd}
 		\end{center}
 		
-		With definition \ref{def: dualObj} and lemma \ref{lemma: isoLinDisCat} it follows that $(A \otimes B)^* \cong B^* \parr A^* $.
+		With Definition \ref{def: dualObj} and Lemma \ref{lemma: isoLinDisCat} it follows that $(A \otimes B)^* \cong B^* \parr A^* $.
 		
 		The same is done for the other equations.
 	\end{proof}
@@ -1558,13 +1635,13 @@
 	
 	\begin{theorem}
 		\label{equivalenceAutoCats}
-		Definition \ref{def: autoCatSrinivasan} and definition \ref{def: autoCatBarrC} are equivalent.
+		Definition \ref{def: autoCatSrinivasan} and Definition \ref{def: autoCatBarrC} are equivalent.
 	\end{theorem}
 	
 	\begin{proof}
 		A sketch for the symmetric case was given by Cocket and Seely \cite[theorem 4.5]{cockett&seely97}. 
 		
-		Asume $\category{C}$ to be a category fulfilling definition \ref{def: autoCatSrinivasan}.
+		Asume $\category{C}$ to be a category fulfilling Definition \ref{def: autoCatSrinivasan}.
 		The object functions $(-)^*$ and ${^*(-)}$ can be extended to contravariant functors by the following maps:
 		
 		\begin{center}
@@ -1676,12 +1753,12 @@
 			\end{tikzcd}
 		\end{center} 
 		
-		The path at the top of the diagram is $(gf)^*$ while the path at the bottom is $f^*g^*$. Commutativity of the diagram is shown the same way as in lemma \ref{lemma: isoLinDisCat}.
+		The path at the top of the diagram is $(gf)^*$ while the path at the bottom is $f^*g^*$. Commutativity of the diagram is shown the same way as in Lemma \ref{lemma: isoLinDisCat}.
 		The preservation of identities follows directly from the properties of the (co-)units.
 		
 		Thus, $(-)^* : \category{C} \rightarrow \category{C}^\opp $ is a functor.
 		
-		By lemma \ref{lemma: isoLinDisCat} we know ${^*(A^*)} \cong ({^*A})^* \cong A$ and that the following diagram commutes:
+		By Lemma \ref{lemma: isoLinDisCat} we know ${^*(A^*)} \cong ({^*A})^* \cong A$ and that the following diagram commutes:
 		
 		\begin{center}
 			${^*(f^*)} = $
@@ -1843,7 +1920,7 @@
 		
 		The path on the left is $(\id \otimes f^*) \parr \id $ while the path at the top of the diagram is the identity on $A$ per definition of the dual object. With this, we see that ${^*}(f^*) \cong f$. The other direction, $({^*f})^*\cong f$, is shown similarly. That means $(-)^*$ is indeed an equivalence.  
 		
-		By lemma \ref{lemma: deMorgan} we know 
+		By Lemma \ref{lemma: deMorgan} we know 
 		$\Hom(1, (B \otimes A)^* ) \cong \Hom(1, A^* \parr B^*) $. 
 		Therefore, it is enough to check whether 
 		$\Hom(A, B^*) \cong \Hom(1, A^* \parr B^*) $.
@@ -1865,7 +1942,7 @@
 		$\Hom(A, B^*) \cong \Hom(1, (B \otimes A)^* )$.
 		
 		%---------------------------------------------------------------------------------------------------------------
-		Now, assume we have a category $\category{C}$ fulfilling definition \ref{def: autoCatBarrC}. As $(-)^*$ is an equivalence, it has an inverse ${^*(-)}$ and we can rewrite the hom-isomorphism as $\Hom(A, B) \cong \Hom( 1, ( {^*B} \otimes A )^* )$.
+		Now, assume we have a category $\category{C}$ fulfilling Definition \ref{def: autoCatBarrC}. As $(-)^*$ is an equivalence, it has an inverse ${^*(-)}$ and we can rewrite the hom-isomorphism as $\Hom(A, B) \cong \Hom( 1, ( {^*B} \otimes A )^* )$.
 		We can therefore define a second tensor product: 
 		\begin{align*}
 			A \parr B := ({^*B} \otimes {^*A})^*
@@ -1996,7 +2073,7 @@
 	We now delve into propositional linear logic, first defining a Gentzen-style sequent calculus and proving some basic properties.
 	We then show that the Cut-rule is admissible in the multiplicative fragment of linear logic (MLL), meaning that any sequent that can be derived using the Cut-rule can be derived without it. 
 	For that proof we develop a cut-elimination procedure that will form the basis for the categorical model of MLL.
-	That procedure can be extended to general linear logic \cite{brauner} and form the basis for further categorical models of different fragments of linear logic \cite{mellies}.
+	That procedure can be extended to general linear logic \cite{brauner} and forms the basis for further categorical models of different fragments for linear logic \cite{mellies}.
 	
 	%=============================================================================================================================
 	\subsection{Syntax}
@@ -2020,12 +2097,14 @@
 		%It is customary in linear logic to call $p^\bot$ atomic, for an atom $p$.
 	\end{definition}
 	
-	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite (possibly empty) lists of formulas (e.g.: $\Gamma = p_1, ..., p_n$), and $A$, $B$ etc. formulas.
+	\begin{convention}
+		Let $\Gamma $, $\Delta$ etc. be arbitrary, finite (possibly empty) lists of formulas (e.g.: $\Gamma = p_1, ..., p_n$), and $A$, $B$ etc. formulas.
+	\end{convention}
 	
 	As we will later consider fragments of linear logic without negation, we shall define it with a two-sided calculus. 
 	
 	\begin{definition}[Sequent]
-		A \emph{sequent} $\Gamma \vdash \Delta $ consists of two Lists $\Gamma$ and $\Delta$ combined by a turnstile $\vdash$. 
+		A \emph{sequent} $\Gamma \vdash \Delta $ consists of two Lists $\Gamma$ and $\Delta$ of formulae combined by a turnstile $\vdash$. 
 		Either $\Gamma$ or $\Delta$ may be empty. 
 		While that turnstile serves a purely syntactic purpose, we will later see that it is correctly interpreted as an implication.
 		
@@ -2037,7 +2116,7 @@
 	\end{definition}
 	
 	\begin{remark}
-		Normally, proof trees are not written in a very "graph-like" way, which might obfuscate their nature as trees. The proof tree
+		Normally, proof trees are not written in a very “graph-like” way, which might obfuscate their nature as trees. The proof tree
 		\begin{center}
 			\AxiomC{\strut}
 			\RightLabel{$\id$}
@@ -2069,7 +2148,7 @@
 				\end{scope}
 			\end{tikzpicture}
 		\end{center}
-		with $\surd$ marking the root. The nodes $\id$, $\otimes_R$ and $\otimes_L$ are sequent rules defined below. As this form is neither efficient nor pretty, we will stick with the traditional display.
+		with $\surd$ marking the root. The nodes $\id$, $\otimes_R$ and $\otimes_L$ are sequent rules defined below. The graphs are to be read from the leafs to the root. As this form is neither efficient nor pretty, we will stick with the traditional display.
 	\end{remark}
 	
 	
@@ -2120,7 +2199,7 @@
 	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ as well as their respective units split into two respectively. These can be classified as multiplicative and additive connectives. 
 	
 	\paragraph{Multiplicatives }
-	The calculus rules for the \emph{multiplicative} conjunction $\otimes$, disjunction $\parr$ ("par") and their units $1$ and $\bot$ ("bottom") are as follows:
+	The calculus rules for the \emph{multiplicative} conjunction $\otimes$, disjunction $\parr$ (“par”) and their units $1$ and $\bot$ (“bottom”) are as follows:
 	
 	\begin{center}
 		\AxiomC{$\Gamma , A, B, \Gamma' \vdash \Delta$}
@@ -2166,12 +2245,12 @@
 		\UnaryInfC{$\Gamma \vdash \Delta_1, \bot , \Delta_2 $}
 		\DisplayProof
 	\end{center}
-	Note that $\Gamma = \Gamma_1 \Vert \Gamma_2 $ and $\Delta = \Delta_1 \Vert \Delta_2$ for $1_L$ and $\bot_R$.
+	Note that $\Gamma = \Gamma_1 \Vert \Gamma_2 $ and $\Delta = \Delta_1 \Vert \Delta_2$ for $1_L$ and $\bot_R$ (with $\Vert$ being the concatenation operator, just to differentiate from any “or” reading). 
 	
 	
-	\begin{remark}
+	\begin{proposition}
 		The rules $\otimes_L$ and $\parr_R$ imply, that the commas are to be read as $\otimes$ on the left-hand side and as $\parr$ on the the right-hand side. That means $A, B \vdash C, D$ is provable iff $A \otimes B \vdash C \parr D$ is provable. 
-	\end{remark}
+	\end{proposition}
 	
 	\begin{proof}
 		We only have to show that $A , B \vdash C , D $ follows from $A\otimes B \vdash C \parr D$ as the other direction is just our introduction rule:
@@ -2205,7 +2284,7 @@
 	\end{proof}
 	
 	\paragraph{Additives}
-	The calculus rules for the \emph{additive} conjunction $\with$ and disjunction $\oplus$ ("plus") are as follows:
+	The calculus rules for the \emph{additive} conjunction $\with$ and disjunction $\oplus$ (“plus”) are as follows:
 	
 	\begin{center}
 		\AxiomC{$\Gamma , A \vdash \Delta $}
@@ -2259,10 +2338,10 @@
 	
 	
 	
-	\begin{remark}
+	\begin{proposition}
 		Similarly to the multiplicative connectives above, the additive connectives have a invertibility statement: $\Gamma \vdash A \with B $ is provable iff $\Gamma \vdash A$ and $\Gamma \vdash B$ are provable. Dually, $A \oplus B \vdash \Delta $ iff $A \vdash \Delta $ and $B \vdash \Delta $.
 		
-	\end{remark}
+	\end{proposition}
 	
 	\begin{proof}
 		As with the multiplicative statement, one direction suffices:
@@ -2285,8 +2364,8 @@
 		We call two formulas $A$ and $B $ \emph{(linearly) equivalent} iff $A \vdash B$ and $B \vdash A $ are provable, and write $A \equiv B$.
 	\end{definition}
 	
-	\begin{remark}
-		The names "multiplicative" and "additive" are motivated by the following relations:
+	\begin{proposition}
+		The names “multiplicative” and “additive” are motivated by the following relations:
 		
 		\begin{align*}
 			A \otimes (B \oplus C) 
@@ -2302,7 +2381,7 @@
 			\quad 
 			A \parr \top \equiv \top
 		\end{align*}
-	\end{remark}
+	\end{proposition}
 	
 	
 	\begin{proof}
@@ -2520,14 +2599,14 @@
 	Here, the context $\oc \Gamma $ is given by applying the $\oc $-modality to every formula of $\Gamma $, i.e. $\oc \Gamma = \oc q, \oc p, \ldots $ for $\Gamma = q, p \ldots $; same for $\wn \Delta$.
 	
 	
-	\begin{remark}
+	\begin{lemma}
 		These modalities are called exponentials because of the	following relation:
 		\begin{align*}
 			\oc\left(A \with B\right) \equiv \oc A \otimes \oc B ,
 			\quad 
 			\wn \left(A \oplus B \right) \equiv \wn A \parr \wn B
 		\end{align*}
-	\end{remark}
+	\end{lemma}
 	
 	\begin{proof}
 		We will only prove the second equivalence.
@@ -2611,17 +2690,6 @@
 	%	Melliès to (multiplicative) classical linear logic and expanding a little bit on the proof given by Braüner \cite{brauner}.
 	
 	
-	\begin{definition}[Degree]
-		The \emph{degree} $\partial(A)$ of a formula $A$ is defined inductively:
-		\begin{itemize}
-			\item $\partial(A) = 1$, for $A$ atomic or constant
-			\item $\partial \left(A^\bot\right) = \partial(A)$ 
-			\item $\partial(A \otimes B) = \partial(A \parr B) = \max\{\partial(A), \partial(B)\} + 1$
-			\item $\partial(\oc A ) = \partial(\wn A) = \partial(A) + 1$
-		\end{itemize} 
-		The degree of a cut is the degree of the cut formula. The cut formula is called \emph{principal formula}. The degree $\partial(\pi)$ of a proof $\pi$ is the supremum of the degrees of the cuts in the proof. 
-	\end{definition}
-	
 	\begin{remark}
 		We write 
 		\AxiomC{$\pi$}
@@ -2652,6 +2720,19 @@
 			\item $h(\pi) = \max\{h(\tau), h(\tau')\} + 1$, for $\pi = \AxiomC{$\tau$} \AxiomC{$\tau'$} \BinaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
 		\end{itemize}
 	\end{definition}
+	
+	
+	\begin{definition}[Degree]
+		The \emph{degree} $\partial(A)$ of a formula $A$ is defined inductively:
+		\begin{itemize}
+			\item $\partial(A) = 1$, for $A$ atomic or constant
+			\item $\partial \left(A^\bot\right) = \partial(A)$ 
+			\item $\partial(A \otimes B) = \partial(A \parr B) = \max\{\partial(A), \partial(B)\} + 1$
+			\item $\partial(\oc A ) = \partial(\wn A) = \partial(A) + 1$
+		\end{itemize} 
+		The degree of a cut is the degree of the cut formula. The cut formula is called \emph{principal formula}. The degree $\partial(\pi)$ of a proof $\pi$ is the supremum of the degrees of the cuts in the proof. 
+	\end{definition}
+	
 	
 	With these, we can now eliminate cuts in a proof:
 	
@@ -3393,10 +3474,9 @@
 				\DisplayProof
 			\end{center}
 		\end{center}
-		with $\partial(\tau_1), \partial(\tau_2) < \partial(A)$. Note that $\Gamma = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$ and $\Delta = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$,
+		with $\partial(\tau_1), \partial(\tau_2) < \partial(A)$. Note that $\Gamma = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$ and $\Delta = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$.
 %		\notimportantnote{just use commata instead of conc.?}
-		with $\Vert$ being the concatenation operator.
-		We then apply lemma \ref{key-cases} to the proof tree.
+		We then apply Lemma \ref{key-cases} to the proof tree.
 	\end{proof}
 	
 	With this we now obtain Gentzen's Hauptsatz:
@@ -3407,7 +3487,7 @@
 	\end{theorem}
 	
 	\begin{proof}
-		For any proof $\pi$ with $\del(\pi)>0$ we can construct a proof $\pi'$ with $\del(\pi')=0$ by a finitely iterated application of lemma \ref{cut-reduction}. 
+		For any proof $\pi$ with $\del(\pi)>0$ we can construct a proof $\pi'$ with $\del(\pi')=0$ by a finitely iterated application of Lemma \ref{cut-reduction}. 
 		For $\del(\pi)=0$ there is nothing to show.
 	\end{proof}
 	
@@ -3418,6 +3498,8 @@
 	\section{Categorical Semantics of Linear Logic}
 	%Cats as LinLog semantics
 	\label{sec: CatSem}
+	
+	In this section, we will see that proof invariants form linearly distributive categories, by first expanding the cut-elimination procedure and then defining said invariants and their necessary properties. 
 	
 	
 	
@@ -3504,7 +3586,7 @@
 	\end{definition}
 	
 	\begin{definition}
-		From now on, when talking about "cut elimination procedure" or "modulo cut elimination", we mean the above mentioned transformations, the proof transformations from lemma \ref{key-cases} as well as the following commuting cuts:
+		From now on, when talking about “cut elimination procedure” or “modulo cut elimination”, we mean the above mentioned transformations, the proof transformations from Lemma \ref{key-cases} as well as the following commuting cuts:
 			
 		\begin{tabularx}{\textwidth}{X c X}
 			\scalebox{.6}{
@@ -3677,7 +3759,7 @@
 	\end{proof}
 	
 	
-	\begin{definition}[tensoriality]
+	\begin{definition}[Tensoriality]
 		A proof invariant is called \emph{tensorial} iff there is a binary operation $\otimes$ such that for any two proofs
 		\AxiomC{$\pi_1 $}
 		\noLine
@@ -3713,7 +3795,7 @@
 	\end{definition}
 	
 	
-	\begin{definition}[cotensorial]
+	\begin{definition}[Cotensoriality]
 		A proof invariant is called \emph{cotensorial} iff there is a binary operation $\otimes$ such that for any two proofs
 		\AxiomC{$\pi_1 $}
 		\noLine
@@ -3750,7 +3832,7 @@
 	
 	
 	\begin{lemma}
-		A (co-)tensorial, modular proof invariant forms a symmetric monoidal category.
+		A (co-)tensorial, modular proof invariant forms a symmetric monoidal category with (denotations of) formulas as objects and denotations of proofs as morphisms.
 	\end{lemma}
 	
 	\begin{proof}
@@ -3938,6 +4020,27 @@
 			\UnaryInfC{$A \otimes 1\vdash A$}
 			\DisplayProof
 		\end{center}
+		
+		Finally, we have the symmetry isomorphism $\sigma$:
+		
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B$}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A$}
+			
+			\BinaryInfC{$B, A \vdash B \otimes A $}
+			\RightLabel{ex.}
+			\UnaryInfC{$A, B \vdash B \otimes A$}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A \otimes B \vdash B \otimes A$}
+			
+			\DisplayProof
+		\end{center}
+		
 		We have to show isomorphy as well as the naturality and coherence conditions.
 		The inverse morphisms are given by 
 		
@@ -3967,8 +4070,7 @@
 			\DisplayProof
 		\end{center}
 		
-		as well as
-		
+		as well as		
 		\begin{center}
 			\AxiomC{\strut}
 			\RightLabel{$1_R$}
@@ -4397,8 +4499,9 @@
 			
 		\end{tabularx}
 		
-		Naturality and isomorphy of $\alpha$ and $\rho$ as well as the coherence conditions are shown the same way.
-	\end{proof}
+		Naturality and isomorphy of $\alpha$, $\rho$ and $\sigma$ as well as the coherence conditions are shown the same way.
+		
+	\end{proof}	
 	
 	
 	\begin{theorem}
@@ -4461,15 +4564,15 @@
 	
 	
 	\begin{remark}
-		As noted in definition \ref{def: invariant}, we have been only dealing with sequents of the form $A \vdash B $. For arbitrary sequents of the form $\Gamma \vdash \Delta $ with $\Gamma = A_1, ... , A_n $ and $\Delta = B_1, ..., B_m $, a natural model are two-tensor-poly-categories as defined by Cockett and Seely \cite{cockett&seely97}. These are (2-categorically) equivalent to linearly distributive categories by identifying $\Gamma$ with $\bigotimes\Gamma = A_1 \otimes \cdots \otimes A_n $ and $\Delta$ with $\bigparr \Delta = B_1 \parr \cdots \parr B_m $ \cite[Theorem 2.1]{cockett&seely97}.
+		As noted in Definition \ref{def: invariant}, we have been only dealing with sequents of the form $A \vdash B $. For arbitrary sequents of the form $\Gamma \vdash \Delta $ with $\Gamma = A_1, ... , A_n $ and $\Delta = B_1, ..., B_m $, a natural model are two-tensor-poly-categories as defined by Cockett and Seely \cite{cockett&seely97}. These are (2-categorically) equivalent to linearly distributive categories by identifying $\Gamma$ with $\bigotimes\Gamma = A_1 \otimes \cdots \otimes A_n $ and $\Delta$ with $\bigparr \Delta = B_1 \parr \cdots \parr B_m $ \cite[Theorem 2.1]{cockett&seely97}.
 	\end{remark}
 	
 	
 	\begin{remark}
-		Modifying the cut elimination in such a way  that it can handle the negation rule, we obtain a symmetrical *-autonomous category as in definition \ref{def: autoCatSrinivasan}. 
-		On the other hand, when starting with intuitionistic multiplicative linear logic (see Melliès for a short list of its calculus rules \cite[p43, fig. 2]{mellies}), which forms a (bi-)closed monoidal category, we obtain a *-autonomous category as defined by Barr \cite{barr95, barr91} when we adopt a classical negation, thus giving additional motivation to theorem \ref{equivalenceAutoCats}.
+		Modifying the cut elimination in such a way  that it can handle the negation rule, we obtain a symmetrical *-autonomous category as in Definition \ref{def: autoCatSrinivasan}. 
+		On the other hand, when starting with intuitionistic multiplicative linear logic (see Melliès for a short list of its calculus rules \cite[p43, fig. 2]{mellies}), which forms a (bi-)closed monoidal category, we obtain a *-autonomous category as defined by Barr \cite{barr95, barr91} when we adopt a classical negation, thus giving additional motivation to Theorem \ref{equivalenceAutoCats}.
 		
-		Accordingly, when we give up on the exchange rule, we need to introduce a second negation ${^\bot A}$ corresponding to the non-symmetric defintions in section \ref{sec: catPrel}.
+		Accordingly, when we give up on the exchange rule, we need to introduce a second negation ${^\bot A}$ corresponding to the non-symmetric defintions in Section \ref{sec: catPrel}.
 	\end{remark}
 	
 	%---------------------------------------------------------------------------------------------------------------------
