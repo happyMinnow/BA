@@ -2178,9 +2178,9 @@
 		\end{equation*}
 		\begin{equation*}
 			\begin{array}{rcl}
-					\Hom(A \parr B, (A \parr (B\otimes C)) \parr {^*C})
+					\Hom((A \otimes (B \parr C))\otimes C^*, A \otimes B)
 					& \cong &
-					\Hom((A\parr B) \otimes C, A \parr (B \otimes C))
+					\Hom(A \otimes (B \parr C) , (A \otimes B) \parr C)
 				\\
 					(\id_A \otimes \eta^R_{B, C^*} ) \alpha_\otimes^{-1}
 					& \mapsto &
@@ -2194,7 +2194,7 @@
 		\end{equation*} 
 		and 
 		\begin{equation*}
-			F':= - \otimes C \dashv - \parr {^*C} =: G'
+			F':= - \otimes C^* \dashv - \parr C =: G'
 		\end{equation*} 
 		by Lemmas \ref{lemma: compAdjunction} and \ref{lemma: isoAdjunctions} we have the adjunction 
 		\begin{equation*}
