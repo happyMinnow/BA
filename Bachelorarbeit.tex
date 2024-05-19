@@ -96,6 +96,7 @@
 \def\Ree{\operatorname{Re}} % real part Re (not fraktur R)
 \def\Imm{\operatorname{Im}} % imaginary part Im (not fraktur I)
 %\DeclareMathOperator{\tr}{tr} % Träger (already in nChairX)
+\newcommand\mapsfrom{\mathrel{\reflectbox{\ensuremath{\mapsto}}}}
 
 %some stuff für Beweise mit mehreren Teilen:
 \newcommand{\implication}[2]{%
@@ -144,7 +145,7 @@
 		}
 		\vfil
 		
-		{\bfseries\huge Categorical Semantics of Linear Logic\\}
+		{\bfseries\huge Categorical Semantics of Multiplicative Linear Logic\\}
 		
 		\vfil
 		\vspace{0.75cm}
@@ -190,7 +191,7 @@
 	If one has a true sentence $A$ and an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. 
 	However, real-life implications are often causal and modify their premises. 
 	They cannot therefore be iterated arbitrarily. 
-	For example if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
+	For example, if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
 	
 	While such dealings with resources can of course be modeled in classical logic, it is easier in the resource-sensitive \emph{linear logic}, first described by Girard in 1987 \cite{girard87}. 
 	
@@ -199,7 +200,7 @@
 	Suppose $C$ is the ownership of a cookie and it costs also 1\euro\ (i.e. we have $A\multimap C$).
 	Then $B \otimes C$ states that one owns both a chocolate bar and a cookie. 
 	The implication $A \multimap B \otimes C$ is not possible, as it would mean that you are buying both, cookie and chocolate bar at the same time, for just 1\euro\ total. 
-	However, from $A \multimap B$ and $A\multimap C$ we get $A \otimes A \multimap B \otimes C$, i.e. the process of buying both for 2\euro.
+	However, from $A \multimap B$ and $A\multimap C$, we get $A \otimes A \multimap B \otimes C$, i.e. the process of buying both for 2\euro.
 	
 	On the other hand, $B \with C$ states that one has a choice between either $B$ or $C$ (imagine a token). 
 	From the implications $A\multimap B$ and $A\multimap C$ we get the implication $A \multimap B \with C$, i.e. the process of buying a token to be exchanged for a chocolate bar or a cookie at a later time (with the choice lying with oneself). 
@@ -215,14 +216,14 @@
 	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(-)^\bot$): 
 	Under the interpretation of ownership the linear negation is interpreted as the absence of ownership but as negative ownership, i.e. debt. 
 	That means the negation of owning 1\euro, $A$, is owing someone 1\euro, $A^\bot$. 
-	With the par operator we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
-	It can be viewed as a shared pool of resources, where in order to access one resource, we have to get rid of the other.
+	With the par operator, we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
+	It can be viewed as a shared pool of resources, where  to access one resource, we have to get rid of the other.
 	%\todo[inline]{(explicit interpretation?! shared pool between people containing Pika and Mew -> you have to get rid of one to use the other?)}
 	%Interpretation von par...............................................................................................................................
 	%comment...............................................................................................................................................
 	
-	In order to regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ (“of course” or “bang”) and $\wn$ (“why not”). 
-	The bang operator informs us that there is an possibly infinite amount of a resource: 
+	To regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ (“of course” or “bang”) and $\wn$ (“why not”). 
+	The bang operator informs us that there is a possibly infinite amount of a resource: 
 	The statement $\oc A$ translates into the ownership of an amount of money that is large enough for us to ignore resource sensitivity. 
 	Imagine for example a billionaire buying a Pokemon figurine: His amount of money will not be noticeably smaller after buying the figurine. We can informally say $\oc A = (1 \with A) \otimes (1 \with A) \otimes \cdots $ and therefore view classical and intuitionistic logic as some sort of limit of linear logic, just as classical mechanics is a limit of quantum mechanics and the theory of relativity. 
 	
@@ -233,8 +234,8 @@
 	Linear logic has applications in various fields from linguistics to proof theory to quantum physics (as a quantum logic), all of which will be of no concern to us \cite{depaiva_et_al:DagSemRep.248, physicsApplication}.
 	
 	Fragments of linear logic can be modeled by monoidal categories with various additional structures depending on the specific fragment.
-	We will see this with multiplicative linear logic and linearly distributive categories, categories that have two tensor products linked with a “weak” distributive relation \cite{cockett&seely97}. 
-	We will start by laying the ground work in category theory in Section \ref{sec: catPrel}, building toward the introduction of \emph{linearly} \emph{distributive} \emph{categories}. 
+	We will see this with multiplicative linear logic and linearly distributive categories, categories that have two tensor products linked with a “weakly” distributive relation \cite{cockett&seely97}. 
+	We will start by laying the groundwork in category theory in Section \ref{sec: catPrel}, building toward the introduction of \emph{linearly} \emph{distributive} \emph{categories}. 
 	With Theorem \ref{equivalenceAutoCats} we see that equipping LDCs with a duality is equivalent to other definitions of *-autonomous categories. 
 	Section \ref{sec: LinLogPre} then presents a sequent calculus of linear logic including an adaptation of Gentzen's Hauptsatz for the multiplicative fragment with Theorem \ref{cut-elimination-theorem}. 
 	Finally, we will see in Section \ref{sec: CatSem} how linearly distributive categories form a categorical semantic for multiplicative linear logic. 
@@ -258,7 +259,7 @@
 	\section{Categorical Preliminaries}
 	\label{sec: catPrel}
 	
-	Before modeling linear logic with categories, we require a short introduction into category theory. 
+	Before modeling linear logic with categories, we require a short introduction to category theory. 
 	We will first define fundamental concepts such as \emph{categories}, \emph{functors} and \emph{natural} \emph{transformations}. 
 	Using these, we then introduce \emph{monoidal} \emph{categories}, categories with a tensor product, which form the foundation for any categorical model of linear logic. 
 	As we ultimately want to model multiplicative linear logic, we arrive at the definition of \emph{linearly} \emph{distributive} \emph{categories}, first introduced by Cocket and Seely \cite{cockett&seely97} as \emph{weakly} \emph{distributive} \emph{categories}. 
@@ -288,7 +289,11 @@
 			\item 
 				For every object $A$ there is an \emph{identity morphism} $\id_A \in \Hom(A, A)$:
 				\begin{align*}
-					f \circ \id_A = f, \quad \id_B \circ f = f
+					f \circ \id_A 
+					&= f , 
+					&
+					\id_B \circ f 
+					&= f
 				\end{align*}
 				for $f \in \Hom(A, B)$
 		\end{itemize}
@@ -305,8 +310,11 @@
 	\begin{definition}[Isomorphism]
 		A morphism $f: A \rightarrow B$ is called \emph{isomorphism} if there is a morphism $f^{-1}: B \rightarrow A$ such that:
 		\begin{align*}
-			f^{-1} \circ f = \id_A , \quad
-			f \circ f^{-1} = \id_B
+			f^{-1} \circ f 
+			&= \id_A , 
+			&
+			f \circ f^{-1} 
+			&= \id_B
 		\end{align*}
 	\end{definition}
 	
@@ -316,9 +324,11 @@
 		\label{def: functor}
 		A \emph{(covariant) functor} $\functor{F}: \category{C} \rightarrow \category{D} $ between two categories $\category{C}$ and $\category{D} $ is a function mapping each object $A \in  \Obj(\category{C}) $ to an object $F(A) \in \Obj(D) $ and each morphism $ f \in \Hom(A,B) $ to a morphism $\functor{F}(f) \in \Hom(\functor{F}(A), \functor{F}(B))$ such that identity and composition are preserved:
 		\begin{align*}
-			\functor{F}(\id_A) = \id_{\functor{F}(A)},
-			\quad
-			\functor{F}(g\circ f) = \functor{F}(g) \circ \functor{F}(f)
+			\functor{F}(\id_A) 
+			&= \id_{\functor{F}(A)},
+			&
+			\functor{F}(g\circ f) 
+			&= \functor{F}(g) \circ \functor{F}(f)
 		\end{align*}
 		
 		A functor $\functor{F}: \category{C}^\opp \rightarrow \category{D} $ is called \emph{contravariant} on $\category{C} $.
@@ -330,7 +340,7 @@
 	
 	\begin{definition}[Natural transformation]
 		\label{def: natTrans}
-		A \emph{natural transformation} $\tau: \functor{F} \rightarrow \functor{G} $ between two functors $\functor{F}, \functor{G}: \category{C} \rightarrow \category{D} $ is family of morphisms in $\category{D}$:
+		A \emph{natural transformation} $\tau: \functor{F} \rightarrow \functor{G} $ between two functors $\functor{F}, \functor{G}: \category{C} \rightarrow \category{D} $ is a family of morphisms in $\category{D}$:
 		\begin{align*}
 			\tau = \{ \tau_A : \functor{F}A \rightarrow \functor{G}A \,| A \in \Obj(\category{C})\}
 		\end{align*}
@@ -369,7 +379,7 @@
 		\label{def: adjunction}
 %		\notimportantnote[]{source: Brandenburg}
 %		comment.....................................................................................................
-		Let $\category{C}$ and $\category{D} $ be categories. We call $\functor{F}: \category{C} \rightarrow \category{D} $ the \emph{left adjoint} of $\functor{G}: \category{D} \rightarrow \category{C} $ and $\functor{G} $ the \emph{right adjoint} of $\functor{F} $ if there is an isomorphism that is natural in $A \in \category{C} $ and $B \in \category{D} $:
+		Let $\category{C}$ and $\category{D} $ be categories. We call $\functor{F}: \category{C} \rightarrow \category{D} $ the \emph{left adjoint} of $\functor{G}: \category{D} \rightarrow \category{C} $ and $\functor{G} $ the \emph{right adjoint} of $\functor{F} $ if there is a natural isomorphism:
 		\begin{align*}
 			\forall A \in \category{C}, \forall B \in \category{D}:
 			\Hom_\category{D}(\functor{F}A, B) 
@@ -380,6 +390,7 @@
 	\end{definition}
 	
 	\begin{proposition}
+		\label{prop.: triangleIdentity}
 		The definition above is equivalent to the following: 
 		We call $\functor{F} $ the left adjoint of $\functor{G} $ if there are natural transformations 
 		\begin{align*}
@@ -438,10 +449,67 @@
 		The proof can be found in most more extensive introductory works. \cite{brandenburg}
 	\end{proof}	
 	
+	Adjunctions have a number of useful properties:
+	
 	\begin{lemma}
+		\label{lemma: transposed}
+		Assume an adjunction $(\eta, \varepsilon): F \dashv G$. Then for any morphisms of the following form 
+		\begin{center}
+			\begin{tikzcd}
+				FA
+					\arrow[r, "f"]
+					\arrow[d, "Fh"]
+				&
+				B
+					\arrow[d, "k"]
+				\\
+				FA'
+					\arrow[r, "g"]
+				&
+				B'
+			\end{tikzcd}
+			$\leftrightsquigarrow$
+			\begin{tikzcd}
+				A
+					\arrow[r, "\hat{f}"]
+					\arrow[d, "h"]
+				&
+				GB
+					\arrow[d, "Gk"]
+				\\
+				A'
+					\arrow[r, "\hat{g}"]
+				&
+				B'
+			\end{tikzcd}
+		\end{center}
 		
+		the right-hand diagram commutes if and only if the left-hand diagram does \cite[Lemma 4.1.3]{riehl_context}. 
+		The diagrams are called \emph{transpose} or \emph{adjuncts} of each other as are $f$ and $\hat{f}$ as well as $g$ and $\hat{g}$.
+		For any $f: FA \rightarrow B$ and $g: A \rightarrow GB$, their transpose are given by:
+		\begin{align*}
+			\hat{f} 
+			&= A \overset{\eta}{\longrightarrow} GFA \overset{Gf}{\longrightarrow} GB , 
+			&
+			\hat{g} 
+			&= FA \overset{Fg}{\longrightarrow} FGA \overset{\varepsilon}{\longrightarrow} B
+		\end{align*}
+		The transpose of the transpose are the original morphisms.
 	\end{lemma}
-	\todo[inline]{lemma transposed}
+	
+	\begin{proof}
+		For an in-depth look into adjuncts refer to Riehl's chapter on adjoints \cite[Chapter 4]{riehl_context}.
+	\end{proof}
+	
+	\begin{lemma}
+		\label{lemma: isoAdjunctions}
+		If $F\dashv G$ and $F' \dashv G$, then $F$ and $F'$ as well as the (co-)units are uniquely isomorphic. The same follows for $G$ and $G'$ if $F \dashv G$ and $F \dashv G'$ \cite[Prop. 4.4.1]{riehl_context}.
+	\end{lemma}
+	
+	\begin{lemma}
+		\label{lemma: compAdjunction}
+		Adjunctions compose: Given $F: \category{C} \rightarrow \category{D}$ and $F': \category{D} \rightarrow \category{E}$ with $F\dashv G$ and $F' \dashv G'$, then $F'F \dashv GG'$ \cite[Prop. 4.4.4]{riehl_context}.
+	\end{lemma}
 	
 	Many useful categories have additional structures to their objects and morphisms and allow for the translation of these structures between similar categories. One such example is the category of vector spaces over a fixed field leading to the definition of monoidal or tensorial categories. That definition will form the basis for our categorical model of linear logic.
 	
@@ -791,87 +859,88 @@
 				coherence between distributors and associators:
 				\begin{center}
 					\begin{tikzcd}
-						&
-						(A \otimes B) \otimes (C \parr D)
-						\arrow[rd, "\partial_L " ]
-						\arrow[ld, "\alpha_\otimes " ]
-						&
+							&
+							(A \otimes B) \otimes (C \parr D)
+							\arrow[rd, "\partial_L " ]
+							\arrow[ld, <-, "\alpha_\otimes " ]
+							&
 						\\
-						A \otimes (B \otimes (C \parr D))
-						\arrow[d, "\id \otimes \partial_L " ]
-						
-						&
-						&
-						((A \otimes B) \otimes C) \parr D
-						\arrow[d, "\alpha_\otimes \parr \id " ]
+							A \otimes (B \otimes (C \parr D))
+							\arrow[d, "\id \otimes \partial_L " ]
+							
+							&
+							&
+							((A \otimes B) \otimes C) \parr D
+							\arrow[d, <-, "\alpha_\otimes \parr \id " ]
 						\\
-						A \otimes ((B \otimes C) \parr D)
-						\arrow[rr, "\partial_L " ]
-						&
-						&
-						(A \otimes (B \otimes C)) \parr D
+							A \otimes ((B \otimes C) \parr D)
+							\arrow[rr, "\partial_L " ]
+							&
+							&
+							(A \otimes (B \otimes C)) \parr D
 					\end{tikzcd}
 					
 					\begin{tikzcd}
-						&
-						A \otimes (B \parr (C \parr D))
-						\arrow[ld, "\id \otimes \alpha_\parr " ]
-						\arrow[rd, "\partial_L " ]
-						&
+							&
+							A \otimes (B \parr (C \parr D))
+							\arrow[ld, "\id \otimes \alpha_\parr " ]
+							\arrow[rd, "\partial_L " ]
+							&
 						\\
-						A \otimes ((B \parr C) \parr D)
-						\arrow[d, "\partial_L " ]
-						&
-						&
-						(A \otimes B) \parr (C \parr D)
-						\arrow[d, "\alpha_\parr " ]
+							A \otimes ((B \parr C) \parr D)
+							\arrow[d, "\partial_L " ]
+							&
+							&
+							(A \otimes B) \parr (C \parr D)
+							\arrow[d, "\alpha_\parr " ]
 						\\
-						(A \otimes (B \parr C)) \parr D
-						\arrow[rr, "\partial_L \parr \id " ]
-						&
-						&
-						((A \otimes B) \parr C) \parr D    \end{tikzcd}
-					
-					\begin{tikzcd}
-						&
-						(A \parr B) \otimes (C \otimes D)
-						\arrow[ld, "\alpha_\otimes " ]
-						\arrow[rd, "\partial_R " ]
-						&
-						\\
-						((A \parr B) \otimes C) \otimes D
-						\arrow[d, "\partial_R \otimes \id " ]
-						&
-						&
-						A \parr (B \otimes (C \otimes D))
-						\arrow[d, "\id \parr \alpha_\otimes " ]
-						\\
-						(A \parr (B \otimes C)) \otimes D
-						\arrow[rr, "\partial_R " ]
-						&
-						&
-						A \parr ((B \otimes C) \otimes D)
+							(A \otimes (B \parr C)) \parr D
+							\arrow[rr, "\partial_L \parr \id " ]
+							&
+							&
+							((A \otimes B) \parr C) \parr D    
 					\end{tikzcd}
 					
 					\begin{tikzcd}
-						&
-						((A \parr B) \parr C) \otimes D
-						\arrow[ld, "\alpha_\parr \otimes \id " ]
-						\arrow[rd, "\partial_R " ]
-						&
+							&
+							(A \parr B) \otimes (C \otimes D)
+							\arrow[ld, "\alpha_\otimes " ]
+							\arrow[rd, "\partial_R " ]
+							&
 						\\
-						(A \parr (B \parr C)) \otimes D
-						\arrow[d, "\partial_R " ]
-						&
-						&
-						(A \parr B) \parr (C \otimes D)
-						\arrow[d, "\alpha_\parr " ]
+							((A \parr B) \otimes C) \otimes D
+							\arrow[d, "\partial_R \otimes \id " ]
+							&
+							&
+							A \parr (B \otimes (C \otimes D))
+							\arrow[d, "\id \parr \alpha_\otimes " ]
 						\\
-						A \parr ((B \parr C) \otimes D)
-						\arrow[rr, "\id \parr \partial_R " ]
-						&
-						&
-						A \parr (B \parr (C \otimes D))
+							(A \parr (B \otimes C)) \otimes D
+							\arrow[rr, "\partial_R " ]
+							&
+							&
+							A \parr ((B \otimes C) \otimes D)
+					\end{tikzcd}
+					
+					\begin{tikzcd}
+							&
+							((A \parr B) \parr C) \otimes D
+							\arrow[ld, <-, "\alpha_\parr \otimes \id " ]
+							\arrow[rd, "\partial_R " ]
+							&
+						\\
+							(A \parr (B \parr C)) \otimes D
+							\arrow[d, "\partial_R " ]
+							&
+							&
+							(A \parr B) \parr (C \otimes D)
+							\arrow[d, <-, "\alpha_\parr " ]
+						\\
+							A \parr ((B \parr C) \otimes D)
+							\arrow[rr, "\id \parr \partial_R " ]
+							&
+							&
+							A \parr (B \parr (C \otimes D))
 					\end{tikzcd}
 				\end{center}
 			\item 
@@ -958,7 +1027,7 @@
 	\subsection{*-autonomous Categories}
 	\label{subsec: autoCats}
 	
-	While linearly distributive categories are enough to  model multiplicative linear logic, if we want to include negation in our model we need additional structures. Those structures are given by *-autonomous categories, which can defined in various ways.
+	While linearly distributive categories are enough to  model multiplicative linear logic; if we want to include negation in our model, we need additional structures. Those structures are given by *-autonomous categories, which can defined in various ways.
 	
 	\begin{definition}[Dual object]
 		\label{def: dualObj}
@@ -1291,7 +1360,7 @@
 					&
 			\end{tikzcd}
 		\end{center}
-		The right hand strand of the above diagram is, again, the identity by definition of the dual object. 
+		The right-hand strand of the above diagram is, again, the identity by definition of the dual object. 
 		
 		Putting it all together we gain the equation:
 		\begin{align*}
@@ -1319,7 +1388,7 @@
 		\end{align*}
 	\end{remark}
 	
-	With above lemma we motivated the name “linearly adjoint”. We will now motivate the name “dual”:
+	With the above lemma, we motivated the name “linearly adjoint”. We will now motivate the name “dual”:
 	
 	\begin{lemma}
 		\label{lemma: deMorgan}
@@ -1708,7 +1777,7 @@
 			\end{tikzcd}
 		\end{center}
 		
-		As the squares commute, the order of distributor and $f$ does not matter. For duality to be functor, it needs to preserve composition, leading to the following diagram in the case of $(-)^*$ (surprassing $\alpha_\otimes$ and some identities for better readability):
+		As the squares commute, the order of distributor and $f$ does not matter. For duality to be a functor, it needs to preserve composition, leading to the following diagram in the case of $(-)^*$ (suppressing $\alpha_\otimes$ and some identities for better readability):
 		
 		\begin{center}
 			\begin{tikzcd}[sep=small]
@@ -1753,7 +1822,7 @@
 			\end{tikzcd}
 		\end{center} 
 		
-		The path at the top of the diagram is $(gf)^*$ while the path at the bottom is $f^*g^*$. Commutativity of the diagram is shown the same way as in Lemma \ref{lemma: isoLinDisCat}.
+		The path at the top of the diagram is $(gf)^*$ while the path at the bottom is $f^*g^*$. Commutativity of the diagram is shown in the same way as in Lemma \ref{lemma: isoLinDisCat}.
 		The preservation of identities follows directly from the properties of the (co-)units.
 		
 		Thus, $(-)^* : \category{C} \rightarrow \category{C}^\opp $ is a functor.
@@ -1951,14 +2020,17 @@
 		This gives us $\Hom(A, B) \cong \Hom(1, A^* \parr B) $.
 		
 		The unit is defined by $\bot := 1^*$. Using the equivalence, we obtain the following isomorphism:
-		
-		\begin{align*}
-			&\Hom(A, \bot) \cong \Hom(1, (1 \otimes A)^*) \overset{^*(-)}{\cong} \Hom(1 \otimes A, {^*1}) \cong \Hom(A, {^*1}) 
+		%
+		\begin{gather*}
+			\Hom(A, \bot) \cong \Hom(1, (1 \otimes A)^*) \overset{^*(-)}{\cong} \Hom(1 \otimes A, {^*1}) \cong \Hom(A, {^*1}) 
 			\\
-			&\Rightarrow \, \bot=1^* \cong {^*1}
-		\end{align*}
+			\Rightarrow \, \bot=1^* \cong {^*1}
+		\end{gather*}
 		
-		Similarly, we obtain ${^*}(B^* \otimes A^*) \cong ({^*B} \otimes {^*A})^* = A\parr B $.
+		Similarly, we obtain 		
+		\begin{align*}
+			{^*}(B^* \otimes A^*) \cong ({^*B} \otimes {^*A})^* = A\parr B 
+		\end{align*}
 		
 		The associator and unitors are inherited from $\otimes$:
 		
@@ -2022,21 +2094,377 @@
 		
 		Accordingly, they fulfill their respective coherence conditions.
 		
-		Candidates for the unit and co-unit of an object are the identities under the hom-isomorphism:
+		Using associativity, we obtain the following equations:
+		
+		\begin{align*}
+			&\Hom(A \otimes B, C) \cong \Hom(1 , ({^*C} \otimes A \otimes B)^*) \cong \Hom(B , A^* \parr C)
+			\\
+			\cong &
+			\Hom({^*C} , {^*(A \otimes B)}) \cong \Hom(1, {^*(A \otimes B \otimes C^*)}) \cong \Hom(A , {^*(B \otimes C^*)}) \cong \Hom(A, C \parr {^*B}) 
+		\end{align*}
+		
+		Thus, for any objects $A$ and $B$ we have the adjunctions 
+		\begin{align*}
+			A \otimes - &\dashv A^* \parr -
+			&
+			- \otimes B &\dashv - \parr {^*B}			
+		\end{align*}
+		
+		Their unit and co-unit are given by the \emph{co-evaluation} and \emph{evaluation} map resp.:
+		\begin{equation*}
+			\begin{array}{rcccl}
+					\Hom(B , A^* \parr (A \otimes B)) 
+					& \cong &
+					\Hom(A\otimes B, A \otimes B)
+					& \cong &
+					\Hom(A, (A \otimes B) \parr {^*B})
+				\\
+					\eta^L_{A, B}
+					& \mapsfrom &
+					\id_{A \otimes B}
+					& \mapsto &
+					\eta^R_{A,B}
+				\\
+					\Hom(A \otimes (A^* \parr {^*B}) , {^*B})
+					& \cong &
+					\Hom(A^* \parr {^*B})
+					& \cong &
+					\Hom((A^* \parr {^*B}) \otimes B, A^*)
+				\\
+					\varepsilon^L_{A, {^*B}}
+					& \mapsfrom &
+					\id_{A^* \parr {^*B}}
+					& \mapsto &
+					\varepsilon^R_{A^*, B} 
+			\end{array}
+		\end{equation*}
+		
+		With these maps, we can define the distributors via both adjunctions:
+		%construction del_R
+		\begin{equation*}
+			\begin{array}{rcl}
+					\Hom({^*A} \otimes ((A \parr B) \otimes C), B \otimes C) 
+					& \cong &
+					\Hom((A\parr B) \otimes C, A \parr (B \otimes C))
+				\\
+					(\epsilon^L_{{^*A}, B} \otimes \id_C)\alpha_\otimes
+					& \mapsto &
+					\partial_R := (\id_A \parr (\epsilon^L_{{^*A}, B} \otimes \id_C)\alpha_\otimes) \eta^L_{{^A}, \cdots}
+			\end{array}
+		\end{equation*}
+		\begin{equation*}
+			\begin{array}{rcl}
+					\Hom(A \parr B, (A \parr (B\otimes C)) \parr {^*C})
+					& \cong &
+					\Hom((A\parr B) \otimes C, A \parr (B \otimes C))
+				\\
+					\alpha_\parr(\id_A \parr \eta^R_{B,C})
+					& \mapsto &
+					\partial_R := \epsilon^R_{\cdots, C} (\alpha_\parr(\id_A \parr \eta^R_{B,C}) \otimes \id_C)
+			\end{array}
+		\end{equation*}
+		
+		%construction del_L
+		\begin{equation*}
+			\begin{array}{rcl}
+					\Hom(B \parr C, A^* \parr ((A \otimes B) \parr C)) 
+					& \cong &
+					\Hom(A \otimes (B \parr C) , (A \otimes B) \parr C)
+				\\
+					\alpha_\parr^{-1}(\eta^L_{A,B} \parr \id_C)
+					& \mapsto &
+					\partial_L := \epsilon^L_{A, \cdots} ( \id_A \otimes \alpha_\parr^{-1}(\eta^L_{A,B} \parr \id_C) )
+			\end{array}
+		\end{equation*}
+		\begin{equation*}
+			\begin{array}{rcl}
+					\Hom(A \parr B, (A \parr (B\otimes C)) \parr {^*C})
+					& \cong &
+					\Hom((A\parr B) \otimes C, A \parr (B \otimes C))
+				\\
+					(\id_A \otimes \eta^R_{B, C^*} ) \alpha_\otimes^{-1}
+					& \mapsto &
+					\partial_L := ((\id_A \otimes \eta^R_{B, C^*} ) \alpha_\otimes^{-1} \parr \id_C) \eta^R_{\cdots, C}
+			\end{array}
+		\end{equation*}
+		
+		In order to see that this is well-defined, note that for 
+		\begin{equation*}
+			F:= A\otimes - \dashv A^* \parr - =: G
+		\end{equation*} 
+		and 
+		\begin{equation*}
+			F':= - \otimes C \dashv - \parr {^*C} =: G'
+		\end{equation*} 
+		by Lemmas \ref{lemma: compAdjunction} and \ref{lemma: isoAdjunctions} we have the adjunction 
+		\begin{equation*}
+			F F' \dashv G' G
+		\end{equation*} 
+		and the isomorphisms
+		\begin{equation*}
+			\alpha_\otimes : F F' \rightarrow F' F
+		\end{equation*} 
+		and 
+		\begin{equation*}
+			\alpha_\parr : G G' \rightarrow G' G 
+		\end{equation*}
+		
+		Thus, equality of the two definitions for $\partial_L$ is shown by the commutativity of the following diagram (by applying it to $B$):
 		
 		\begin{center}
-			\begin{align*}
-				\Hom(A,A) &\cong \Hom(1, ({^*A} \otimes A)^*) = \Hom(1, A^* \parr A)\\
-				\id & \mapsto \tau_A\\
-				\Hom(A^*, A^*) &\cong \Hom(1, (A \otimes A^*)^*) \cong \Hom( A \otimes A^*, \bot) \\
-				\id & \mapsto \gamma_A
-			\end{align*}
+			\begin{tikzcd}[sep=large]
+					F G'
+						\arrow[r, "\eta^R F G' "]
+						\arrow[d, "F G' \eta^L "]
+					&
+					G' F' F G'
+						\arrow[r, "G' \alpha^{-1}_\otimes G' "]
+						\arrow[d, "G'F'FG' \eta^L " ]
+					&
+					G' F F' G'
+						\arrow[r, "G' F \epsilon^R " ]
+						\arrow[d, "G'F F' G' \eta^L " ]
+					&
+					G' F
+						\arrow[d, "G'F \eta^L " ]
+				\\
+					F G' G F
+						\arrow[r, "\eta^R FG' GF "]
+						\arrow[d, "F \alpha_\parr^{-1} F"]
+					&
+					G'F' FG' GF
+						\arrow[r, "G' \alpha^{-1}_\otimes G' GF "]
+						\arrow[d, "G'F' F \alpha_\parr^{-1} F"]
+					&
+					G'F F'G' GF
+						\arrow[r, "G' F \epsilon^R " ]
+					&
+					G'F GF
+						\arrow[dd, "G' \epsilon^L F "]
+				\\
+					FG G'F
+						\arrow[r, "\eta^R FG G'F "]
+						\arrow[d, "\epsilon^L G'F "]
+					&
+					G'F' FG G'F
+						\arrow[d, "G'F' \epsilon^L G'F "]
+					&&
+				\\
+					G'F
+						\arrow[r, "\eta^R G'F "]
+					&
+					G'F' G'F
+						\arrow[rr, "G' \epsilon^R F "]
+					&&
+					G'F
+			\end{tikzcd}
 		\end{center}
 		
+		The paths on the top and left are the two definitions of $\partial_L$, the paths on the right and bottom are the identity on $G'F$ by the triangle identity of Proposition \ref{prop.: triangleIdentity}. The small squares commute by naturality of the (co-)units, the big square does so by Lemmas \ref{lemma: isoAdjunctions} and \ref{lemma: compAdjunction}.
+		Switching $FG'$ for $F'G$ and the appropriate morphisms gives us the same diagram for $\partial_R$.
 		
-		What remains to be done is the construction of the distributors:
+		Thus we can show the coherence conditions by transposing the diagram along either adjunction:
+		
+		Commutativity of the diagram 
+		\begin{center}
+			\begin{tikzcd}
+				(A \parr B) \otimes 1
+					\arrow[r, "\partial_L " ]
+					\arrow[d, "\rho_\otimes " ]
+				&
+				A \parr (B \otimes 1)
+					\arrow[d, "\id \parr \rho_\otimes " ]
+				\\
+				A \parr B
+					\arrow[r, equal]
+				&
+				A \parr B
+			\end{tikzcd}
+		\end{center}
+		
+		follows from commutativity of its transpose under ${^*A} \otimes - \dashv A \parr - $:
+		\begin{center}
+			\begin{tikzcd}
+				{^*A} \otimes ((A \parr B) \otimes 1)
+					\arrow[r, "\alpha_\otimes " ]
+					\arrow[d, " \id \otimes \rho_\otimes " ]
+				&
+				({^*A} \otimes (A \parr B)) \otimes 1
+					\arrow[r, "\epsilon^L \otimes \id " ]
+					\arrow[d, "\rho_\otimes " ]
+				&
+				B \otimes 1
+					\arrow[d, "\rho_\otimes " ]
+				\\
+				{^*A} \otimes (A \parr B) 
+					\arrow[r, equal ]
+				&
+				{^*A} \otimes (A \parr B)
+					\arrow[r, "\epsilon^L " ]
+				&
+				B
+			\end{tikzcd}
+		\end{center}
+		
+		Similarly, coherence of $\partial_R$ and $\lambda_\parr$
+		\begin{center}
+			\begin{tikzcd}
+				(\bot \parr A) \otimes B
+					\arrow[r, "\partial_R " ]
+					\arrow[d, "\lambda_\parr \otimes \id " ]
+				&
+				\bot \parr (A \otimes B)
+					\arrow[d, "\lambda_\parr " ]
+				\\
+				A \otimes B
+					\arrow[r, equal]
+				&
+				A \otimes B
+			\end{tikzcd}
+		\end{center}
+		
+		follows from commutativity of its transpose under $- \otimes B \dashv - \parr {^*B} $:
+		\begin{center}
+			\begin{tikzcd}
+				\bot \parr A
+					\arrow[r, "\id \parr \eta^R " ]
+					\arrow[d, "\lambda_\parr " ]
+				&
+				\bot \parr ((A \otimes B) \parr {^*B})
+					\arrow[r, "\alpha_\parr^{-1} " ]
+					\arrow[d, "\lambda_\parr " ]
+				&
+				(\bot \parr (A \otimes B)) \parr {^*B}
+					\arrow[d, "\lambda_\parr \parr \id " ]
+				\\
+				A
+					\arrow[r, "\eta^R " ]
+				&
+				(A \otimes B) \parr {^*B}
+					\arrow[r, equal]
+				&
+				(A \otimes B) \parr {^*B}
+			\end{tikzcd}
+		\end{center}
+		
+		Coherence with the associator $\alpha_\otimes$
+		\begin{center}
+			\begin{tikzcd}
+				(A \parr B) \otimes (C \otimes D)
+					\arrow[r, "\partial_R " ]
+					\arrow[d, "\alpha_\otimes " ]
+				&
+				A \par (B \otimes (C \otimes D))
+					\arrow[dd, "\id \parr \alpha_\parr " ]
+				\\
+				((A \parr B) \otimes C) \otimes D
+					\arrow[d, "\partial_R \otimes \id " ]
+				&
+				\\
+				(A \parr (B \otimes C)) \otimes D
+					\arrow[r, "\partial_R " ]
+				&
+				A \parr ((B\otimes C) \otimes D)
+			\end{tikzcd}
+		\end{center}
+		
+		also follows from its transpose:
+		\begin{center}
+			\begin{tikzcd}
+					{^*A} \otimes ((A \parr B) \otimes (C \otimes D))
+						\arrow[r, "\alpha_\otimes " ]
+						\arrow[dd, "\id \otimes \alpha_\otimes " ]
+					&
+					({^*A} \otimes (A \parr B)) \otimes (C \otimes D)
+						\arrow[r, "\epsilon^L \otimes \id " ]
+						\arrow[d, "\alpha_\otimes " ]
+					&
+					B \otimes (C \otimes D)
+						\arrow[d, "\alpha_\otimes " ]
+				\\
+					&
+					(({^*A} \otimes (A \parr B)) \otimes C) \otimes D
+						\arrow[r, "(\epsilon^L \otimes \id) \otimes \id " ]
+					&
+					(B \otimes C) \otimes D
+						\arrow[dd, equal]
+				\\
+					{^*A} \otimes (((A \parr B) \otimes C) \otimes D)
+						\arrow[r, "\alpha " ]
+						\arrow[d, "\id \otimes (\partial_R \otimes \id) " ]
+					&
+					( {^*A} \otimes ( (A \parr B) \otimes C ) ) \otimes D
+						\arrow[d, " (\id \otimes \partial_R) \otimes \id " ]
+						\arrow[u, "\alpha \otimes \id " ]
+				\\
+					{^*A} \otimes ((A \parr (B \otimes C)) \otimes D)
+						\arrow[r, "\alpha " ]
+					&
+					({^*A} \otimes (A \parr (B \otimes C))) \otimes D
+						\arrow[r, "\epsilon^L \otimes \id " ]
+					&
+					(B \otimes C) \otimes D
+			\end{tikzcd}
+		\end{center}
+		
+		The bottom-right square is the transposed of the following diagram (before application of the functor $-\otimes D$):
+		\begin{center}
+			\begin{tikzcd}
+				(A \parr B) \otimes C
+					\arrow[r, "\partial_R " ]
+					\arrow[d, "\partial_R " ]
+				&
+				A \parr (B \otimes C)
+					\arrow[d, equal, "\id_A \parr \id_{B \otimes C} " ]
+				\\
+				A \parr (B \otimes C)
+					\arrow[r, equal, "\id_{A \parr (B \otimes C)} " ]
+				&
+				A \parr (B \otimes C)
+			\end{tikzcd}
+		\end{center}
+		
+		The remaining coherence conditions between the distributors and the associators or unitors are shown in the same way.
+		
 		\todo[inline]{joa...}
 		
+		The unit and co-unit of a dual object are the transpose of the unitors:
+		\begin{equation*}
+			\begin{array}{rcccl}
+					\Hom(A \otimes 1 ,A) 
+					&\cong& 
+					\Hom(1, A^* \parr A) 
+					&\cong&
+					\Hom(1 \otimes A^*, A^*)
+				\\
+					\lambda_\otimes
+					&\mapsto&
+					\tau_A 
+					= (\id_{A^*} \otimes \lambda_\otimes)\eta^L_{A, 1}
+					&\mapsfrom&
+					\rho_\otimes
+				\\
+				&&
+				= (\rho_\otimes \otimes \id_{A})\eta^R_{1, A^*}
+				&&
+				\\
+					\Hom(A^*, A^* \parr \bot)
+					&\cong &
+					\Hom(A \otimes A^*, \bot)
+					&\cong&
+					\Hom(A, \bot \parr A)
+				\\
+					\rho_\parr^{-1}
+					&\mapsto&
+					\gamma_A
+					&\mapsfrom&
+					\lambda_\parr^{-1}
+			\end{array}
+		\end{equation*}
+		
+		This is well-defined because of the coherence between $\lambda$ and $\rho$.
+		Their defining diagrams also follow by the methods above.
+		\todo[inline]{noch malen?}
 	\end{proof}
 	
 	
@@ -2072,7 +2500,7 @@
 	
 	We now delve into propositional linear logic, first defining a Gentzen-style sequent calculus and proving some basic properties.
 	We then show that the Cut-rule is admissible in the multiplicative fragment of linear logic (MLL), meaning that any sequent that can be derived using the Cut-rule can be derived without it. 
-	For that proof we develop a cut-elimination procedure that will form the basis for the categorical model of MLL.
+	For that proof, we develop a cut-elimination procedure that will form the basis for the categorical model of MLL.
 	That procedure can be extended to general linear logic \cite{brauner} and forms the basis for further categorical models of different fragments for linear logic \cite{mellies}.
 	
 	%=============================================================================================================================
@@ -2148,7 +2576,7 @@
 				\end{scope}
 			\end{tikzpicture}
 		\end{center}
-		with $\surd$ marking the root. The nodes $\id$, $\otimes_R$ and $\otimes_L$ are sequent rules defined below. The graphs are to be read from the leafs to the root. As this form is neither efficient nor pretty, we will stick with the traditional display.
+		with $\surd$ marking the root. The nodes $\id$, $\otimes_R$ and $\otimes_L$ are sequent rules defined below. The graphs are to be read from the leaves to the root. As this form is neither efficient nor pretty, we will stick with the traditional display.
 	\end{remark}
 	
 	
@@ -2249,7 +2677,7 @@
 	
 	
 	\begin{proposition}
-		The rules $\otimes_L$ and $\parr_R$ imply, that the commas are to be read as $\otimes$ on the left-hand side and as $\parr$ on the the right-hand side. That means $A, B \vdash C, D$ is provable iff $A \otimes B \vdash C \parr D$ is provable. 
+		The rules $\otimes_L$ and $\parr_R$ imply, that the commas are to be read as $\otimes$ on the left-hand side and as $\parr$ on the right-hand side. That means $A, B \vdash C, D$ is provable iff $A \otimes B \vdash C \parr D$ is provable. 
 	\end{proposition}
 	
 	\begin{proof}
@@ -2525,7 +2953,7 @@
 		The rest is shown similarly.
 	\end{proof}
 	
-	With the negation our calculus rules become quite redundant and we can restrict them on the rules for the right-hand side by translating any two-sided sequent 
+	With the negation, our calculus rules become quite redundant and we can restrict them on the rules for the right-hand side by translating any two-sided sequent 
 	$A_1, ..., A_n \vdash B_1, ..., B_n$ 
 	into a one-sided sequent 
 	$\vdash A_1^\bot, ... A_n^\bot, B_1, ... B_n$. 
@@ -2546,7 +2974,7 @@
 	\end{definition}
 	
 	\paragraph{Exponentials }
-	The modality connectives reintroduce stable truths and with them the the weakening and contraction rules known from classical logic:
+	The modality connectives reintroduce stable truths and with them the weakening and contraction rules known from classical logic:
 	
 	\begin{center}
 		\AxiomC{$\Gamma \vdash \Delta$}
@@ -2672,10 +3100,10 @@
 	
 	
 	%================================================================================================================================================
-	\subsection{Cut elimination }
+	\subsection{Cut-elimination }
 	\label{cut-elimination}
 	
-	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. 
+	As is the case with most, if not all, logical systems, the Cut rule of our calculus is admissible. 
 	That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can construct a \emph{cut-free} proof $\pi'$ of that same sequent.  
 	We will prove this for the multiplicative fragment by simplifying the proof due to Braüner \cite[Appendix B]{brauner}. 
 	The transformations used in this construction will later form the basis for the categorical semantics of this fragment. 
@@ -2765,7 +3193,7 @@
 		
 		
 		\begin{itemize}
-			\item If one of the the subproofs is an axiom, we just take the remaining one, resulting in a proof with lower degree:
+			\item If one of the subproofs is an axiom, we just take the remaining one, resulting in a proof with a lower degree:
 			
 			\begin{tabularx}{\textwidth}{x c x}
 				\AxiomC{}
@@ -3283,7 +3711,7 @@
 			
 			Again, $r$ is one of the following rules: $\otimes_L, \parr_R, 1_L, \bot_R$, ex.R or ex.L.
 			
-			\item Finally, if both $\tau_1$ and $\tau_2$ introduce the principle formula with their last rule, we perform one the following transformations resulting in a proof of lower degree:
+			\item Finally, if both $\tau_1$ and $\tau_2$ introduce the principle formula with their last rule, we perform one of the following transformations resulting in a proof of lower degree:
 			
 			\begin{tabularx}{\textwidth}{x c x}
 				%cut otimes intro vs otimes intro
@@ -3479,9 +3907,9 @@
 		We then apply Lemma \ref{key-cases} to the proof tree.
 	\end{proof}
 	
-	With this we now obtain Gentzen's Hauptsatz:
+	With this, we now obtain Gentzen's Hauptsatz:
 	
-	\begin{theorem}[Cut elimination]
+	\begin{theorem}[Cut-elimination]
 		\label{cut-elimination-theorem}
 		Given any proof of a sequent we can construct a cut-free proof of that same sequent.
 	\end{theorem}
@@ -3586,7 +4014,7 @@
 	\end{definition}
 	
 	\begin{definition}
-		From now on, when talking about “cut elimination procedure” or “modulo cut elimination”, we mean the above mentioned transformations, the proof transformations from Lemma \ref{key-cases} as well as the following commuting cuts:
+		From now on, when talking about “cut-elimination procedure” or “modulo cut-elimination”, we mean the above-mentioned transformations, the proof transformations from Lemma \ref{key-cases} as well as the following commuting cuts:
 			
 		\begin{tabularx}{\textwidth}{X c X}
 			\scalebox{.6}{
@@ -3710,7 +4138,7 @@
 		\begin{align*}
 			\pi \mapsto [\pi]
 		\end{align*}
-		that remains constant under cut elimination \emph{proof invariant}. The entity $[\pi]$ is called \emph{denotation} of the proof $\pi$.
+		that remains constant under cut-elimination \emph{proof invariant}. The entity $[\pi]$ is called \emph{denotation} of the proof $\pi$.
 	\end{definition}
 	
 	
@@ -3796,7 +4224,7 @@
 	
 	
 	\begin{definition}[Cotensoriality]
-		A proof invariant is called \emph{cotensorial} iff there is a binary operation $\otimes$ such that for any two proofs
+		A proof invariant is called \emph{cotensorial} iff there is a binary operation $\parr$ such that for any two proofs
 		\AxiomC{$\pi_1 $}
 		\noLine
 		\UnaryInfC{$\svdots$}
@@ -3832,7 +4260,7 @@
 	
 	
 	\begin{lemma}
-		A (co-)tensorial, modular proof invariant forms a symmetric monoidal category with (denotations of) formulas as objects and denotations of proofs as morphisms.
+		Any (co-)tensorial, modular proof invariant forms a symmetric monoidal category with (denotations of) formulas as objects and denotations of proofs as morphisms.
 	\end{lemma}
 	
 	\begin{proof}
@@ -3930,7 +4358,7 @@
 		\end{center}
 		
 		with denotation $(\pi_3 \otimes \pi_4) \circ (\pi_1 \otimes \pi_2)$
-		is transformed via cut elimination into the proof
+		is transformed via cut-elimination into the proof
 		\begin{center}
 			\AxiomC{$\pi_1 $}
 			\noLine
@@ -4381,7 +4809,7 @@
 		$\lambda^{-1} \circ \lambda = \id_{1 \otimes A}$.
 		
 		Naturality for $\lambda$ means that for any $\pi: A \rightarrow B $ the equation $\lambda_B \circ (\id_1 \otimes \pi) = \pi \circ \lambda_A $ holds.
-		Cut elimination on $\lambda_B \circ (\id_1 \otimes \pi)$ gives us:
+		Cut-elimination on $\lambda_B \circ (\id_1 \otimes \pi)$ gives us:
 		
 		\begin{tabularx}{\textwidth}{x c x}			
 			\scalebox{.8}{
@@ -4463,7 +4891,7 @@
 			&
 		\end{tabularx}
 		
-		Which is the same result as cut elimination on $\pi \circ \lambda_A$:
+		Which is the same result as cut-elimination on $\pi \circ \lambda_A$:
 		
 		\begin{tabularx}{\textwidth}{x c x}	
 			\AxiomC{\strut}
@@ -4499,13 +4927,13 @@
 			
 		\end{tabularx}
 		
-		Naturality and isomorphy of $\alpha$, $\rho$ and $\sigma$ as well as the coherence conditions are shown the same way.
+		Naturality and isomorphy of $\alpha$, $\rho$ and $\sigma$ as well as the coherence conditions are shown in the same way.
 		
 	\end{proof}	
 	
 	
 	\begin{theorem}
-		A proof invariant that is modular, tensorial and cotensorial forms a linearly distributive category.
+		Any proof invariant that is modular, tensorial and cotensorial forms a linearly distributive category.
 	\end{theorem}
 	
 	\begin{proof}
@@ -4559,7 +4987,7 @@
 			\DisplayProof
 		\end{center}
 		
-		Coherence and naturality are shown the same way as for the associator and unitors above.
+		Coherence and naturality are shown in the same way as for the associator and unitors above.
 	\end{proof}
 	
 	
@@ -4569,7 +4997,7 @@
 	
 	
 	\begin{remark}
-		Modifying the cut elimination in such a way  that it can handle the negation rule, we obtain a symmetrical *-autonomous category as in Definition \ref{def: autoCatSrinivasan}. 
+		Modifying the cut-elimination in such a way  that it can handle the negation rule, we obtain a symmetrical *-autonomous category as in Definition \ref{def: autoCatSrinivasan}. 
 		On the other hand, when starting with intuitionistic multiplicative linear logic (see Melliès for a short list of its calculus rules \cite[p43, fig. 2]{mellies}), which forms a (bi-)closed monoidal category, we obtain a *-autonomous category as defined by Barr \cite{barr95, barr91} when we adopt a classical negation, thus giving additional motivation to Theorem \ref{equivalenceAutoCats}.
 		
 		Accordingly, when we give up on the exchange rule, we need to introduce a second negation ${^\bot A}$ corresponding to the non-symmetric defintions in Section \ref{sec: catPrel}.
