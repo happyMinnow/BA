@@ -25,6 +25,9 @@
 \usepackage{mathabx} %for dashV etc. conflict with amssymb
 \usepackage{eurosym}
 \usepackage{leftindex} 
+
+\usepackage{rotating}
+
 \usepackage{graphicx}
 \usepackage{pgf}
 \usepackage{tikz}
@@ -36,6 +39,8 @@
 \usepackage{multicol} %??
 \usepackage{float}
 \usepackage[hidelinks]{hyperref}
+
+\usepackage{pdfpages}
 %\usepackage[table]{xcolor} %Übernommen aus Protokollen letzten Jahres, Nutzen unbekannt:
 %\usepackage[margin=10pt,font=small,labelfont=bf]{caption}
 \usepackage{textgreek}
@@ -44,10 +49,24 @@
 %LinLog (par and with, etc.)
 \usepackage{cmll}
 
+
 %Logic
 \usepackage{bussproofs}
 
-\usepackage{todonotes} %to do notes...
+%Tables
+\usepackage{tabularx}
+\newcolumntype{x}{>{\centering\arraybackslash}X}
+
+
+\usepackage{relsize} %relative fontsize
+
+%scalable prooftrees:
+\newenvironment{scprooftree}[1]%
+{\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}%
+	{\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
+
+\usepackage[]{todonotes} %to do notes...
+%package options: obeyDraft , obeyFinal
 \setuptodonotes{tickmarkheight=0.1cm}
 %different types of todonotes:
 \newcommand{\formatnote}[2][]{\todo[color=cyan!40, #1]{#2}}
@@ -80,6 +99,7 @@
 \def\Ree{\operatorname{Re}} % real part Re (not fraktur R)
 \def\Imm{\operatorname{Im}} % imaginary part Im (not fraktur I)
 %\DeclareMathOperator{\tr}{tr} % Träger (already in nChairX)
+\newcommand\mapsfrom{\mathrel{\reflectbox{\ensuremath{\mapsto}}}}
 
 %some stuff für Beweise mit mehreren Teilen:
 \newcommand{\implication}[2]{%
@@ -93,6 +113,16 @@
 
 \usepackage{csvsimple} %Import von csv-Dateien
 
+
+%better vdots:
+\DeclareRobustCommand{\svdots}{% s for `scaling'
+	\vbox{%
+		\baselineskip=0.33333\normalbaselineskip
+		\lineskiplimit=0pt
+		\hbox{.}\hbox{.}\hbox{.}%
+		\kern-0.2\baselineskip
+	}%
+}
 
 
 %==============================================================================
@@ -110,399 +140,165 @@
 %text starts 
 
 \begin{document}
-	\maketitle
+	\thispagestyle{empty}
 	
+	\begin{center}
+		{\large
+			JMU Würzburg\  \ \textbullet\ \ Faculty of Mathematics
+		}
+		\vfil
+		
+		{\bfseries\huge Categorical Semantics of Multiplicative Linear Logic\\}
+		
+		\vfil
+		\vspace{0.75cm}
+		
+		{\LARGE
+			Bachelor Thesis
+		}
+		\\
+		
+		\begin{figure}[h!]
+			\centering
+			\vspace*{0.75cm}
+			\includegraphics[width=0.6\textwidth]{unisiegel.png}
+			\vspace*{.75cm}
+		\end{figure}
+		
+		
+		by\\[\bigskipamount]
+		\textsc{Max Wiegand}\\[\bigskipamount]
+		\vspace{2cm}
+		Advisor:\\ \bigskip
+		Dr. Gregor Schaumann, Chair X
+	\end{center}
+	
+	\newpage\null\thispagestyle{empty}\newpage
+	
+	\tableofcontents
+	\newpage
+	%\cleardoublepage
+	
+	
+	%______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	\section{Introduction}
 	
-	\todo[inline]{what am I even writing about?}
-	
-	\section{LinLog Preliminaries}
-	
-	\subsection{Motivation/Intuition}
-	\label{sec: intuition}
+%	\subsection{Intuition}
+%	\label{sec: intuition}
 	
 	%................................
-	\todo[inline, color=green!50]{feels kinda rambling... combine intuition with syntax definition below}
+	%\todo[inline, color=green!50]{feels kinda rambling... combine intuition with syntax definition below}
 	%comment..............................................................................
 	
-	Classical (and intuitionistic) logic deals with the propagation of stable truth values. If one has a true sentence $A$ and an an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. However, real-life implications are often causal and modify their premises. They cannot therefore be iterated arbitrarily. For example if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
+	Classical (and intuitionistic) logic deals with the propagation of stable truth values. 
+	If one has a true sentence $A$ and an implication $A \Rightarrow B$, then $B$ follows while $A$ remains true. 
+	However, real-life implications are often causal and modify their premises. 
+	They cannot therefore be iterated arbitrarily. 
+	For example, if $A$ describes the ownership of 1\euro\ and $B$ owning a chocolate bar, an implication $A \multimap B$ (to be formally introduced later) would describe the process of buying such a chocolate bar for 1\euro, losing the 1\euro\ in the process.
 	
-	While such dealings with resources can of course be modeled in classical logic, it is easier done in the resource-sensitive \emph{linear logic}, first described by Girard in 1987 \cite{girard87}. 
+	While such dealings with resources can of course be modeled in classical logic, it is easier in the resource-sensitive \emph{linear logic}, first described by Girard in 1987 \cite{girard87}. 
 	
-	Here, we have two conjunctions simultaneously $\otimes$ ("times" or "tensor") and $\with$ ("with"), which describe the availability of resources:
+	Here, we have two conjunctions simultaneously $\otimes$ (“times” or “tensor”) and $\with$ (“with”), which describe the availability of resources:
 	
-	Suppose $C$ is the ownership of a cookie and it costs also 1\euro\ (i.e. we have $A\multimap C$). Then $B \otimes C$ states that one owns both a chocolate bar and a cookie. The implication $A \multimap B \otimes C$ is not possible, as it would mean that you are buying both, cookie and chocolate bar at the same time, for just 1\euro\ total. However, from $A \multimap B$ and $A\multimap C$ we get $A \otimes A \multimap B \otimes C$, i.e. the process of buying both for 2\euro.
+	Suppose $C$ is the ownership of a cookie and it costs also 1\euro\ (i.e. we have $A\multimap C$).
+	Then $B \otimes C$ states that one owns both a chocolate bar and a cookie. 
+	The implication $A \multimap B \otimes C$ is not possible, as it would mean that you are buying both, cookie and chocolate bar at the same time, for just 1\euro\ total. 
+	However, from $A \multimap B$ and $A\multimap C$, we get $A \otimes A \multimap B \otimes C$, i.e. the process of buying both for 2\euro.
 	
-	On the other hand, $B \with C$ states that one has a choice between either $B$ or $C$ (imagine a token). From the implications $A\multimap B$ and $A\multimap C$ we get the implication $A \multimap B \with C$, i.e. the process of buying a token to be exchanged for a chocolate bar or a cookie at a later time (with the choice lying with oneself). While this may  seem like a disjunction, both implications $B\with C \multimap B$ and $B \with C \multimap C$ (exchanging the token for either product) are provable from $B \with C$, although not simultaneously. 
+	On the other hand, $B \with C$ states that one has a choice between either $B$ or $C$ (imagine a token). 
+	From the implications $A\multimap B$ and $A\multimap C$ we get the implication $A \multimap B \with C$, i.e. the process of buying a token to be exchanged for a chocolate bar or a cookie at a later time (with the choice lying with oneself). 
+	While this may  seem like a disjunction, both implications $B\with C \multimap B$ and $B \with C \multimap C$ (exchanging the token for either product) are provable from $B \with C$, although not simultaneously. 
 	
-	Dually, we have two disjunctions $\parr$ ("par") and $\oplus$ ("plus"):
+	Dually, we have two disjunctions $\parr$ (“par”) and $\oplus$ (“plus”):
 	
-	Suppose now that $B$ and $C$ are the ownership of a figurine of Pikachu or Mew respectively. Then $B \oplus C$ may be the ownership of a Kinder Egg containing either figurine. This means when buying that egg ($A \multimap B \oplus C$) we do not know which one we will get. 
+	Suppose now that $B$ and $C$ are the ownership of a figurine of Pikachu or Mew respectively. 
+	Then $B \oplus C$ may be interpreted as the ownership of a Kinder Egg containing either figurine. 
+	This means when buying that egg ($A \multimap B \oplus C$) we do not know which one we will get. 
+	It mirrors $\with$ except, that it is non-deterministic and therefore we can prove neither $A \oplus B \multimap A$ nor $A \oplus B \multimap B$ from $A \oplus B$.
 	
-	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(\cdot)^\bot$): Under the interpretation of ownership the linear negation is no interpreted as the absence of ownership but as negative ownership, i.e. debt. That means the negation of owning 1\euro, $A$, is owing someone 1\euro, $A^\bot$. With the par operator we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
-	\todo[inline]{(explicit interpretation?! shared pool between people containing Pika and Mew -> you have to get rid of one to use the other?)}
+	Our second disjunction, dual to $\otimes$, can be understood by linear implication and the linear negation (denoted as $(-)^\bot$): 
+	Under the interpretation of ownership the linear negation is interpreted as the absence of ownership but as negative ownership, i.e. debt. 
+	That means the negation of owning 1\euro, $A$, is owing someone 1\euro, $A^\bot$. 
+	With the par operator, we can now write the linear implication $A \multimap B$ symmetrically as $A^\bot \parr B$. 
+	It can be viewed as a shared pool of resources, where  to access one resource, we have to get rid of the other.
+	%\todo[inline]{(explicit interpretation?! shared pool between people containing Pika and Mew -> you have to get rid of one to use the other?)}
 	%Interpretation von par...............................................................................................................................
+	%comment...............................................................................................................................................
 	
-	In order to regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ ("of course" or "bang") and $\wn$ ("why not"). The bang operator informs us that there is an infinite amount of a resource: The statement $\oc A$ translates into the ownership of an amount of money that is large enough for us to ignore resource sensitivity. Imagine for example a billionaire buying a Pokemon figurine instead of a social media site: His amount of money will not be noticeably smaller after buying the figurine. We can informally say $\oc A = (1 \with A) \otimes (1 \with A) \otimes \cdots $ and therefore view classical logic as some sort of limit of linear logic, just as classical mechanics is a limit of quantum mechanics and the theory of relativity. 
+	To regain our stable truths known from classical logic, we need to employ two unitary connectives $\oc$ (“of course” or “bang”) and $\wn$ (“why not”). 
+	The bang operator informs us that there is a possibly infinite amount of a resource: 
+	The statement $\oc A$ translates into the ownership of an amount of money that is large enough for us to ignore resource sensitivity. 
+	Imagine for example a billionaire buying a Pokemon figurine: His amount of money will not be noticeably smaller after buying the figurine. We can informally say $\oc A = (1 \with A) \otimes (1 \with A) \otimes \cdots $ and therefore view classical and intuitionistic logic as some sort of limit of linear logic, just as classical mechanics is a limit of quantum mechanics and the theory of relativity. 
 	
 	%......................................................
-	\todo[inline]{interpretation of ?wn.}
-	\todo[inline ]{interpretation of constants}
+	%\todo[inline]{interpretation of ?wn and constants.}
 	%comment........................................................................................................................................
 	
+	Linear logic has applications in various fields from linguistics to proof theory to quantum physics (as a quantum logic), all of which will be of no concern to us \cite{depaiva_et_al:DagSemRep.248, physicsApplication}.
 	
-	%=============================================================================================================================
-	\subsection{Syntax}
-	\todo[inline]{section needs serious reformatting... }
-	\todo[inline]{main source: IntroLinLog}
-	\todo[inline]{sequent calculus constants}
+	Fragments of linear logic can be modeled by monoidal categories with various additional structures depending on the specific fragment.
+	We will see this with multiplicative linear logic and linearly distributive categories, categories that have two tensor products linked with a “weakly” distributive relation \cite{cockett&seely97}. 
+	We will start by laying the groundwork in category theory in Section \ref{sec: catPrel}, building toward the introduction of \emph{linearly} \emph{distributive} \emph{categories}. 
+	With Theorem \ref{equivalenceAutoCats} we see that equipping LDCs with a duality is equivalent to other definitions of *-autonomous categories. 
+	Section \ref{sec: LinLogPre} then presents a sequent calculus of linear logic including an adaptation of Gentzen's Hauptsatz for the multiplicative fragment with Theorem \ref{cut-elimination-theorem}. 
+	Finally, we will see in Section \ref{sec: CatSem} how linearly distributive categories form a categorical semantic for multiplicative linear logic. 
 	
-	Formulas are built from atomic 
-	\urgentnote{formula? term? look up basic terminology}
-	%used "formula" an unterschiedlichen Stellen
-	formulas $p, q, \phi, \psi, p^\bot$ etc. and constants $1, \bot, 0, \top$ with connectives $\otimes, \parr, \with, \oplus, \oc, \wn$.
-	
-	Let $\Gamma $, $\Delta$ etc. be arbitrary, finite lists of formulas (e.g.: $\Gamma = (p_1, ..., p_n)$) and $A$ and $B$ formulas. %clunky sentence
-	As we will later consider fragments without negation, we shall define linear logic with a two-sided calculus. For structural rules we only have the exchange rule, missing the (general) weakening and contraction rules known from classical logic:
-	
-	\begin{center}
-		\AxiomC{$\Gamma, A, B, \Gamma' \vdash \Delta$}
-		\RightLabel{ex.L}
-		\UnaryInfC{$\Gamma, B, A, \Gamma' \vdash \Delta$}
-		\DisplayProof
-		\quad
-		\AxiomC{$\Gamma \vdash \Delta , A, B, \Delta'$}
-		\RightLabel{ex.R}
-		\UnaryInfC{$\Gamma \vdash \Delta , B, A, \Delta' $}
-		\DisplayProof
-	\end{center}
+%	\urgentnote[inline]{mono cat as model for various fragments}
+%	\urgentnote[inline]{applications}
 	
 	
-	Obviously, we have an identity and a cut rule:
-	%Erklaerung der importance von Cut?
-	%anderes Wort als obviously!....................................................................................................................
+	%---------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	\begin{center}
-		\AxiomC{\vphantom{$\frac{a}{b}$} } %temporäre Lösung (auch an anderen Stellen verwendet?)
-		\RightLabel{id}
-		\UnaryInfC{$A \vdash A$}
-		\DisplayProof
-		\quad
-		\AxiomC{$\Gamma \vdash \Delta , A$}
-		\AxiomC{$A , \Gamma' \vdash \Delta' $}
-		\RightLabel{Cut}
-		\BinaryInfC{$\Gamma , \Gamma' \vdash \Delta , \Delta' $}
-		\DisplayProof
-	\end{center}
-	\notimportantnote{permanente Lösung für empty axiom finden}
-	
-	
-	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ split into two respectively. These can be classified as multiplicative and additive connectives. The calculus rules for the \emph{multiplicative} conjunction $\otimes$ and disjunction $\parr$ ("par") are as follows:
-	
-	\begin{center}
-		\AxiomC{$\Gamma , A, B \vdash \Delta$}
-		\RightLabel{$\otimes_L$}
-		\UnaryInfC{$\Gamma A\otimes B \vdash \Delta $}
-		\DisplayProof
-		\quad
-		\AxiomC{$\Gamma \vdash \Delta , A$}
-		\AxiomC{$\Gamma' \vdash B, \Delta'$}
-		\RightLabel{$\otimes_R$}
-		\BinaryInfC{$\Gamma, \Gamma' \vdash \Delta , A\otimes B, \Delta'$}
-		\DisplayProof
-		
-		
-		\AxiomC{$\Gamma , A \vdash \Delta $}
-		\AxiomC{$\Gamma' , B \vdash \Delta' $}
-		\RightLabel{$\parr_L$}
-		\BinaryInfC{$\Gamma, A\parr B, \Gamma' \vdash \Delta, \Delta'$}
-		\DisplayProof
-		\quad
-		\AxiomC{$\Gamma \vdash \Delta , A, B$}
-		\RightLabel{$\parr_R$}
-		\UnaryInfC{$\Gamma \vdash \Delta , A \parr B $}
-		\DisplayProof
-	\end{center}
-	%Bedeutung
-	
-	
-	\begin{remark}
-		The rules $\otimes_L$ and $\parr_R$ imply, that the commas are to be read as $\otimes$ on the left-hand side and as $\parr$ on the the right-hand side. That means $A, B \vdash C, D$ is provable iff $A \otimes B \vdash C \parr D$ is provable. 
-	\end{remark}
-	
-	\begin{proof}
-		We only have to show that $A , B \vdash C , D $ follows from $A\otimes B \vdash C \parr D$ as the other direction is just our introduction rule:
-		
-		\begin{center}
-			\AxiomC{$A \otimes B \vdash C \parr D $}
-			
-			\AxiomC{}
-			\RightLabel{id}
-			\UnaryInfC{$A \vdash A $}
-			\AxiomC{}
-			\RightLabel{id}
-			\UnaryInfC{$B \vdash B $}
-			\RightLabel{$\otimes_R$}
-			\BinaryInfC{$A , B \vdash A \otimes B $}
-			\RightLabel{Cut}
-			\BinaryInfC{$A , B \vdash C \parr D $}
-			
-			\AxiomC{}
-			\UnaryInfC{$C \vdash C $}
-			\AxiomC{}
-			\UnaryInfC{$D \vdash D $}
-			\RightLabel{$\parr_L $}
-			\BinaryInfC{$C \parr D \vdash C , D $}
-			\BinaryInfC{$A  , B \vdash C , D$}
-			\DisplayProof
-		\end{center}
-	\end{proof}
-	\formatnote[]{proofsymbol :/ }
-	
-	The calculus rules for the \emph{additive} conjunction $\with$ and disjunction $\oplus$ ("plus") are as follows:
-	
-	\begin{center}
-		\AxiomC{$\Gamma , A \vdash \Delta $}
-		\RightLabel{$\with_{L1}$}
-		\UnaryInfC{$\Gamma , A \with B \vdash \Delta $}
-		\DisplayProof
-		\quad
-		\AxiomC{$\Gamma , B \vdash \Delta $}
-		\RightLabel{$\with_{L2}$}
-		\UnaryInfC{$\Gamma , A \with B \vdash \Delta $}
-		\DisplayProof
-		
-		\AxiomC{$\Gamma \vdash \Delta , A $}
-		\AxiomC{$\Gamma \vdash \Delta , B $}
-		\RightLabel{$\with_R$}
-		\BinaryInfC{$\Gamma \vdash \Delta , A \with B $}
-		\DisplayProof
-	\end{center}
-	
-	\begin{center}
-		\AxiomC{$\Gamma , A \vdash \Delta $}
-		\AxiomC{$ \Gamma , B \vdash \Delta $}
-		\RightLabel{$\oplus_L$}
-		\BinaryInfC{$\Gamma , A\oplus B \vdash \Delta$}
-		\DisplayProof
-		
-		\AxiomC{$\Gamma \vdash A , \Delta $}
-		\RightLabel{$\oplus_{R1}$}
-		\UnaryInfC{$\Gamma \vdash A \oplus B , \Delta $}
-		\DisplayProof
-		\quad
-		\AxiomC{$\Gamma \vdash B , \Delta $}
-		\RightLabel{$\oplus_{R2}$}
-		\UnaryInfC{$\Gamma \vdash A \oplus B ,  \Delta $}
-		\DisplayProof
-	\end{center}
-	
-	Notice the difference between $\with_R$ and $\otimes_R$ (and dually between $\oplus_L$ and $\parr_L$): while for $\otimes_R$ the contexts $\Gamma$ etc. are arbitrary and get combined in the conclusion, $\with_R$ requires the contexts to be equal. In classical logic these rules would be equivalent using its additional structural rules.
-	
-	\begin{remark}
-		Similarly to the multiplicative connectives above, the additive connectives have a invertibility statement: $\Gamma \vdash A \with B $ is provable iff $\Gamma \vdash A$ and $\Gamma \vdash B$ are provable. (The statement for $\oplus$ is formulated dually)
-	\end{remark}
-	
-	\begin{proof}
-		As with the multiplicative statement, one direction suffices:
-		\begin{center}
-			\AxiomC{$\Gamma \vdash A \with B$}
-			
-			\AxiomC{}
-			\UnaryInfC{$A \vdash A$}
-			\UnaryInfC{$A \with B \vdash A$}
-			\BinaryInfC{$\Gamma \vdash A$}
-			\DisplayProof
-		\end{center}
-		$\Gamma \vdash B$ follows the same way.
-	\end{proof}
-	
-	\todo[inline]{above remark unnötig?}
-	
-	We now define the linear negation $(\cdot)^\bot$ as follows:
-	
-	\begin{itemize}
-		\item For the constants: 
-		\begin{align*}
-			1^\bot := \bot \quad 
-			& 
-			\bot^\bot := 1 
-			\\
-			\top^\bot := 0 \quad 
-			& 
-			0^\bot := \top
-		\end{align*}
-		\item For atomic formulas: the negation of $p$ is $p^\bot$. The negation $\left(p^\bot\right)^\bot$ of $p^\bot $ is $p$.
-		\item For non-atomic formulas we define the negation by the De Morgan equations:
-		\begin{align*}
-			\left(A \otimes B\right)^\bot := A^\bot \parr B^\bot 
-			\quad
-			&
-			\left(A \parr B\right)^\bot := A^\bot \otimes B^\bot 
-			\\
-			\left(A \with B\right)^\bot := A^\bot \oplus B^\bot 
-			\quad
-			&
-			\left(A \oplus B\right)^\bot := A^\bot \with B^\bot 
-		\end{align*}
-		\item We define linear implication with the par-operator: 
-		\begin{align*}
-			A \multimap B := A^\bot \parr B
-		\end{align*}
-		\item As with classical logic, we translate a two-sided sequent 
-		$A_1, ..., A_n \vdash B_1, ..., B_n$ 
-		into a right-sided sequent 
-		$\vdash A_1^\bot, ... A_n^\bot, B_1, ... B_n$ 
-		by negation of the left-hand side and vice versa.
-		With this it is easily seen that $\vdash A\multimap B$ iff $A \vdash B$.
-		
-	\end{itemize}
-	
-	\todo[inline]{cut last point and formulate introduction rule for negati	on instead...}
-	
-	With this our calculus rules above become quite redundant and we can restrict them on the rules for the right-hand side. However, these redundancies become necessary when dealing with a negation-free fragment of LL.
-	
-	The modality connectives reintroduce stable truths and with them the the weakening and contraction rules known from classical logic:
-	
-	\begin{center}
-		\AxiomC{$\vdash \wn\Gamma , A$}
-		\RightLabel{$\oc$}
-		\UnaryInfC{$\vdash \wn\Gamma , \oc A$}
-		\DisplayProof
-		\quad
-		\AxiomC{$\vdash \Gamma$}
-		\RightLabel{$\wn_W$ (weakening)}
-		\UnaryInfC{$\vdash \Gamma , \wn A$}
-		\DisplayProof
-		
-		\AxiomC{$\vdash \Gamma , A$}
-		\RightLabel{$\wn_D$ (dereliction)}
-		\UnaryInfC{$\vdash \Gamma , \wn A$}\
-		\DisplayProof
-		\quad
-		\AxiomC{$\vdash \Gamma , \wn A , \wn A $}
-		\RightLabel{$\wn_C$ (contraction)}
-		\UnaryInfC{$\vdash \Gamma , \wn A$}
-		\DisplayProof
-		
-		\begin{align*}
-			\left(\oc A \right) ^\bot = \wn \left( A^\bot \right) 
-			\quad 
-			\left(\wn A \right) ^\bot = \oc \left( A^\bot \right) 
-		\end{align*}
-	\end{center}
-	
-	\notimportantnote[noline]{Definition of $\wn \Gamma $ korrekt?}
-	Here the Kontext $\wn \Gamma $ is given by applying the $\wn $-modality to every formula in the list of $\Gamma $, i.e. $\wn \Gamma = \wn q, \wn p, \ldots $ for $\Gamma = q, p \ldots $
-	
-	\begin{remark}
-		These modalities are called exponentials because of the
-		\urgentnote{definition linear equivalence}
-		following relation:
-		\begin{align*}
-			\oc\left(A \with B\right) \equiv \oc A \otimes \oc B ,
-			\quad 
-			\wn \left(A \oplus B \right) \equiv \wn A \parr \wn B
-		\end{align*}
-	\end{remark}
-	
-	\begin{proof}
-		We will only prove the second equivalence. The first is acquired by duality.
-		
-		\begin{center}
-			\AxiomC{}
-			\UnaryInfC{$\vdash A, A^\bot $}
-			\RightLabel{$\oplus $}
-			\UnaryInfC{$A^\bot, A\oplus B$}
-			\RightLabel{$\wn_D $}
-			\UnaryInfC{$\vdash A^\bot, \wn (A\oplus B) $}
-			\RightLabel{$\oc $}
-			\UnaryInfC{$\vdash\oc (A^\bot), \wn (A\oplus B) $}
-			
-			\AxiomC{}
-			\UnaryInfC{$\vdash B, B^\bot$}
-			\RightLabel{$\oplus $}
-			\UnaryInfC{$\vdash B^\bot, A\oplus B$}
-			\RightLabel{$\wn_D $}
-			\UnaryInfC{$\vdash B^\bot, \wn (A\oplus B) $}
-			\RightLabel{$\oc $}
-			\UnaryInfC{$\vdash \oc (B^\bot), \wn (A\oplus B) $}
-			
-			\RightLabel{$\otimes $}
-			\BinaryInfC{$\vdash \oc(A^\bot) \otimes \oc (B^\bot) , \wn (A\oplus B) , \wn (A\oplus B) $}
-			\RightLabel{$\wn_D $}
-			\UnaryInfC{$\vdash \oc(A^\bot) \otimes \oc (B^\bot) , \wn (A\oplus B) $}
-			\RightLabel{$(-)^\bot$}
-			\UnaryInfC{$\vdash (\wn A \parr \wn B)^\bot , \wn (A \oplus B) $}
-			\UnaryInfC{$\vdash \wn A \parr \wn B \multimap \wn (A \oplus B)$}
-			\DisplayProof
-			
-			
-			\AxiomC{}
-			\UnaryInfC{$\vdash A^\bot , A$}
-			\UnaryInfC{$\vdash A^\bot, \wn A$}
-			\RightLabel{$\wn_W$}
-			\UnaryInfC{$\vdash A^\bot, \wn A, \wn B $}
-			
-			\AxiomC{}
-			\UnaryInfC{$\vdash B^\bot, B$}
-			\UnaryInfC{$\vdash B^\bot, B$}
-			\RightLabel{$\wn_W$}
-			\UnaryInfC{$\vdash B^\bot, \wn B , \wn A $}
-			
-			\RightLabel{$\with $}
-			\BinaryInfC{$\vdash A^\bot \with B^\bot , \wn A , \wn B $}
-			\UnaryInfC{$\vdash \oc (A^\bot \with B^\bot) , \wn A, \wn B $}
-			\UnaryInfC{$\vdash \oc (A^\bot \with B^\bot) , \wn A \parr \wn B $}
-			\UnaryInfC{$\vdash \wn (A \oplus B) \multimap \wn A \parr \wn B $}
-			\DisplayProof
-		\end{center}
-	\end{proof}
-	
-	\formatnote{proofsymbol なんで？ :( }
-	
-	%.......................................
-	\notimportantnote[inline]{MAYBE to be added: \textbackslash forall and \textbackslash exist. Do we want predicate logic?}
-	%comment..............................................................................................
-	
-	
-	
-	%=============================================================================================================
-	\subsection{Proof-structures and proof-nets}
-	
-	We shall now leave behind any capitalistic resource interpretation and concentrate on what linear logic was invented for: analyzing proofs.
-	
-	\todo[inline]{to be continued... }
-	\todo[inline]{how to typeset axiom links? :(}
-	
+	\subsection{Zusammenfassung}
+	Fragmente der linearen Logik können durch monoidale Kategorien mit verschiedenen zusätzlichen Strukturen modelliert werden, die vom jeweiligen Fragment abhängen.
+	Wir werden dies anhand der multiplikativen linearen Logik und der linear distributiven Kategorien sehen, Kategorien, die zwei Tensorprodukte haben, die mit einer „schwachen“ distributiven Relation verknüpft sind \cite{cockett&seely97}. 
+	In Abschnitt \ref{sec: catPrel} werden zunächst die Grundlagen der Kategorientheorie gelegt, die zur Einführung von \emph{linearly} \emph{distributiv} \emph{Kategorien} führen. 
+	Mit Satz \ref{equivalenceAutoCats} sehen wir, dass die Ausstattung von LDCs mit einer Dualität äquivalent zu anderen Definitionen von *-autonomen Kategorien ist. 
+	Abschnitt \ref{sec: LinLogPre} stellt dann ein Sequenzkalkül der linearen Logik vor, einschließlich einer Adaption des Gentzenschen Hauptsatzes für das multiplikative Fragment mit Satz \ref{cut-elimination-theorem}. 
+	Schließlich werden wir in Abschnitt \ref{sec: CatSem}, wie linear distributive Kategorien eine kategorielle Semantik für multiplikative lineare Logik bilden. 
 	
 	
 	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 	\section{Categorical Preliminaries}
+	\label{sec: catPrel}
+	
+	Before modeling linear logic with categories, we require a short introduction to category theory. 
+	We will first define fundamental concepts such as \emph{categories}, \emph{functors} and \emph{natural} \emph{transformations}. 
+	Using these, we then introduce \emph{monoidal} \emph{categories}, categories with a tensor product, which form the foundation for any categorical model of linear logic. 
+	As we ultimately want to model multiplicative linear logic, we arrive at the definition of \emph{linearly} \emph{distributive} \emph{categories}, first introduced by Cocket and Seely \cite{cockett&seely97} as \emph{weakly} \emph{distributive} \emph{categories}. 
+	Finally, we will take a quick look at \emph{*-autonomous} \emph{categories}, which form a model of multiplicative linear logic with linear negation, and their relation to LDCs.
+	
 	
 	\subsection{Categories}
-	\label{sec: catSec}
+	\label{subsec: catSec}
 	%Tensorcats?
-	
-	\todo[inline]{sources for basic definitions. (nlab prolly doesn't suffice)}
 	
 	\begin{definition}[Category]
 		\label{def: cat}
 		A Category $\category{C}$ consists of the following data: 
 		\begin{itemize}
-			\item A class $\Obj(\category{C})$ of \emph{objects}.
-			\item For every pair of objects $A, B \in \Obj(\category{C})$ there is a class $\Hom(A, B)$ of \emph{morphisms} $f: A \rightarrow B$ from $A$ to $B$. 
-			\item Morphisms \emph{compose}: For $f \in \Hom(A, B)$ and $g \in \Hom(B, C)$ there is a morphism $g \circ  f \in \Hom(A, C)$. 
-			That composition is associative: 
-			\begin{align*}
-				h \circ (g \circ f) = (h \circ g) \circ f
-			\end{align*}
-			We will write $gf$ for $g\circ f$ when appropriate.
-			\item For every object $A$ there is an \emph{identity morphism} $\id_A \in \Hom(A, A)$:
-			\begin{align*}
-				f \circ \id_A = f, \quad \id_B \circ f = f
-			\end{align*}
-			for $f \in \Hom(A, B)$
+			\item 
+				A class $\Obj(\category{C})$ of \emph{objects}.
+			\item 
+				For every pair of objects $A, B \in \Obj(\category{C})$ there is a class $\Hom(A, B)$ of \emph{morphisms} $f: A \rightarrow B$ from $A$ to $B$. 
+				We denote the class of all morphisms of $\category{C}$ with $\Morph{(\category{C})}$
+			\item 
+				Morphisms \emph{compose}: For $f \in \Hom(A, B)$ and $g \in \Hom(B, C)$ there is a morphism $g \circ  f \in \Hom(A, C)$. 
+				That composition is associative: 
+				\begin{align*}
+					h \circ (g \circ f) = (h \circ g) \circ f
+				\end{align*}
+				We will write $gf$ for $g\circ f$ when appropriate.
+			\item 
+				For every object $A$ there is an \emph{identity morphism} $\id_A \in \Hom(A, A)$:
+				\begin{align*}
+					f \circ \id_A 
+					&= f , 
+					&
+					\id_B \circ f 
+					&= f
+				\end{align*}
+				for $f \in \Hom(A, B)$
 		\end{itemize}
 		If the hom-classes are sets, we call the category \emph{locally small}. If the object class is a set, we call the category \emph{small}. Otherwise, we call the category \emph{large}.
 		
@@ -514,18 +310,28 @@
 		\end{itemize}
 	\end{definition}
 	
-	%.....................................................................................
-	\notimportantnote[inline]{extra definition for opposite structure? }
-	%commment....................................................................................
+	\begin{definition}[Isomorphism]
+		A morphism $f: A \rightarrow B$ is called \emph{isomorphism} if there is a morphism $f^{-1}: B \rightarrow A$ such that:
+		\begin{align*}
+			f^{-1} \circ f 
+			&= \id_A , 
+			&
+			f \circ f^{-1} 
+			&= \id_B
+		\end{align*}
+	\end{definition}
 	
+	We are often interested in the relation between categories and how their structures can be translated into one another. Functors serve this purpose:
 	
 	\begin{definition}[Functor]
 		\label{def: functor}
 		A \emph{(covariant) functor} $\functor{F}: \category{C} \rightarrow \category{D} $ between two categories $\category{C}$ and $\category{D} $ is a function mapping each object $A \in  \Obj(\category{C}) $ to an object $F(A) \in \Obj(D) $ and each morphism $ f \in \Hom(A,B) $ to a morphism $\functor{F}(f) \in \Hom(\functor{F}(A), \functor{F}(B))$ such that identity and composition are preserved:
 		\begin{align*}
-			\functor{F}(\id_A) = \id_{\functor{F}(A)},
-			\quad
-			\functor{F}(g\circ f) = \functor{F}(g) \circ \functor{F}(f)
+			\functor{F}(\id_A) 
+			&= \id_{\functor{F}(A)},
+			&
+			\functor{F}(g\circ f) 
+			&= \functor{F}(g) \circ \functor{F}(f)
 		\end{align*}
 		
 		A functor $\functor{F}: \category{C}^\opp \rightarrow \category{D} $ is called \emph{contravariant} on $\category{C} $.
@@ -533,10 +339,11 @@
 		We will drop the parentheses when appropriate.
 	\end{definition}
 	
+	Just as we are interested in the relation between two categories, we can look into the relation between two functors. These can be described by natural transformations:
 	
 	\begin{definition}[Natural transformation]
 		\label{def: natTrans}
-		A \emph{natural transformation} $\tau: F \rightarrow G $ between two functors $\functor{F}, \functor{G}: \category{C} \rightarrow \category{D} $ is family of morphisms in $\category{D}$:
+		A \emph{natural transformation} $\tau: \functor{F} \rightarrow \functor{G} $ between two functors $\functor{F}, \functor{G}: \category{C} \rightarrow \category{D} $ is a family of morphisms in $\category{D}$:
 		\begin{align*}
 			\tau = \{ \tau_A : \functor{F}A \rightarrow \functor{G}A \,| A \in \Obj(\category{C})\}
 		\end{align*}
@@ -559,23 +366,36 @@
 		\end{center}
 		
 		If $\tau_A$ is an isomorphism for all $A \in \Obj(\category{C}) $, we call $\tau$ a \emph{natural} \emph{isomorphism}.
-		We will often represent a natural transformation by a single one of its members and also drop the index when appropriate.
+		We will often represent a natural transformation by a single one of its members and also drop the index when appropriate, i.e. denoting 
+		$\tau: \functor{F} \rightarrow \functor{G} $ 
+		by 
+		$\tau : \functor{F}A \rightarrow \functor{G}A $ .
 	\end{definition}
 	
 	
-	\todo[inline]{definition: equivalence of categories}
+	%\todo[inline]{definition: equivalence of categories}
+	%definition only relevant for Barr's definitions of *-auto. cats
+	%comment.....................................................................................................................................
 	
-
 	
 	\begin{definition}[Adjunction]
 		\label{def: adjunction}
-		\notimportantnote[]{source: Brandenburg}
-		Let $\category{C}$ and $\category{D} $ be categories. We call $\functor{F}: \category{C} \rightarrow \category{D} $ the \emph{left adjoint} of $\functor{G}: \category{D} \rightarrow \category{C} $ and $\functor{G} $ the \emph{right adjoint} of $\functor{F} $ if there is an isomorphism that is natural in $A \in \category{C} $ and $B \in \category{D} $:
+%		\notimportantnote[]{source: Brandenburg}
+%		comment.....................................................................................................
+		Let $\category{C}$ and $\category{D} $ be categories. We call $\functor{F}: \category{C} \rightarrow \category{D} $ the \emph{left adjoint} of $\functor{G}: \category{D} \rightarrow \category{C} $ and $\functor{G} $ the \emph{right adjoint} of $\functor{F} $ if there is a natural isomorphism:
 		\begin{align*}
+			\forall A \in \category{C}, \forall B \in \category{D}:
 			\Hom_\category{D}(\functor{F}A, B) 
 			\cong \Hom_\category{C}(A, \functor{G}B)
 		\end{align*}
-		Equivalently, we call $\functor{F} $ the left adjoint of $\functor{G} $ if there are natural transformations 
+		
+		We write $F \dashv G$.
+	\end{definition}
+	
+	\begin{proposition}
+		\label{prop.: triangleIdentity}
+		The definition above is equivalent to the following: 
+		We call $\functor{F} $ the left adjoint of $\functor{G} $ if there are natural transformations 
 		\begin{align*}
 			\eta &: \id_\category{C} \rightarrow \functor{G} \circ \functor{F}
 			\\
@@ -585,13 +405,14 @@
 		
 		\begin{align*}
 			\id_{\functor{F}A} 
-			&= \varepsilon(\functor{F}A) \circ \functor{F}\eta(A)
+			&= \varepsilon_{\functor{F}A} \circ \functor{F}(\eta_A)
 			\\
 			\id_{\functor{G}B} 
-			&= \functor{G}\varepsilon(B) \circ \eta(\functor{G}B)
+			&= \functor{G}(\varepsilon_B) \circ \eta_{\functor{G}B}
 		\end{align*}
-		\todo{maybe index Schreibweise?}
 		
+		%cut content.....................................................................................................
+		\iffalse
 		i.e. the following diagrams commute:
 		\begin{center}
 			\begin{tikzcd}
@@ -621,21 +442,104 @@
 				\functor{G} \circ \id_\category{D}
 			\end{tikzcd}
 		\end{center}
-		\todo[inline]{cut triangle diagrams or define $\bullet $ } %diagramme.............................................................................................................................................
+		\todo[inline]{cut triangle diagrams or define $\bullet $ } %comment......................................................................................................................................
+		\fi
+		%end of cut content.............................................................................................
 		
-		We write $F \dashv G$.
-	\end{definition}
+	\end{proposition}
+	
+	\begin{proof}
+		The proof can be found in most more extensive introductory works. \cite{brandenburg}
+	\end{proof}	
+	
+	Adjunctions have a number of useful properties:
+	
+	\begin{lemma}
+		\label{lemma: transposed}
+		Assume an adjunction $(\eta, \varepsilon): F \dashv G$. Then for any morphisms of the following form 
+		\begin{center}
+			\begin{tikzcd}
+				FA
+					\arrow[r, "f"]
+					\arrow[d, "Fh"]
+				&
+				B
+					\arrow[d, "k"]
+				\\
+				FA'
+					\arrow[r, "g"]
+				&
+				B'
+			\end{tikzcd}
+			$\leftrightsquigarrow$
+			\begin{tikzcd}
+				A
+					\arrow[r, "\hat{f}"]
+					\arrow[d, "h"]
+				&
+				GB
+					\arrow[d, "Gk"]
+				\\
+				A'
+					\arrow[r, "\hat{g}"]
+				&
+				B'
+			\end{tikzcd}
+		\end{center}
+		
+		the right-hand diagram commutes if and only if the left-hand diagram does \cite[Lemma 4.1.3]{riehl_context}. 
+		The diagrams are called \emph{transpose} or \emph{adjuncts} of each other as are $f$ and $\hat{f}$ as well as $g$ and $\hat{g}$.
+		For any $f: FA \rightarrow B$ and $g: A \rightarrow GB$, their transpose are given by:
+		\begin{align*}
+			\hat{f} 
+			&= A \overset{\eta}{\longrightarrow} GFA \overset{Gf}{\longrightarrow} GB , 
+			&
+			\hat{g} 
+			&= FA \overset{Fg}{\longrightarrow} FGA \overset{\varepsilon}{\longrightarrow} B
+		\end{align*}
+		The transpose of the transpose are the original morphisms.
+	\end{lemma}
+	
+	\begin{proof}
+		For an in-depth look into adjuncts refer to Riehl's chapter on adjoints \cite[Chapter 4]{riehl_context}.
+	\end{proof}
+	
+	\begin{lemma}
+		\label{lemma: isoAdjunctions}
+		\cite[Prop. 4.4.1]{riehl_context}
+		If $F\dashv G$ and $F' \dashv G$, then $F$ and $F'$ as well as the (co-)units are uniquely isomorphic. The same follows for $G$ and $G'$ if $F \dashv G$ and $F \dashv G'$.
+	\end{lemma}
+	
+	\begin{lemma}
+		\label{lemma: compAdjunction}
+		 \cite[Prop. 4.4.4]{riehl_context} 
+		Adjunctions compose: Given $F: \category{C} \rightarrow \category{D}$ and $F': \category{D} \rightarrow \category{E}$ with $F\dashv G$ and $F' \dashv G'$, then $F'F \dashv GG'$.
+		The unit and co-unit are given by:
+		\begin{align*}
+			\tilde{\eta}: & \id_{\category{C}} \overset{\eta}{\longrightarrow} GF \overset{G \eta' F}{\longrightarrow} GG' F'F
+			\\
+			\tilde{\varepsilon}: & FF' G'G \overset{F '\varepsilon' F}{\longrightarrow} FG \overset{\varepsilon}{\longrightarrow} \id_{\category{E}}
+		\end{align*}
+		with $\eta F := \eta_{F(-)} $ etc.
+	\end{lemma}
+	
+	Many useful categories have additional structures to their objects and morphisms and allow for the translation of these structures between similar categories. One such example is the category of vector spaces over a fixed field leading to the definition of monoidal or tensorial categories. That definition will form the basis for our categorical model of linear logic.
 	
 	
 	\begin{definition}[Monoidal category]
 		\label{def: monoCat}
 		A \emph{monoidal category} $(\category{C}, \otimes, \Unit, \alpha, \lambda, \rho)$ is a category $\category{C}$ with the following additional data:
 		\begin{itemize}
-			\item a functor $\otimes : \category{C} \times \category{C} \rightarrow \category{C} $, called \emph{monoidal} or \emph{tensor product};
-			\item an object $\Unit \in  \Obj(\category{C})$, called \emph{unit object};
-			\item a natural isomorphism $\alpha: A \otimes (B \otimes C ) \rightarrow (A \otimes B) \otimes C$, called \emph{associator};
-			\item a natural isomorphism $\lambda: \Unit \otimes A \rightarrow A$, called left unitor;
-			\item a natural isomorphism $\rho: A \otimes \Unit \rightarrow A$, called right unitor;
+			\item 
+				a functor $\otimes : \category{C} \times \category{C} \rightarrow \category{C} $, called \emph{monoidal} or \emph{tensor product};
+			\item 
+				an object $\Unit \in  \Obj(\category{C})$, called \emph{unit object};
+			\item 
+				a natural isomorphism $\alpha: A \otimes (B \otimes C ) \rightarrow (A \otimes B) \otimes C$, called \emph{associator};
+			\item 
+				a natural isomorphism $\lambda: \Unit \otimes A \rightarrow A$, called left unitor;
+			\item 
+				a natural isomorphism $\rho: A \otimes \Unit \rightarrow A$, called right unitor;
 		\end{itemize}
 		such that the following diagrams commute:
 		\begin{itemize}
@@ -680,61 +584,73 @@
 				\end{tikzcd}
 			\end{center}
 		\end{itemize}
-		A \emph{symmetric monoidal category} has an additional natural isomorphism:
+		
+	\end{definition}
+	
+	
+	
+	\begin{definition}[Symmetric monoidal category]
+		A \emph{symmetric monoidal category} is a monoidal category with an additional natural isomorphism:
 		\begin{align*}
-			s_{A,B}: A \otimes B \rightarrow B \otimes A
+			\sigma_{A,B}: A \otimes B \rightarrow B \otimes A
 		\end{align*}
 		satisfying the following conditions:
 		\begin{itemize}
-			\item the hexagon law:
-			\begin{center}
-				\begin{tikzcd}
-					A \otimes (B \otimes C)
-					\arrow[d, "\id \otimes s_{B, C}"]
-					\arrow[r, "\alpha " ]
-					&
-					(A \otimes B) \otimes C
-					\arrow[r, "s_{A\otimes B, C} "]
-					&
-					C \otimes (A \otimes B)
-					\arrow[d, "\alpha" ]
-					\\
-					A \otimes (C \otimes B)
-					\arrow[r, "\alpha"' ]
-					&
-					(A \otimes C) \otimes B 
-					\arrow[r, "s_{A, C} \otimes B"' ]
-					&
-					(C \otimes A) \otimes B
-				\end{tikzcd}
-			\end{center}
-			\item the inverse law: $s_{A, B}^{-1} = s_{B, A} $
-			\item the unit law: $\lambda = \rho s$
-			\begin{center}
-				\begin{tikzcd}
-					\Unit \otimes A 
-					\arrow[rr, "s_{\Unit, A} "]
-					\arrow[rd, "\lambda "' ]
-					&
-					&
-					A \otimes \Unit
-					\arrow[ld, "\rho" ]
-					\\
-					&
-					A
-					&
-				\end{tikzcd}
-			\end{center}
+			\item 
+				the hexagon law:
+				\begin{center}
+					\begin{tikzcd}
+						A \otimes (B \otimes C)
+						\arrow[d, "\id \otimes \sigma_{B, C}"]
+						\arrow[r, "\alpha " ]
+						&
+						(A \otimes B) \otimes C
+						\arrow[r, "\sigma_{A\otimes B, C} "]
+						&
+						C \otimes (A \otimes B)
+						\arrow[d, "\alpha" ]
+						\\
+						A \otimes (C \otimes B)
+						\arrow[r, "\alpha"' ]
+						&
+						(A \otimes C) \otimes B 
+						\arrow[r, "\sigma_{A, C} \otimes B"' ]
+						&
+						(C \otimes A) \otimes B
+					\end{tikzcd}
+				\end{center}
+			\item 
+				the inverse law: $\sigma_{A, B}^{-1} = \sigma_{B, A} $
+			\item 
+				the unit law: $\lambda = \rho \sigma$
+				\begin{center}
+					\begin{tikzcd}
+						\Unit \otimes A 
+						\arrow[rr, "\sigma_{\Unit, A} "]
+						\arrow[rd, "\lambda "' ]
+						&
+						&
+						A \otimes \Unit
+						\arrow[ld, "\rho" ]
+						\\
+						&
+						A
+						&
+					\end{tikzcd}
+				\end{center}
 		\end{itemize}
-		\notimportantnote[inline]{Diagramme verschönern}
+		%............................................................................................
+		%\notimportantnote[inline]{Diagramme verschönern}
 		%........................................................................................................................................
 	\end{definition}
 	
-	\todo[inline]{fix associators throughout the document (direction)}
 	
+	%cut conten.................................................................................................................................................
+	%cut because only needed in Barr's definitions
+	\iffalse
 	\begin{definition}[Closed monoidal category]
 		\label{def: closedMonoCat}
-		\todo{lengthy, rambling... muss eleganter gehen}
+		\todo{lengthy, rambling... maybe cut into three definitions?}
 		A monoidal category $\category{C} $ is called \emph{right closed}, resp. \emph{left closed}, iff there is a functor 
 		$- \multimap -: \category{C}^\opp \times \category{C} \rightarrow \category{C} $, 
 		resp. 
@@ -756,7 +672,9 @@
 		$- \multimapinv -: \category{C} \times \category{C}^\opp \rightarrow \category{C} $
 		are called \emph{internal hom} functors.
 	\end{definition}
+	\fi 
 	
+\iffalse	
 	\todo[inline]{following definitions prolly unnötig:}
 	
 	\begin{definition}[Enriched category]
@@ -848,6 +766,7 @@
 				&
 				\category{D}(\functor{F}_0 A , \functor{F}_0 C)
 			\end{tikzcd}
+			
 			\begin{tikzcd}
 				&
 				\Unit
@@ -863,19 +782,23 @@
 			\end{tikzcd}
 		\end{center}
 	\end{definition}
+\fi
+
 	
-	
-	\subsection{LinDisCats}
-	\label{sec: linDisCats}
+%---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
+	\subsection{Linearly distributive categories }
+	\label{subsec: linDisCats}
 	%LDCs
 	%*-auto. Cats
 	
-	\begin{definition}[Linearly distributive category]
+	We now arrive at the categories that we will use to later model multiplicative linear logic.
+	
+	\begin{definition}[Linearly distributive category \cite{srinavsan-thesis}]
 		\label{def: linDisCat}
-		A \emph{linearly} \emph{distributive} \emph{category} $(\category{C}, \otimes, 1, \parr, \bot)$ is a category $\category{C}$ consisting of:
+		A \emph{linearly} \emph{distributive} \emph{category} (LDC) $(\category{C}, \otimes, 1, \parr, \bot)$ is a category $\category{C}$ consisting of:
 		\begin{itemize}
-			\item a monoidal category $(\category{C}, \otimes, 1, \alpha_\otimes, \lambda_\otimes, \rho_\otimes)$, with $\otimes$ called "tensor";
-			\item a monoidal  category $(\category{C}, \parr, \bot, \alpha_\parr, \lambda_\parr, \rho_\parr)$, with $\parr$ called "par";
+			\item a monoidal category $(\category{C}, \otimes, 1, \alpha_\otimes, \lambda_\otimes, \rho_\otimes)$, with $\otimes$ called “tensor”;
+			\item a monoidal  category $(\category{C}, \parr, \bot, \alpha_\parr, \lambda_\parr, \rho_\parr)$, with $\parr$ called “par”;
 			\item two natural transformations called left and right \emph{linear distributors} respectively:
 			\begin{align*}
 				\partial_L:& A \otimes (B \parr C) \rightarrow (A\otimes B) \parr C
@@ -885,205 +808,238 @@
 		\end{itemize}
 		satisfying the following coherence conditions:
 		\begin{itemize}
-			\item coherence between the distributors and unitors:
-			\begin{center}
-				\begin{tikzcd}
-					1 \otimes (A \parr B)
-					\arrow[rr, "\partial_L " ]
-					\arrow[rd, "\lambda_\otimes "' ]
-					&
-					&
-					(1 \otimes A) \parr B
-					\arrow[ld, "\lambda_\otimes \parr \id " ]
-					\\
-					&
-					A \parr B
-					&
-				\end{tikzcd}
-				\begin{tikzcd}
-					(A \parr B) \otimes 1
-					\arrow[rr, "\partial_R " ]
-					\arrow[rd, " \rho_\otimes "' ]
-					&
-					&
-					A \parr (B \otimes 1)
-					\arrow[ld, "\id \otimes \rho_\otimes " ]
-					\\
-					&
-					A \parr B
-					&
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					A \otimes (B \parr \bot ) 
-					\arrow[rr, "\partial_L " ]
-					\arrow[dr, "\id \otimes \rho_\parr "' ]
-					&
-					&
-					(A \otimes B) \parr \bot
-					\arrow[dl, "\rho_\parr " ]
-					\\
-					&
-					A\otimes B
-					&
-				\end{tikzcd}
-				\begin{tikzcd}
-					(\bot \parr A) \otimes B
-					\arrow[rr, "\partial_R " ]
-					\arrow[dr, "\lambda_\parr \otimes \id "' ]
-					&
-					&
-					\bot \parr (A \otimes B)
-					\arrow[dl, "\lambda_\parr " ]
-					\\
-					&
-					A \otimes B
-					&
-				\end{tikzcd}
-			\end{center}
-			\formatnote{Diagramme besser alignen}
-			%Diagramme besser alignen.............................................................................................................
-			\item coherence between distributors and associators:
-			\begin{center}
-				\begin{tikzcd}
-					&
-					(A \otimes B) \otimes (C \parr D)
-					\arrow[rd, "\partial_L " ]
-					\arrow[ld, "\alpha_\otimes " ]
-					&
-					\\
-					A \otimes (B \otimes (C \parr D))
-					\arrow[d, "\id \otimes \partial_L " ]
+			\item 
+				coherence between the distributors and unitors:
+				\begin{center}
+					\begin{tikzcd}
+						1 \otimes (A \parr B)
+						\arrow[rr, "\partial_L " ]
+						\arrow[rd, "\lambda_\otimes "' ]
+						&
+						&
+						(1 \otimes A) \parr B
+						\arrow[ld, "\lambda_\otimes \parr \id " ]
+						\\
+						&
+						A \parr B
+						&
+					\end{tikzcd}
+					\begin{tikzcd}
+						(A \parr B) \otimes 1
+						\arrow[rr, "\partial_R " ]
+						\arrow[rd, " \rho_\otimes "' ]
+						&
+						&
+						A \parr (B \otimes 1)
+						\arrow[ld, "\id \parr \rho_\otimes " ]
+						\\
+						&
+						A \parr B
+						&
+					\end{tikzcd}
 					
-					&
-					&
-					((A \otimes B) \otimes C) \parr D
-					\arrow[d, "\alpha_\otimes \parr \id " ]
-					\\
-					A \otimes ((B \otimes C) \parr D)
-					\arrow[rr, "\partial_L " ]
-					&
-					&
-					(A \otimes (B \otimes C)) \parr D
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					A \otimes (B \parr (C \parr D))
-					\arrow[ld, "\id \otimes \alpha_\parr " ]
-					\arrow[rd, "\partial_L " ]
-					&
-					\\
-					A \otimes ((B \parr C) \parr D)
-					\arrow[d, "\partial_L " ]
-					&
-					&
-					(A \otimes B) \parr (C \parr D)
-					\arrow[d, "\alpha_\parr " ]
-					\\
-					(A \otimes (B \parr C)) \parr D
-					\arrow[rr, "\partial_L \parr \id " ]
-					&
-					&
-					((A \otimes B) \parr C) \parr D    \end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					(A \parr B) \otimes (C \otimes D)
-					\arrow[ld, "\alpha_\otimes " ]
-					\arrow[rd, "\partial_R " ]
-					&
-					\\
-					((A \parr B) \otimes C) \otimes D
-					\arrow[d, "\partial_R \otimes \id " ]
-					&
-					&
-					A \parr (B \otimes (C \otimes D))
-					\arrow[d, "\id \parr \alpha_\otimes " ]
-					\\
-					(A \parr (B \otimes C)) \otimes D
-					\arrow[rr, "\partial_R " ]
-					&
-					&
-					A \parr ((B \otimes C) \otimes D)
-				\end{tikzcd}
-				
-				\begin{tikzcd}
-					&
-					((A \parr B) \parr C) \otimes D
-					\arrow[ld, "\alpha_\parr \otimes \id " ]
-					\arrow[rd, "\partial_R " ]
-					&
-					\\
-					(A \parr (B \parr C)) \otimes D
-					\arrow[d, "\partial_R " ]
-					&
-					&
-					(A \parr B) \parr (C \otimes D)
-					\arrow[d, "\alpha_\parr " ]
-					\\
-					A \parr ((B \parr C) \otimes D)
-					\arrow[rr, "\id \parr \partial_R " ]
-					&
-					&
-					A \parr (B \parr (C \otimes D))
-				\end{tikzcd}
-			\end{center}
-			\item coherence between the distributors:
-			\begin{center}
-				\begin{tikzcd}
-					&
-					(A \parr B) \otimes (C \parr D)
-					\arrow[rd, "\partial_L " ]
-					\arrow[ld, "\partial_R " ]
-					&
-					\\
-					((A \parr B) \otimes C) \parr D
-					\arrow[d, "\partial_R \parr \id " ]
-					&
-					&
-					A \parr (B \otimes (C \parr D))
-					\arrow[d, "\id \parr \partial_L " ]
-					\\
-					(A \parr (B \otimes C)) \parr D
-					&
-					&
-					A \parr ((B \otimes C) \parr D)
-					\arrow[ll, "\alpha_\parr " ]
-				\end{tikzcd}
-				\formatnote[inline]{obiges Diagramm rumdrehen}
-				%.......................................................................................................
-				\formatnote[inline]{\textbackslash parr \textbackslash id sieht kacke aus...}    %..................................................................................
-				\begin{tikzcd}
-					&
-					A \otimes ((B \parr C) \otimes D)
-					\arrow[ld, "\alpha_\otimes " ]
-					\arrow[rd, "\id \otimes \partial_R " ]
-					&
-					\\
-					(A \otimes (B \parr C)) \otimes D
-					\arrow[d, "\partial_L \otimes \id " ]
-					&
-					&
-					A \otimes (B \parr (C \otimes D))
-					\arrow[d, "\partial_L " ]
-					\\
-					((A \otimes B) \parr C) \otimes D
-					\arrow[rr, "\partial_R " ]
-					&
-					&
-					(A \otimes B) \parr (C \otimes D)
-				\end{tikzcd}
-			\end{center}
+					\begin{tikzcd}
+						A \otimes (B \parr \bot ) 
+						\arrow[rr, "\partial_L " ]
+						\arrow[dr, "\id \otimes \rho_\parr "' ]
+						&
+						&
+						(A \otimes B) \parr \bot
+						\arrow[dl, "\rho_\parr " ]
+						\\
+						&
+						A\otimes B
+						&
+					\end{tikzcd}
+					\begin{tikzcd}
+						(\bot \parr A) \otimes B
+						\arrow[rr, "\partial_R " ]
+						\arrow[dr, "\lambda_\parr \otimes \id "' ]
+						&
+						&
+						\bot \parr (A \otimes B)
+						\arrow[dl, "\lambda_\parr " ]
+						\\
+						&
+						A \otimes B
+						&
+					\end{tikzcd}
+				\end{center}
+	%			\formatnote{Diagramme besser alignen}
+				%comment.............................................................................................................
+			\item 
+				coherence between distributors and associators:
+				\begin{center}
+					\begin{tikzcd}
+							&
+							(A \otimes B) \otimes (C \parr D)
+							\arrow[rd, "\partial_L " ]
+							\arrow[ld, <-, "\alpha_\otimes " ]
+							&
+						\\
+							A \otimes (B \otimes (C \parr D))
+							\arrow[d, "\id \otimes \partial_L " ]
+							
+							&
+							&
+							((A \otimes B) \otimes C) \parr D
+							\arrow[d, <-, "\alpha_\otimes \parr \id " ]
+						\\
+							A \otimes ((B \otimes C) \parr D)
+							\arrow[rr, "\partial_L " ]
+							&
+							&
+							(A \otimes (B \otimes C)) \parr D
+					\end{tikzcd}
+					
+					\begin{tikzcd}
+							&
+							A \otimes (B \parr (C \parr D))
+							\arrow[ld, "\id \otimes \alpha_\parr " ]
+							\arrow[rd, "\partial_L " ]
+							&
+						\\
+							A \otimes ((B \parr C) \parr D)
+							\arrow[d, "\partial_L " ]
+							&
+							&
+							(A \otimes B) \parr (C \parr D)
+							\arrow[d, "\alpha_\parr " ]
+						\\
+							(A \otimes (B \parr C)) \parr D
+							\arrow[rr, "\partial_L \parr \id " ]
+							&
+							&
+							((A \otimes B) \parr C) \parr D    
+					\end{tikzcd}
+					
+					\begin{tikzcd}
+							&
+							(A \parr B) \otimes (C \otimes D)
+							\arrow[ld, "\alpha_\otimes " ]
+							\arrow[rd, "\partial_R " ]
+							&
+						\\
+							((A \parr B) \otimes C) \otimes D
+							\arrow[d, "\partial_R \otimes \id " ]
+							&
+							&
+							A \parr (B \otimes (C \otimes D))
+							\arrow[d, "\id \parr \alpha_\otimes " ]
+						\\
+							(A \parr (B \otimes C)) \otimes D
+							\arrow[rr, "\partial_R " ]
+							&
+							&
+							A \parr ((B \otimes C) \otimes D)
+					\end{tikzcd}
+					
+					\begin{tikzcd}
+							&
+							((A \parr B) \parr C) \otimes D
+							\arrow[ld, <-, "\alpha_\parr \otimes \id " ]
+							\arrow[rd, "\partial_R " ]
+							&
+						\\
+							(A \parr (B \parr C)) \otimes D
+							\arrow[d, "\partial_R " ]
+							&
+							&
+							(A \parr B) \parr (C \otimes D)
+							\arrow[d, <-, "\alpha_\parr " ]
+						\\
+							A \parr ((B \parr C) \otimes D)
+							\arrow[rr, "\id \parr \partial_R " ]
+							&
+							&
+							A \parr (B \parr (C \otimes D))
+					\end{tikzcd}
+				\end{center}
+			\item 
+				coherence between the distributors:
+				\begin{center}
+					\begin{tikzcd}
+						&
+						(A \parr B) \otimes (C \parr D)
+						\arrow[rd, "\partial_L " ]
+						\arrow[ld, "\partial_R " ]
+						&
+						\\
+						((A \parr B) \otimes C) \parr D
+						\arrow[d, "\partial_R \parr \id " ]
+						&
+						&
+						A \parr (B \otimes (C \parr D))
+						\arrow[d, "\id \parr \partial_L " ]
+						\\
+						(A \parr (B \otimes C)) \parr D
+						&
+						&
+						A \parr ((B \otimes C) \parr D)
+						\arrow[ll, "\alpha_\parr " ]
+					\end{tikzcd}
+					%comment.............................................................................................................
+					%\formatnote[inline]{obiges Diagramm rumdrehen}
+					%comment.......................................................................................................
+					%\formatnote[inline]{\textbackslash parr \textbackslash id sieht kacke aus...}    %..................................................................................
+					\begin{tikzcd}
+						&
+						A \otimes ((B \parr C) \otimes D)
+						\arrow[ld, "\alpha_\otimes " ]
+						\arrow[rd, "\id \otimes \partial_R " ]
+						&
+						\\
+						(A \otimes (B \parr C)) \otimes D
+						\arrow[d, "\partial_L \otimes \id " ]
+						&
+						&
+						A \otimes (B \parr (C \otimes D))
+						\arrow[d, "\partial_L " ]
+						\\
+						((A \otimes B) \parr C) \otimes D
+						\arrow[rr, "\partial_R " ]
+						&
+						&
+						(A \otimes B) \parr (C \otimes D)
+					\end{tikzcd}
+				\end{center}
 		\end{itemize}
-		\formatnote[inline]{itemize anpassen?}
-		%.............................................................................
+		
+		A \emph{symmetric} LDC is an LDC where both $\otimes$ and $\parr$ are symmetric with symmetry isomorphisms 
+		$\sigma_\otimes : A \otimes B \rightarrow B \otimes A $ 
+		and 
+		$\sigma_\parr : A \parr B \rightarrow B \parr A $ 
+		such that:
+		\begin{align*}
+			\partial_L = \sigma_\parr (\sigma_\otimes \parr \id) \partial_R (\id \otimes \sigma_\parr) \sigma_\otimes
+		\end{align*}
 	\end{definition}
 	
+	\begin{example}
+		Some examples for LDCs \cite[Definition 2.2]{srinavsan-thesis}:
+		\begin{itemize}
+			\item 
+				Trivially, any monoidal category is a linearly distributive category with $\parr = \otimes$ and $\partial = \alpha$.
+			\item 
+				A bounded distributive lattice $(L, \leq, \wedge, \top, \vee, \bot ) $ viewed as a category with its elements as objects and the pre-order forming the morphisms. The tensor is given by $\wedge$ with its unit being $\top$, the par is given by $\vee$ with its unit being $\bot$.
+				
+				The right distributor is given by the following relation:
+				\begin{align*}
+					(a \vee b) \wedge c = (a \wedge c) \vee (b \wedge c) \leq a \vee (b \wedge c)
+				\end{align*}
+			\item 
+				As we will see in Section \ref{sec: CatSem}, certain proof invariants of (multiplicative) linear logic form an LDC.
+
+%---------------------------------------------------------------------------------------------------------------------------------				
+%			\item 
+%				\todo[inline]{more examples \cite[Definition 2.2]{srinavsan-thesis}}
+		\end{itemize}
+	\end{example}
 	
-	\subsection{*-aut. cats}
-	\label{sec: autoCats}
-	\todo[inline]{structure an Mellies, CatSemOfLinLog, anpassen; equivalence Srinivasan and Barr definitions}
+	\subsection{*-autonomous Categories}
+	\label{subsec: autoCats}
+	
+	While linearly distributive categories are enough to  model multiplicative linear logic, if we want to include negation in our model, we need additional structures. Those structures are given by *-autonomous categories, which can defined in various ways.
 	
 	\begin{definition}[Dual object]
 		\label{def: dualObj}
@@ -1122,52 +1078,1618 @@
 				A \otimes 1
 				\arrow[d, "\id \otimes \tau " ]
 				\\
-				(A^* \parr A) \otimes A^*
+				(A \otimes A^*) \parr A
 				\arrow[u, "\gamma \parr \id " ]
 				&
-				A^* \parr (A \otimes A^*)
+				A \otimes (A^* \parr A)
 				\arrow[l, "\partial_L " ]
 			\end{tikzcd}
-			\formatnote[inline]{das geht schöner}
 		\end{center}
 		
 		We write $(\tau, \gamma): A^* \dashV A $ and also call $A$ \emph{right dual} to $A^*$. 
-		\formatnote[inline]{mathabx incompatible with amssymb, stix absolutely broken; repalce dashV with dashv + some index?}
+		
+		%........................................................................................................................................................
+		%\formatnote[inline]{mathabx incompatible with amssymb, stix absolutely broken; repalce dashV with dashv + some index?}
+		%comment..................................................................................................................................................................................................................................................................
 	\end{definition}
 	
 	\begin{lemma}
 		\label{lemma: isoLinDisCat}
-		{ }
+		
 		\begin{enumerate}
 			\item In an LDC: if 
-			$A^* \dashV A $ and $A' \dashV A $, 
-			then $A^*$ and $A'$ are isomorphic. 
+			$(\tau^*, \gamma^*): A^* \dashV A $ and $(\tau', \gamma'): A' \dashV A $, 
+			then $A^*$ and $A'$ are uniquely isomorphic. 
+			The same is true for 
+			$A \dashV {^*A} $ and $A \dashV {'A} $.
 			We will from now on only talk about \emph{the} dual object, when equality up to isomorphism is sufficient.
 			\item In a symmetric LDC: 
 			$(\tau, \gamma): A^* \dashV A 
 			\Longleftrightarrow 
-			(\tau s_{\parr}, s_{\otimes} \gamma): A \dashV A^* $ 
+			(\sigma_{\parr} \tau , \gamma \sigma_{\otimes} ): A \dashV A^* $ 
 		\end{enumerate}
 	\end{lemma}
 	
-	\todo[inline]{proof }
+	\begin{proof}
+		As the term “linearly adjoint” might suggest, it is straightforward, albeit a bit tedious, to translate a proof for the uniqueness of adjoint functors.
+		
+		\begin{center}
+			\begin{tikzcd}[cramped, sep=small, ]%every label/.append style = {font = \tiny}
+					&	
+					(A^* \parr A) \otimes A^* 	
+						\arrow[rr, equal ] 
+						\arrow[dr, "\id \otimes ( (\tau' \otimes \id ) \lambda_\otimes^{-1}) "' {font=\tiny, shift right}  ] % 	
+					&		
+					&	
+					(A^* \parr A) \otimes A		
+						\drar{\rho_\parr (\id \parr \gamma^*) \partial_R}
+					&	
+				\\
+					A^* 
+						\arrow[ur, "(\tau^* \otimes \id) \lambda_\otimes^{-1} " ]
+						\arrow[dr, "(\tau' \otimes \id) \lambda_\otimes^{-1} "' ] 
+					&		
+					&	
+					(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+						\urar
+						\arrow[dr, "\id \otimes (\rho_\parr (\id \otimes \gamma^*) \partial_R) "' font=\tiny ]
+					&		
+					&		
+					A^*
+				\\
+					&	
+					(A' \parr A) \otimes A^*	
+						\arrow[ur, "(\tau^* \otimes \id) \lambda_\otimes^{-1} "' ]
+						\arrow[dr, "\rho_\parr(\id \parr \gamma^*)\partial_R "' ]
+					&		
+					&		
+					(A^* \parr A) \otimes A'	
+						\arrow[ur, "\rho_\parr (\id \parr \gamma') \partial_R"']
+					&
+				\\
+					&
+					&
+					A'
+						\arrow[ur, "(\tau^* \otimes \id) \lambda_\otimes^{-1} "' ]
+					&
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		The upper path is the identity as per definition of $\gamma^*$ and $\tau^*$, while the lower path gives us our isomorphisms $A^* \xlongrightarrow{\sim} A'$ and $A' \xlongrightarrow{\sim} A^*$. 
+		Commutativity of the left square follows immediately from the naturality of $\lambda$ and the functoriality of $\otimes$:
+		
+		\begin{center}
+			\begin{tikzcd}
+					(A' \parr A) \otimes A^*	
+						\arrow[d, "\lambda_\otimes^{-1} " ]
+					&
+					1 \otimes A^*
+						\arrow[l, "\tau' \otimes \id "' ]
+						\arrow[r, "\tau^* \otimes \id " ]
+						\arrow[d, "\lambda_\otimes^{-1} "' shift right, shift right]
+						\arrow[d, "\id \otimes \lambda_\otimes^{-1} " shift left , shift left]
+					&
+					(A^* \parr A ) \otimes A^*
+						\arrow[d, " \id \otimes \lambda_\otimes^{-1} " ]
+				\\
+					1\otimes ((A' \parr A ) \otimes A^* )
+						\arrow[dr, "\tau^* \otimes \id "' ]
+					&
+					1 \otimes (1 \otimes A^*)
+						\arrow[d, "\tau^* \otimes (\tau' \otimes \id) " ]
+						\arrow[l, "\id \otimes (\tau' \otimes \id ) " ' ]
+						\arrow[r, " \tau^* \otimes \id " ]
+					&
+					(A^* \parr A ) \otimes (1 \otimes A)
+						\arrow[dl, "\id \otimes (\tau' \otimes \id) " ]
+				\\
+					&
+					(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		The middle square also commutes because of naturality:
+		
+		\begin{center}
+			\begin{tikzcd}
+					(A' \parr A) \otimes A^*
+						\arrow[r, "\lambda_\otimes^{-1} " ]
+						\arrow[d, "\partial_R "' ]
+					&
+					1 \otimes ((A' \parr A) \otimes A^*)
+						\arrow[r, "\tau^* \otimes \id " ]
+						\arrow[d, "\id \otimes \partial_R "' ]
+					&
+					(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+						\arrow[d, "\id \otimes \partial_R "' ]
+				\\
+					A' \parr (A \otimes A^* )
+						\arrow[r, "\lambda_\otimes^{-1} " ]
+						\arrow[d, "\id \parr \gamma^* "' ]
+					&
+					1 \otimes (A' \parr (A \otimes A^* ))
+						\arrow[r, "\tau^* \otimes \id " ]
+						\arrow[d, "\id \otimes (\id \parr \gamma^*) "' ]
+					&
+					(A^* \parr A) \otimes (A' \parr (A \otimes A^* ))
+						\arrow[d, "\id \otimes (\id \parr \gamma^*) "' ]
+				\\
+					A' \parr \bot
+						\arrow[r, "\lambda_\otimes^{-1} " ]
+						\arrow[d, "\rho_\parr "' ]
+					&
+					1 \otimes (A \parr \bot)
+						\arrow[r, "\tau^* \otimes \id " ]
+						\arrow[d, "\id \otimes \rho_\parr "' ]
+					&
+					(A^* \parr A ) \otimes (A' \parr \bot )
+						\arrow[d, "\id \otimes \rho_\parr "' ]
+				\\
+					A'
+						\arrow[r, "\lambda_\otimes^{-1} " ]
+					&
+					1 \otimes A'
+						\arrow[r, "\tau^* \otimes \id " ]
+					&
+					(A^* \parr A) \otimes A'
+			\end{tikzcd}
+		\end{center}
+		
+		For the right square we need the coherence conditions of our transformations:
+		
+		
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}[column sep=small, row sep=huge]				
+						&[-20pt]
+						(A^* \parr A) \otimes ((A' \parr A)\otimes A^*)	
+							\arrow[rr, "\alpha" ]
+							\arrow[dl, "\id \otimes \partial_R "' ]
+						&[-10pt]
+						&[-20pt]
+						((A^* \parr A) \otimes (A' \parr A)) \otimes A^*
+							\arrow[dr, "\partial_L \otimes \id " ]
+						&[-20pt]
+					\\
+						(A^* \parr A) \otimes (A' \parr (A \otimes A^*))	
+							\arrow[rr, "\partial_L " ]
+							\arrow[d, "\id \otimes (\id \parr \gamma^*) "' ]
+						&
+						&
+						((A^* \parr A) \otimes A') \parr (A\otimes A^*)	
+							\arrow[dl, "\id \parr \gamma^* "' ]
+							\arrow[d, "\partial_R \parr \id "']
+						&
+						&
+						(((A^* \parr A) \otimes A') \parr A) \otimes A^*
+							\arrow[ll, "\partial_R "' ]
+							\arrow[d, "(\partial_R \parr \id ) \otimes \id " ]
+					\\
+						(A^* \parr A) \otimes (A' \parr \bot )
+							\arrow[r, "\partial_L " ]
+							\arrow[d, "\id \otimes \rho_\parr "' ]
+						&
+						((A^* \parr A) \otimes A') \parr \bot 
+							\arrow[ld, "\rho_\parr "' ]
+							\arrow[d, "\partial_R \parr \id " ]
+						&
+						(A^* \parr (A \otimes A')) \parr (A\otimes A^*)	
+							\arrow[dl, "\id \parr \gamma^* " ]
+							\arrow[dr, "(\id \parr \gamma' ) \parr \id " ]			
+						&
+						&
+						((A^* \parr (A \otimes A')) \parr A)\otimes A^*	
+							\arrow[ll, "\partial_L "' ]
+							\arrow[d, " ((\id \parr \gamma' ) \parr \id ) \otimes \id "' ]
+					\\
+						(A^* \parr A) \otimes A'
+							\arrow[d, "\partial_R"]
+						&
+						(A^* \parr (A \otimes A')) \parr \bot
+							\arrow[r, "(\id \parr \gamma') \parr \id "' ] 	
+							\arrow[dl, "\rho_\parr " ]
+						&
+						(A^* \parr \bot) \parr \bot 
+							\arrow[dl, "\rho_\parr " ]				
+						&
+						(A^* \parr \bot) \parr (A\otimes A^*)	
+							\arrow[l, "\id \otimes \gamma^* "' ]
+							\arrow[dl , "\rho_\parr \parr \id " ]
+						&
+						((A^* \parr \bot) \parr A) \otimes A^*
+							\arrow[l, " \partial_R " ]
+							\arrow[dl, " (\rho_\parr \parr \id) \otimes \id " ]
+					\\
+						A^* \parr (A \otimes A')
+							\arrow[r, "\id \parr \gamma' " ]
+						&
+						A^* \parr \bot
+						&
+						A^* \parr (A \otimes A^*)
+							\arrow[l, "\id \parr \gamma^* "']
+						&
+						(A^* \parr A ) \otimes A^*
+							\arrow[l, "\partial_R "' ]
+				\end{tikzcd}
+			\end{sideways}
+			
+		\end{center}
+		
+		Finally, the triangle gives us the identity we want:
+		
+		\begin{center}
+			\begin{tikzcd}
+					(A^* \parr A) \otimes ((A' \parr A ) \otimes A^* )
+						\arrow[d, "\alpha_\otimes "' ]
+					&
+					(A^* \parr A) \otimes (1 \otimes A^* )
+						\arrow[l, "\id \otimes (\tau' \otimes \id ) "']
+						\arrow[d, "\alpha "' ]
+					&
+					(A^* \parr A) \otimes A^*
+						\arrow[l, "\id \otimes \lambda_\otimes^{-1} "' ]
+						\arrow[dl, "\rho_\otimes^{-1} \otimes \id " ]
+						\arrow[dd, "(\id \parr \rho_\otimes^{-1}) \otimes \id " ]
+				\\
+					((A^* \parr A) \otimes (A' \parr A)) \otimes A^*
+						\arrow[d, "\partial_L \otimes \id "' ]
+						\arrow[dr, "\partial_R \otimes \id " ]
+					&
+					((A^* \parr A) \otimes 1) \otimes A^*
+						\arrow[l, "(\id \otimes \tau') \otimes \id  "']
+						\arrow[dr, "\partial_R \otimes \id " ]
+					&
+				\\
+					(((A^* \parr A) \otimes A') \parr A) \otimes A^*
+						\arrow[d, "(\partial_R \parr \id) \otimes \id "' ]
+					&
+					(A^* \parr (A \otimes (A' \parr A))) \otimes A^*
+						\arrow[d, "(\id \parr \partial_L) \otimes \id "' ]
+					&
+					(A^* \parr (A \otimes 1)) \otimes A^*
+						\arrow[l, "(\id \parr (\id \otimes \tau')) \otimes \id " {yshift=-3pt} ]
+				\\
+					((A^* \parr (A \otimes A')) \parr A) \otimes A^*
+						\arrow[r, "\alpha_\parr \otimes \id "]
+						\arrow[d, "((\id \parr \gamma') \parr \id) \otimes \id "' ]
+					&
+					(A^* \parr ((A \otimes A') \parr A)) \otimes A^*
+						\arrow[d, "(\id \parr (\gamma' \parr \id)) \otimes \id "' ]
+					&
+				\\
+					((A^* \parr \bot) \parr A) \otimes A^*
+						\arrow[r, "\alpha_\parr \otimes \id "]
+						\arrow[dr, " (\rho_\parr \parr \id) \otimes \id "' ]
+					&
+					(A^* \parr (\bot \parr A)) \otimes A^*
+						\arrow[d, "(\id \parr \rho_\parr) \otimes \id " ]
+					&
+				\\
+					&
+					(A^* \parr A) \otimes A^*
+					&
+			\end{tikzcd}
+		\end{center}
+		The right-hand strand of the above diagram is, again, the identity by definition of the dual object. 
+		
+		Putting it all together we gain the equation:
+		\begin{align*}
+			\rho_\parr (\id \parr \gamma') \partial_R (\tau^* \otimes \id) \lambda_\otimes^{-1}
+			\rho_\parr (\id \parr \gamma^*) \partial_R (\tau' \otimes \id) \lambda_\otimes^{-1}
+			=\id_{A^*}
+		\end{align*} 
+		
+		Switching $A^*$ for $A'$ and vice versa in our diagram gives us the analog equation for $\id_{A'}$. 
+		Thus, we have $A^* \cong A'$ with the unique isomorphism 
+		$d = \rho_\parr (\id \parr \gamma^*) \partial_R (\tau' \otimes \id) \lambda_\otimes^{-1}$. 
+		For the units and counits we obtain: 
+		$\tau' = (d \parr \id) \tau^*$ and $\gamma^* = \gamma' (\id \otimes d)$.
+		
+		An analog proof shows the same for right duals.
+	\end{proof}
+	
+	
+	\begin{remark}
+		As the structure of the proof above might suggest, we have the following (functorial) adjunctions \cite[Lemma 4.2]{cockett&seely97}:
+		\begin{align*}
+			{^*A} \otimes - \dashv A \parr - , 
+			&\quad
+			- \otimes B^* \dashv - \parr B
+		\end{align*}
+	\end{remark}
+	
+	With the above lemma, we motivated the name “linearly adjoint”. We will now motivate the name “dual”:
+	
+	\begin{lemma}
+		\label{lemma: deMorgan}
+		For any objects $A$ and $B$ of an LDC: if $A^*$ and $B^*$ exist, the De-Morgan equations hold:
+		\begin{align*}
+			(A \otimes B)^* & \cong B^* \parr A^* 
+			\\
+			(A \parr B)^* & \cong B^* \otimes A^*
+		\end{align*}
+		The same is true for the right dual.
+	\end{lemma}
+	
+	\begin{proof}
+		The unit and counit for $A \otimes B$ are given by 
+		\begin{align*}
+			\tau_{A\otimes B} 
+			&= 
+			\alpha_\parr
+			\left(
+				\id \parr (\partial_R(\tau_A \otimes \id)\lambda_\otimes^{-1}) 
+			\right)
+			\tau_B : 
+			1 \longrightarrow (B^* \parr A^*) \parr (A \otimes B) 
+			\\
+			\gamma_{A \otimes B} 
+			&= 
+			\gamma_A 
+			\left(
+				\id \otimes 
+				\left(
+					\lambda_\parr (\gamma_B \parr \id) \partial_L 
+				\right)
+			\right)
+			\alpha_\otimes :
+			(A \otimes B) \otimes (B^* \parr A^*) \longrightarrow \bot
+		\end{align*}
+		
+		A straightforward diagram chase shows that these fulfill the conditions of Definition \ref{def: dualObj}.
+		
+		We focus on the second diagram of the definition, i.e. on creating the identity $\id_{A \otimes B} $. The process for $\id_{B^* \parr A^*} $ works the same way.
+		By  naturality of $\alpha_\otimes $ (and coherence with $\rho_\otimes$) we first obtain for the unit:
+		
+		\begin{center}
+			\begin{tikzcd}
+					&
+					A\otimes B
+					&
+				\\
+					A \otimes (B \otimes 1)
+						\arrow[ur, "\id \otimes \rho_\otimes " ]
+						\arrow[rr, "\sim " , "\alpha_\otimes "' ]
+						\arrow[d, "\id \otimes (\id \otimes \tau_{A\otimes B}) "' ]
+					&&
+					(A \otimes B) \otimes 1
+						\arrow[ul, "\rho_\otimes "' ]
+						\arrow[d, "\id \otimes \tau_{A\otimes B} " ]
+				\\
+					A \otimes \left( B \otimes \left( (B^* \parr A^*) \parr (A \otimes B) \right) \right)
+						\arrow[rr, "\sim " , "\alpha_\otimes "' ]
+					&&
+					(A \otimes B) \otimes \left( (B^* \parr A^*) \parr (A \otimes B) \right) 
+			\end{tikzcd}
+		\end{center}
+		
+		On the other hand, we obtain for the co-unit by naturality of $\partial_L$ (and coherence with $\alpha_\otimes$):
+		
+		\begin{center}
+			\begin{tikzcd}
+					A \otimes \left( B \otimes \left( (B^* \parr A^*) \parr (A \otimes B) \right) \right)
+						\arrow[rr, "\sim " , "\alpha_\otimes "' ]
+						\arrow[dd, "\id \otimes \partial_L "' ]
+					&&
+					(A \otimes B) \otimes \left( (B^* \parr A^*) \parr (A \otimes B) \right) 
+						\arrow[d, "\partial_L " ]
+				\\
+					&&
+					((A \otimes B) \otimes (B^* \parr A^*)) \parr (A \otimes B) 
+						\arrow[d, "\alpha_\otimes \parr \id " ]
+				\\
+					A \otimes \left( ( B \otimes (B^* \parr A^*) ) \parr (A \otimes B) \right)
+						\arrow[rr, "\partial_L " ]
+						\arrow[d, "\id \otimes (\partial_L \parr \id) "' ]
+					&&
+					(A \otimes ( B \otimes (B^* \parr A^*) )) \parr (A \otimes B) 
+						\arrow[d, "(\id \otimes \partial_L) \parr \id " ]
+				\\
+					A \otimes \left( ( (B \otimes B^*) \parr A^* ) \parr (A \otimes B) \right)
+						\arrow[rr, "\partial_L " ]
+						\arrow[d, "\id \otimes ((\lambda_\parr(\gamma_B \parr \id)) \parr \id) "' ]
+					&&
+					(A \otimes  ( (B \otimes B^*) \parr A^* )) \parr (A \otimes B) 
+						\arrow[d, "(\id \otimes( \lambda_\parr(\gamma_B \parr \id))) \parr \id " ]
+				\\
+					A \otimes (A^* \parr (A \otimes B))
+						\arrow[rr, " \partial_L " ]
+					&&
+					(A \otimes A^*) \parr (A \otimes B)
+						\arrow[d, "\gamma_A \parr \id " ]
+				\\
+					&&
+					\bot \parr (A \otimes B)
+						\arrow[d, "\lambda_\parr " ]
+				\\
+					&&
+					A \otimes B
+			\end{tikzcd}
+		\end{center}
+		
+		The path on the right is $\lambda_\parr (\gamma_{A \otimes B} \parr \id ) \partial_L $.
+		
+		Furthermore, using  the coherence between $\lambda$ and $\rho$ as well as $\partial_L$ and $\partial_R$, we can rewrite $\id_A \otimes \id_B $:
+		
+		\begin{center}
+			\begin{tikzcd}
+					&
+					A \otimes B 
+						\arrow[ld, "((\id \otimes \tau_A)\rho_\otimes^{-1}) \otimes \id "' ]
+						\arrow[rd, "\id \otimes ((\tau_A \otimes \id)\lambda_\otimes^{-1}) " ]
+					&
+				\\
+					(A \otimes (A^* \parr A) ) \otimes B
+						\arrow[rr, "\alpha_\otimes " ]
+						\arrow[dd, "\partial_L \otimes \id "' ]
+					&&
+					A \otimes  ((A^* \parr A) \otimes B)
+						\arrow[d, "\id \otimes \partial_R " ]
+				\\
+					&&
+					A \otimes (A^* \parr (A \otimes B))
+						\arrow[d, "\partial_L " ]
+				\\
+					((A \otimes A^*) \parr A) \otimes B
+						\arrow[rr, "\partial_R " ]
+						\arrow[dr, "(\lambda_\parr(\gamma_A \parr \id)) \otimes \id "' ]
+					&&
+					(A \otimes A^*) \parr (A \otimes B)
+						\arrow[dl, "\lambda_\parr (\gamma_A \parr \id) "]
+				\\
+					&
+					A \otimes B
+					&
+ 			\end{tikzcd}
+		\end{center}
+		
+		Thus, we can draw up the defining diagram (at times suppressing some identities):
+		
+		
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}[every label/.append style = {font = \tiny}, 
+					cells={nodes={font=\small}}, row sep=large]
+						A \otimes B
+							\arrow[d, equal ]
+							\arrow[r, "\id \otimes \rho_\otimes^{-1} " ]
+						&
+						A \otimes (B \otimes 1)
+							\arrow[r, "\id \otimes (\id \otimes \tau_B) " {name=unitB} ]
+						&
+						A \otimes (B \otimes (B^* \parr B) )
+							\arrow[r, "\id \otimes (\id \parr (\tau_A \otimes \id)\lambda_\otimes^{-1}) " {yshift=5pt} ]
+							\arrow[d, "\id \otimes \partial_L "' ]
+						&
+						A \otimes ( B \otimes ( B^* \parr ((A^* \parr A) \otimes B) ) )
+							\arrow[d, "\id \cdots \partial_R " ]
+							\arrow[ddl, "\id \otimes \partial_L "' {yshift=5pt, xshift=4pt} ]
+					\\
+						A\otimes B
+							\arrow[d, "\id \otimes ( \tau_A \otimes \id ) \lambda_\otimes^{-1} "' ]
+						& 
+						A \otimes (\bot \parr B)
+							\arrow[l, "\id \otimes \lambda_\parr " ]
+							\arrow[d, "\id \otimes (\id \parr (\tau_A \otimes \id)\lambda_\otimes^{-1}) "' ]
+						&
+						A \otimes ( (B \otimes B^*) \parr B )
+							\arrow[l, "\id \otimes (\gamma_B \parr \id) " {name=counitB} ]
+							\arrow[d, "\id \otimes (\id \parr (\tau_A \otimes \id)\lambda_\otimes^{-1}) "' ]
+						\arrow[phantom, from=unitB, to=counitB, "\circlearrowleft: B^* \dashV B"]
+						&
+						A \otimes ( B \otimes ( B^* \parr (A^* \parr (A \otimes B)) ) )
+							\arrow[d, "\cdots \alpha_\parr "]
+							\arrow[ddl, "\id \otimes \partial_L "' {yshift=5pt, xshift=4pt, name=cohDisAss1} ]
+					\\
+						A \otimes ( (A^*\parr A) \otimes B )
+							\arrow[d, "\id \otimes \partial_R "' ]
+						&
+						A \otimes( \bot \parr ( (A^* \parr A) \otimes B ) )
+							\arrow[l, "\id \otimes \lambda_\parr " ]
+							\arrow[d, "\id \otimes (\id \parr \partial_R) "' ]
+						&
+						A \otimes ( (B \otimes B^*) \parr ((A^* \parr A) \otimes B) )
+							\arrow[l, "\id \otimes (\gamma_B \parr \id) " yshift=-5pt ]
+							\arrow[d, "\id \otimes (\id \parr \partial_R) "' ]
+						&
+						A \otimes ( B \otimes (( B^* \parr A^*) \parr (A \otimes B) ) )
+							\arrow[d, "\id \otimes \partial_L " ]
+					\\
+						A \otimes (A^* \parr (A\otimes B))
+							\arrow[d, "\partial_L "' ]
+						&
+						A \otimes( \bot \parr ( A^* \parr (A \otimes B) ) )	
+							\arrow[l, "\id \otimes \lambda_\parr " ]
+							\arrow[d, "\id \otimes \alpha_\parr "' ]
+						&
+						A \otimes ( (B \otimes B^*) \parr (A^* \parr (A \otimes B) ) )
+							\arrow[l, "\id \otimes (\gamma_B \parr \id) " yshift=-5pt ]
+							\arrow[d, "\id \otimes \alpha_\parr "' ]
+						&
+						A \otimes ( (B \otimes (B^* \parr A^*)) \parr (A \otimes B))
+							\arrow[dl, "\id \otimes (\partial_L \parr \id) " {name=cohDisAss2} ]
+						\arrow[phantom, from=cohDisAss1, to=cohDisAss2, "\scriptstyle \circlearrowleft: { \text{ coh. } \partial_L \text{, } \alpha_\parr }" ]
+					\\
+						(A \otimes A^*) \parr (A \otimes B)
+							\arrow[d, "\gamma_A \parr \id "' ]
+						&
+						A \otimes ( ( \bot \parr A^* ) \parr (A \otimes B) )
+							\arrow[ul, "\id \otimes (\lambda_\parr \parr \id) " ]
+						&
+						A \otimes ( ( (B \otimes B^*) \parr A^* ) \parr (A \otimes B) )
+							\arrow[l, "\id \otimes ( (\gamma_B \parr \id) \parr \id ) " yshift=-5pt ]
+						&
+					\\
+						\bot \parr (A \otimes B)
+							\arrow[d, "\lambda_\parr "' ]
+						&
+						&&
+					\\
+						A \otimes B
+						&&&
+				\end{tikzcd}
+			\end{sideways}
+		\end{center}
+		
+		The left hand path (in orientation of the writing) is the identity on 
+		$A \otimes B$, 
+		while the top-right-bottom path equals 
+		$\lambda_\parr (\gamma_{A \otimes B} \parr \id ) \partial_L (\id \otimes \tau_{A\otimes B}) \rho_\otimes^{-1} $,
+		as shown above,
+		thus proving that the following diagram commutes:
+		
+		\begin{center}
+			\begin{tikzcd}
+					A \otimes B
+					\arrow[r, equal, "\id " ]
+					&
+					A \otimes B
+					\arrow[d, "\rho_\otimes^{-1} " ]
+				\\
+					\bot \parr (A \otimes B)
+					\arrow[u, "\lambda_\parr " ]
+					&
+					(A \otimes B) \otimes 1
+					\arrow[d, "\id \otimes \tau_{A \otimes B} " ]
+				\\
+					( (A \otimes B) \otimes (B^* \parr A^*) ) \parr (A \otimes B)
+					\arrow[u, "\gamma_{A \otimes B} \parr \id " ]
+					&
+					(A \otimes B) \otimes ( (B^* \parr A^*) \parr (A \otimes B) )
+					\arrow[l, "\partial_L " ]
+			\end{tikzcd}
+		\end{center}
+		
+		A similar argument shows that the following diagram commutes:
+		
+		\begin{center}
+			\begin{tikzcd}
+					B^* \parr A^*
+					\arrow[r, equal, "\id" ]
+					&
+					B^* \parr A^*
+					\arrow[d, "\lambda_\otimes^{-1} " ]
+				\\
+					(B^* \parr A^*) \parr \bot
+					\arrow[u, "\rho_\parr " ]
+					&
+					1 \otimes (B^* \parr A^*)
+					\arrow[d, "\tau_{A \otimes B} \otimes \id " ]
+				\\
+					(B^* \parr A^*) \parr ( (A \otimes B) \otimes (B^* \parr A^*) )
+					\arrow[u, "\id \parr \gamma_{A \otimes B} " ]
+					&
+					( (B^* \parr A^*) \parr (A \otimes B) ) \otimes (B^* \parr A^*)
+					\arrow[l, "\partial_R " ]
+			\end{tikzcd}
+		\end{center}
+		
+		With Definition \ref{def: dualObj} and Lemma \ref{lemma: isoLinDisCat} it follows that $(A \otimes B)^* \cong B^* \parr A^* $.
+		
+		The same is done for the other equations.
+	\end{proof}
+	
 	%(BCS: "Feedback for linearly distributive categories: traces and fixpoints)
 	%comment..............................................................................................................................
 	
-	\todo[inline]{\cite{srinavsan-thesis} Lemma 2.9 (iii)?}
+	%\todo[inline]{\cite{srinavsan-thesis} Lemma 2.9 (iii)?}
 	%comment.............................................................................................................................
 	
-	\begin{definition}[*-autonomous categories (Srinivasan \cite{srinavsan-thesis})]
+	\begin{definition}[*-autonomous categories \cite{srinavsan-thesis}]
 		\label{def: autoCatSrinivasan}
-		\notimportantnote{is Srinivasan the origin of this version?}
-		An LDC $\category{C} $ in which for every Object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau*, \gamma*): A^* \dashV A $ and $(*\tau, *\gamma): A \dashV \leftindex^* {A} $, is called \emph{*-autonomous category}.
+		An LDC $\category{C} $ in which for every object $A \in \category{C} $ there exists a left and right dual, resp. $(\tau_A, \gamma_A): A^* \dashV A $ and $({_A}\tau, {_A}\gamma): A \dashV {^*A} $, is called \emph{*-autonomous category}.
 	\end{definition}
 	
+	As mentioned, there are various ways to define *-autonomous categories:
+	
+	\begin{definition}[*-autonomous categories \cite{barr95}]
+		\label{def: autoCatBarrC}
+		A *-autonomous category is a monoidal category $\category{C} $ equipped with an equivalence $(-)^* : \category{C} \rightarrow \category{C}^\opp $ such that there is a natural isomorphism 
+		\begin{align*}
+			\Hom(A, B^*) \rightarrow \Hom(1, (B \otimes A)^*)
+		\end{align*}
+	\end{definition}
+	
+	Barr lists three more ways to define *-autonomous categories, all equivalent to the definition above \cite{barr95}. We will now show that these are equivalent to Srinivasan's definition:
+	
+	\begin{theorem}
+		\label{equivalenceAutoCats}
+		Definition \ref{def: autoCatSrinivasan} and Definition \ref{def: autoCatBarrC} are equivalent.
+	\end{theorem}
+	
+	\begin{proof}
+		A sketch for the symmetric case was given by Cocket and Seely \cite[theorem 4.5]{cockett&seely97}. 
+		
+		Asume $\category{C}$ to be a category fulfilling Definition \ref{def: autoCatSrinivasan}.
+		The object functions $(-)^*$ and ${^*(-)}$ can be extended to contravariant functors by the following maps:
+		
+		\begin{center}
+			$(A \xlongrightarrow{f} B) \mapsto f^* := \; $
+			\begin{tikzcd}
+					&
+					B^*
+						\arrow[d, "(\tau_A \otimes \id) \lambda_\otimes^{-1} " ]
+					&
+				\\
+					&
+					(A^* \parr A) \otimes B^*
+						\arrow[dr, "\partial_R " ]
+						\arrow[dl, "(\id \parr f) \otimes \id "]
+					&
+				\\
+					(A^* \parr B) \otimes B^*
+						\arrow[dr, "\partial_R " ]
+					&
+					&
+					A^* \parr (A \otimes B^*)
+						\arrow[dl, "\id \parr (f \otimes \id) " ]
+				\\
+					&
+					A^* \parr (B \otimes B^*)
+						\arrow[d, "\rho_\parr (\id \parr \gamma_B) " ]
+					&
+				\\
+					&
+					A^*
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		\begin{center}
+			$(A \xlongrightarrow{f} B) \mapsto {^*f} := \; $
+			\begin{tikzcd}
+					&
+					{^*B}
+					\arrow[d, "( \id \otimes {_A}\tau ) \rho_\otimes^{-1} " ]
+					&
+				\\
+					&
+					{^*B} \otimes (A \parr {^*A})
+					\arrow[dr, "\partial_L " ]
+					\arrow[dl, "\id \otimes (f \parr \id) "]
+					&
+				\\
+					{^*B} \otimes (B \parr {^*A})
+					\arrow[dr, "\partial_L " ]
+					&
+					&
+					({^*B} \otimes A) \parr {^*A}
+					\arrow[dl, "(\id \otimes f) \parr \id " ]
+				\\
+					&
+					({^*B} \otimes B) \parr A^*
+					\arrow[d, "\lambda_\parr ( {_B}\gamma \parr \id ) " ]
+					&
+				\\
+					&
+					A^*
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		As the squares commute, the order of distributor and $f$ does not matter. For duality to be a functor, it needs to preserve composition, leading to the following diagram in the case of $(-)^*$ (suppressing $\alpha_\otimes$ and some identities for better readability):
+		
+		\begin{center}
+			\begin{tikzcd}[sep=small]
+					&
+					(A^* \parr A) \otimes C^*
+						\arrow[rr, "(\id \parr f ) \otimes \id" ]
+						\arrow[dr, "\id \otimes (\tau_A \otimes \id) \lambda^{-1} "' ]
+					&
+					&
+					(A^* \parr B) \otimes C^*
+					\arrow[dr, "(\id \parr \gamma_C) \partial_R ((\id \parr g) \otimes \id) " ]
+					&
+				\\
+					C^*
+						\arrow[ur, "(\tau_A \otimes \id) \lambda^{-1} " ]
+						\arrow[dr, "(\tau_B \otimes \id) \lambda^{-1} "' ]
+					&
+					&
+					(A^* \parr A) \otimes (B^* \parr B) \otimes C^*
+						\arrow[ur, "\cdots\gamma_B\cdots \circ \cdots\partial_R\partial_L\cdots \circ \cdots f \cdots " {shift right}]
+						\arrow[dr, "(\id \parr \gamma_C) \partial_R ((\id \parr g) \otimes \id) "']
+					&
+					&
+					A^*
+				\\
+					&
+					(B^* \parr B) \otimes C^*
+						\arrow[ur, "(\tau^*_A \otimes \id) \lambda^{-1} " ]
+						\arrow[dr, "(\id \parr \gamma_C) \partial_R ((\id \parr g) \otimes \id) "' ]
+					&
+					&
+					(A^* \parr A) \otimes B^*
+						\arrow[ur, "(\id \parr \gamma_B) \partial_R ((\id \parr f) \otimes \id) "' ]
+					&
+				\\
+					&
+					&
+					B^*
+						\arrow[ur, "(\tau_A \otimes \id) \lambda^{-1} "']
+					&
+					&					
+			\end{tikzcd}
+		\end{center} 
+		
+		The path at the top of the diagram is $(gf)^*$ while the path at the bottom is $f^*g^*$. Commutativity of the diagram is shown in the same way as in Lemma \ref{lemma: isoLinDisCat}.
+		The preservation of identities follows directly from the properties of the (co-)units.
+		
+		Thus, $(-)^* : \category{C} \rightarrow \category{C}^\opp $ is a functor.
+		
+		By Lemma \ref{lemma: isoLinDisCat} we know ${^*(A^*)} \cong ({^*A})^* \cong A$ and that the following diagram commutes:
+		
+		\begin{center}
+			${^*(f^*)} = $
+			\begin{tikzcd}
+					{^*(A^*)}
+						\arrow[r, "\sim "]
+						\arrow[d, "(\id \otimes {_{B^*}}\tau) \lambda_\otimes^{-1} "' ]
+					&
+					A
+						\arrow[d, "(\id \otimes \tau_B) \lambda_\otimes^{-1} " ]
+				\\
+					{^*(A^*)} \otimes (B^* \parr {^*(B^*))}
+						\arrow[r, "\sim "]
+						\arrow[d, "\id \otimes (f^* \parr \id) "' ]
+					&
+					A \otimes (B^* \parr B)
+						\arrow[d, "\id \otimes (f^* \parr \id) " ]
+				\\
+					{^*(A^*)} \otimes (A^* \parr {^*(B^*)})
+						\arrow[r, "\sim "]
+						\arrow[d, "\partial_L "' ]
+					&
+					A \otimes (A^* \parr B)
+						\arrow[d, "\partial_L "]
+				\\
+					({^*(A^*)} \otimes A^*) \parr {^*(B^*)}
+						\arrow[r, "\sim "]
+						\arrow[d, "\rho_\parr ({_{A^*}}{\gamma} \parr \id) "' ]
+					&
+					(A \otimes A^*) \parr B
+						\arrow[d, "\rho_\parr (\gamma_{A} \parr \id) " ]
+				\\
+					{^*(B^*)}
+					&
+					B
+					\arrow[l, "\sim "']
+			\end{tikzcd}
+		\end{center}
+		
+		Thus, in order to check ${^*(f^*)} \cong f $, it is sufficient to check if the following diagram commutes:
+		
+		\begin{center}
+			\begin{tikzcd}
+					A
+						\arrow[r, "f"]
+						\arrow[d, "(\id \otimes \tau_B) \rho_\otimes^{-1} "' ]
+					&
+					B
+						\arrow[d, "(\id \otimes \tau_B) \rho_\otimes^{-1} " ]
+				\\
+					A \otimes (B^* \parr B)
+						\arrow[d, "\partial_L "' ]
+						\arrow[r, "f \otimes \id " ]
+					&
+					B \otimes (B^* \parr B)
+						\arrow[d, "\partial_L " ]
+				\\
+					(A \otimes B^*) \parr B
+						\arrow[d, "(\id \otimes f^*) \parr \id "' ]
+						\arrow[r, "(f\otimes \id) \parr \id " ]
+					&
+					(B \otimes B^*) \parr B
+						\arrow[d, "\lambda_\parr (\gamma_B \parr \id) " ]
+				\\
+					(A \otimes A^*) \parr B
+						\arrow[r,  "\lambda_\parr (\gamma_A \parr \id) " ]
+					&
+					B
+			\end{tikzcd}
+		\end{center}
+		
+		The commutativity of the last square can be seen when zooming in:
+		
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}[row sep=large ]
+						(A \otimes B^*) \parr B
+							\arrow[d, "( \id \otimes (\tau_A \otimes \id)\lambda_\otimes^{-1} ) \parr \id "']
+							\arrow[dr, " \id \otimes ( (\tau_A \otimes \id)\rho_\otimes^{-1}  \parr \id ) "]
+						&&&
+					\\
+						( A \otimes ( (A^* \parr A) \otimes B ) ) \parr B
+							\arrow[r, "\alpha_\otimes \otimes \id " ]
+							\arrow[dd, "(\id \otimes \partial_R) \parr \id "' {name=cohDisAss1} ]
+						&
+						( ( A \otimes (A^* \parr A) ) \otimes B ) \parr B
+							\arrow[d, "(\partial_L \otimes \id) \parr \id " {name=cohDisAss2} ]
+						\arrow[phantom, from=cohDisAss1, to=cohDisAss2, "{ \scriptstyle \circlearrowleft: \text{ coh. } \partial_L, \partial_R }" {xshift=-10pt} ]
+						&&
+					\\
+						&
+						( ( (A \otimes A^*) \parr A ) \otimes B ) \parr B
+							\arrow[r, "\gamma_A \cdots " ]
+							\arrow[d, "\partial_R \parr \id " ]
+						&
+						( ( \bot \parr A ) ) \otimes B ) \parr B
+							\arrow[r, "\lambda_\parr \cdots "]
+							\arrow[d, "\partial_R \parr \id "]
+						&
+						(A \otimes B^*) \parr B
+							\arrow[dd, "(f \otimes \id) \parr \id " ]
+					\\
+						( A \otimes ( A^* \parr (A \otimes B) ) ) \parr B
+							\arrow[r, " \partial_L \parr \id " ]
+							\arrow[d, "( \id \otimes ( \id \parr (f \otimes \id) ) ) \parr \id "' ]
+						&
+						( (A \otimes A^*) \parr (A \otimes B^*) ) \parr B
+							\arrow[r, " (\gamma_A \parr \id) \otimes \id " {yshift=4pt} ]
+							\arrow[d, "(\id \parr (f \otimes \id)) \parr \id "{name=funTen1} ]
+						&
+						( \bot \parr (A \otimes B^*) ) \parr B
+							\arrow[ur, "\lambda_\parr \parr \id "' ]
+							\arrow[d, "(\id \parr (f \otimes \id)) \parr \id "{name=funTen2} ]
+						\arrow[phantom, from=funTen2, to=funTen1, "\scriptstyle { \circlearrowleft: \text{ funct. } \otimes } " xshift=8pt ]
+						&
+					\\
+						( A \otimes ( A^* \parr (B \otimes B^*) ) ) \parr B
+							\arrow[r, "\partial_L \parr \id " ]
+							\arrow[d, "( \id \otimes ( \id \parr \gamma_B ) ) \parr \id "' ]
+						&
+						( (A \otimes A^*) \parr (B \otimes B^*) ) \parr B
+							\arrow[r, "(\gamma_A \parr \id) \parr \id " {yshift=4pt} ]
+							\arrow[d, "(\id \parr \gamma_B) \parr \id " ]
+						&
+						( \bot \parr (B \otimes B^*) ) \parr B
+							\arrow[r, "\lambda_\parr \parr \id " ]
+							\arrow[d, "(\id \parr \gamma_B) \parr \id " ]
+						&
+						(B \otimes B^*) \parr B
+							\arrow[d, "\gamma_B \parr \id " ]
+					\\
+						( A \otimes  (A^* \parr \bot) ) \parr B
+							\arrow[r, "(\gamma_A \parr \id) \parr \id " ]
+							\arrow[dr, "(\id \otimes \lambda_\parr) \parr \id "' ]
+						&
+						( (A \otimes A^*) \parr \bot ) \parr B
+							\arrow[r, "(\gamma_A \parr \id) \parr \id " ]
+							\arrow[d, "\rho_\parr \parr \id " ]
+						&
+						(\bot \parr \bot) \parr B
+							\arrow[r, "\lambda_\parr \parr \id " ]
+							\arrow[d, "\rho_\parr \parr \id " {name=cohAssUni1} ]
+						&
+						\bot \parr B
+							\arrow[d, "\lambda_\parr " {name=cohAssUni2} ]
+						\arrow[phantom, from=cohAssUni1, to=cohAssUni2, "\scriptstyle \circlearrowleft: {\text{ coh. } \alpha \text{, } \lambda \text{, } \rho} " ]
+					\\
+						&
+						(A \otimes A^*) \parr B
+							\arrow[r, "\gamma_A \parr \id " ]
+						&
+						\bot \parr B
+							\arrow[r, "\lambda_\parr " ]
+						&
+						B
+				\end{tikzcd}
+			\end{sideways}
+		\end{center}
+		
+		The path on the left is $(\id \otimes f^*) \parr \id $ while the path at the top of the diagram is the identity on $A$ per definition of the dual object. With this, we see that ${^*}(f^*) \cong f$. The other direction, $({^*f})^*\cong f$, is shown similarly. That means $(-)^*$ is indeed an equivalence.  
+		
+		By Lemma \ref{lemma: deMorgan} we know 
+		$\Hom(1, (B \otimes A)^* ) \cong \Hom(1, A^* \parr B^*) $. 
+		Therefore, it is enough to check whether 
+		$\Hom(A, B^*) \cong \Hom(1, A^* \parr B^*) $.
+		The isomorphism is given by the following map:
+		\begin{align*}
+			(f: A\rightarrow B^*) 
+			\mapsto 
+			\left((\id \otimes f)\tau_A : 1 \rightarrow A^* \parr B^* \right)
+		\end{align*} 
+		and its inverse:
+		\begin{align*}
+			(g: 1\rightarrow A^* \parr B^*) 
+			\mapsto 
+			\left(\lambda_\parr(\gamma_A  \parr \id) \partial_L (\id \otimes g) \rho_\otimes^{-1} : A \rightarrow B^* \right)
+		\end{align*}
+		Thus, we obtain a monoidal category with an equivalence 
+		$(-)^*:\category{C}^\opp \rightarrow \category{C} $ 
+		such that 
+		$\Hom(A, B^*) \cong \Hom(1, (B \otimes A)^* )$.
+		
+		%---------------------------------------------------------------------------------------------------------------
+		Now, assume we have a category $\category{C}$ fulfilling Definition \ref{def: autoCatBarrC}. As $(-)^*$ is an equivalence, it has an inverse ${^*(-)}$ and we can rewrite the hom-isomorphism as $\Hom(A, B) \cong \Hom( 1, ( {^*B} \otimes A )^* )$.
+		We can therefore define a second tensor product: 
+		\begin{align*}
+			A \parr B := ({^*B} \otimes {^*A})^*
+		\end{align*} 
+		
+		This gives us $\Hom(A, B) \cong \Hom(1, A^* \parr B) $.
+		
+		The unit is defined by $\bot := 1^*$. Using the equivalence, we obtain the following isomorphism:
+		%
+		\begin{gather*}
+			\Hom(A, \bot) \cong \Hom(1, (1 \otimes A)^*) \overset{^*(-)}{\cong} \Hom(1 \otimes A, {^*1}) \cong \Hom(A, {^*1}) 
+			\\
+			\Rightarrow \, \bot=1^* \cong {^*1}
+		\end{gather*}
+		
+		Similarly, we obtain 		
+		\begin{align*}
+			{^*}(B^* \otimes A^*) \cong ({^*B} \otimes {^*A})^* = A\parr B 
+		\end{align*}
+		
+		The associator and unitors are inherited from $\otimes$:
+		
+		\begin{center}
+			\begin{tikzcd}
+					A \parr (B \parr C)
+						\arrow[r, equal]
+						\arrow[d, "\alpha_\parr " ]
+					&
+					\left({^*\left( ({^*C} \otimes {^*B} )^* \right)} \otimes {^*A} \right)
+						\arrow[r, "\sim " ]
+					&
+					\left(({^*C} \otimes {^*B}) \otimes {^*A}\right)^*
+						\arrow[d, "\alpha_\otimes^* " ]
+				\\
+					(A \parr B) \parr C
+						\arrow[r, equal]
+					&
+					\left( {^*C} \otimes {^*\left( ({^*B} \otimes {^*A} )^* \right)} \right)
+					&
+					\left( {^*C} \otimes ({^*B} \otimes {^*A}) \right)^*
+						\arrow[l, "\sim "' ]				
+			\end{tikzcd}
+			
+			\begin{tikzcd}
+					A \parr \bot 
+						\arrow[r, equal]
+						\arrow[d, "\rho_\parr " ]
+					&
+					({^*\bot} \otimes {^*A})^*
+						\arrow[r, "\sim " ]
+					&
+					(1 \otimes {^*A})^*
+						\arrow[d, " (\lambda_\otimes^{-1})^* " ]
+				\\
+					A
+					&
+					&
+					({^*A})^*
+						\arrow[ll, "\sim "' ]
+			\end{tikzcd}
+			
+			\begin{tikzcd}
+					\bot \parr A 
+					\arrow[r, equal]
+					\arrow[d, "\lambda_\parr " ]
+					&
+					({^*A} \otimes {^*\bot})^*
+					\arrow[r, "\sim " ]
+					&
+					({^*A} \otimes 1)^*
+					\arrow[d, " (\rho_\otimes^{-1})^* " ]
+				\\
+					A
+					&
+					&
+					({^*A})^*
+					\arrow[ll, "\sim "' ]
+			\end{tikzcd}
+		\end{center}
+		
+		Accordingly, they fulfill their respective coherence conditions.
+		
+		Using associativity, we obtain the following equations:
+		
+		\begin{align*}
+			&\Hom(A \otimes B, C) \cong \Hom(1 , ({^*C} \otimes A \otimes B)^*) \cong \Hom(B , A^* \parr C)
+			\\
+			\cong &
+			\Hom({^*C} , {^*(A \otimes B)}) \cong \Hom(1, {^*(A \otimes B \otimes C^*)}) \cong \Hom(A , {^*(B \otimes C^*)}) \cong \Hom(A, C \parr {^*B}) 
+		\end{align*}
+		
+		Thus, for any objects $A$ and $B$ we have the adjunctions 
+		\begin{align*}
+			A \otimes - &\dashv A^* \parr -
+			&
+			- \otimes B &\dashv - \parr {^*B}			
+		\end{align*}
+		
+		Their unit and co-unit are given by the \emph{co-evaluation} and \emph{evaluation} map resp.:
+		\begin{equation*}
+			\begin{array}{rcccl}
+					\Hom(B , A^* \parr (A \otimes B)) 
+					& \cong &
+					\Hom(A\otimes B, A \otimes B)
+					& \cong &
+					\Hom(A, (A \otimes B) \parr {^*B})
+				\\
+					\eta^L_{A, B}
+					& \mapsfrom &
+					\id_{A \otimes B}
+					& \mapsto &
+					\eta^R_{A,B}
+				\\
+					\Hom(A \otimes (A^* \parr {^*B}) , {^*B})
+					& \cong &
+					\Hom(A^* \parr {^*B})
+					& \cong &
+					\Hom((A^* \parr {^*B}) \otimes B, A^*)
+				\\
+					\varepsilon^L_{A, {^*B}}
+					& \mapsfrom &
+					\id_{A^* \parr {^*B}}
+					& \mapsto &
+					\varepsilon^R_{A^*, B} 
+			\end{array}
+		\end{equation*}
+		
+		With these maps, we can define the distributors via both adjunctions:
+		%construction del_R
+		\begin{equation*}
+			\begin{array}{rcl}
+					\Hom({^*A} \otimes ((A \parr B) \otimes C), B \otimes C) 
+					& \cong &
+					\Hom((A\parr B) \otimes C, A \parr (B \otimes C))
+				\\
+					(\epsilon^L_{{^*A}, B} \otimes \id_C)\alpha_\otimes
+					& \mapsto &
+					\partial_R := (\id_A \parr (\epsilon^L_{{^*A}, B} \otimes \id_C)\alpha_\otimes) \eta^L_{{^A}, \cdots}
+			\end{array}
+		\end{equation*}
+		\begin{equation*}
+			\begin{array}{rcl}
+					\Hom(A \parr B, (A \parr (B\otimes C)) \parr {^*C})
+					& \cong &
+					\Hom((A\parr B) \otimes C, A \parr (B \otimes C))
+				\\
+					\alpha_\parr(\id_A \parr \eta^R_{B,C})
+					& \mapsto &
+					\partial_R := \epsilon^R_{\cdots, C} (\alpha_\parr(\id_A \parr \eta^R_{B,C}) \otimes \id_C)
+			\end{array}
+		\end{equation*}
+		
+		%construction del_L
+		\begin{equation*}
+			\begin{array}{rcl}
+					\Hom(B \parr C, A^* \parr ((A \otimes B) \parr C)) 
+					& \cong &
+					\Hom(A \otimes (B \parr C) , (A \otimes B) \parr C)
+				\\
+					\alpha_\parr^{-1}(\eta^L_{A,B} \parr \id_C)
+					& \mapsto &
+					\partial_L := \epsilon^L_{A, \cdots} ( \id_A \otimes \alpha_\parr^{-1}(\eta^L_{A,B} \parr \id_C) )
+			\end{array}
+		\end{equation*}
+		\begin{equation*}
+			\begin{array}{rcl}
+					\Hom((A \otimes (B \parr C))\otimes C^*, A \otimes B)
+					& \cong &
+					\Hom(A \otimes (B \parr C) , (A \otimes B) \parr C)
+				\\
+					(\id_A \otimes \eta^R_{B, C^*} ) \alpha_\otimes^{-1}
+					& \mapsto &
+					\partial_L := ((\id_A \otimes \eta^R_{B, C^*} ) \alpha_\otimes^{-1} \parr \id_C) \eta^R_{\cdots, C}
+			\end{array}
+		\end{equation*}
+		
+		In order to see that this is well-defined, note that for 
+		\begin{equation*}
+			F:= A\otimes - \dashv A^* \parr - =: G
+		\end{equation*} 
+		and 
+		\begin{equation*}
+			F':= - \otimes C^* \dashv - \parr C =: G'
+		\end{equation*} 
+		by Lemmas \ref{lemma: compAdjunction} and \ref{lemma: isoAdjunctions} we have the adjunction 
+		\begin{equation*}
+			F F' \dashv G' G
+		\end{equation*} 
+		and the isomorphisms
+		\begin{equation*}
+			\alpha_\otimes : F F' \rightarrow F' F
+		\end{equation*} 
+		and 
+		\begin{equation*}
+			\alpha_\parr : G G' \rightarrow G' G 
+		\end{equation*}
+		
+		Thus, equality of the two definitions for $\partial_L$ is shown by the commutativity of the following diagram (by applying it to $B$):
+		
+		\begin{center}
+			\begin{tikzcd}[sep=large]
+					F G'
+						\arrow[r, "\eta^R F G' "]
+						\arrow[d, "F G' \eta^L "]
+					&
+					G' F' F G'
+						\arrow[r, "G' \alpha^{-1}_\otimes G' "]
+						\arrow[d, "G'F'FG' \eta^L " ]
+					&
+					G' F F' G'
+						\arrow[r, "G' F \epsilon^R " ]
+						\arrow[d, "G'F F' G' \eta^L " ]
+					&
+					G' F
+						\arrow[d, "G'F \eta^L " ]
+				\\
+					F G' G F
+						\arrow[r, "\eta^R FG' GF "]
+						\arrow[d, "F \alpha_\parr^{-1} F"]
+					&
+					G'F' FG' GF
+						\arrow[r, "G' \alpha^{-1}_\otimes G' GF "]
+						\arrow[d, "G'F' F \alpha_\parr^{-1} F"]
+					&
+					G'F F'G' GF
+						\arrow[r, "G' F \epsilon^R " ]
+					&
+					G'F GF
+						\arrow[dd, "G' \epsilon^L F "]
+				\\
+					FG G'F
+						\arrow[r, "\eta^R FG G'F "]
+						\arrow[d, "\epsilon^L G'F "]
+					&
+					G'F' FG G'F
+						\arrow[d, "G'F' \epsilon^L G'F "]
+					&&
+				\\
+					G'F
+						\arrow[r, "\eta^R G'F "]
+					&
+					G'F' G'F
+						\arrow[rr, "G' \epsilon^R F "]
+					&&
+					G'F
+			\end{tikzcd}
+		\end{center}
+		
+		The paths on the top and left are the two definitions of $\partial_L$, the paths on the right and bottom are the identity on $G'F$ by the triangle identity of Proposition \ref{prop.: triangleIdentity}. The small squares commute by naturality of the (co-)units, the big square does so by Lemmas \ref{lemma: isoAdjunctions} and \ref{lemma: compAdjunction}.
+		Switching $F$ for $F'$, $G'$ for $G$, and the appropriate morphisms gives us the same diagram for $\partial_R$.
+		
+		Thus we can show the coherence conditions by transposing the diagram along either adjunction:
+		
+		The commutativity of the diagram 
+		\begin{center}
+			\begin{tikzcd}
+				(A \parr B) \otimes 1
+					\arrow[r, "\partial_L " ]
+					\arrow[d, "\rho_\otimes " ]
+				&
+				A \parr (B \otimes 1)
+					\arrow[d, "\id \parr \rho_\otimes " ]
+				\\
+				A \parr B
+					\arrow[r, equal]
+				&
+				A \parr B
+			\end{tikzcd}
+		\end{center}
+		
+		follows from the commutativity of its transpose under ${^*A} \otimes - \dashv A \parr - $:
+		\begin{center}
+			\begin{tikzcd}
+				{^*A} \otimes ((A \parr B) \otimes 1)
+					\arrow[r, "\alpha_\otimes " ]
+					\arrow[d, " \id \otimes \rho_\otimes " ]
+				&
+				({^*A} \otimes (A \parr B)) \otimes 1
+					\arrow[r, "\epsilon^L \otimes \id " ]
+					\arrow[d, "\rho_\otimes " ]
+				&
+				B \otimes 1
+					\arrow[d, "\rho_\otimes " ]
+				\\
+				{^*A} \otimes (A \parr B) 
+					\arrow[r, equal ]
+				&
+				{^*A} \otimes (A \parr B)
+					\arrow[r, "\epsilon^L " ]
+				&
+				B
+			\end{tikzcd}
+		\end{center}
+		
+		Similarly, coherence of $\partial_R$ and $\lambda_\parr$
+		\begin{center}
+			\begin{tikzcd}
+				(\bot \parr A) \otimes B
+					\arrow[r, "\partial_R " ]
+					\arrow[d, "\lambda_\parr \otimes \id " ]
+				&
+				\bot \parr (A \otimes B)
+					\arrow[d, "\lambda_\parr " ]
+				\\
+				A \otimes B
+					\arrow[r, equal]
+				&
+				A \otimes B
+			\end{tikzcd}
+		\end{center}
+		
+		follows from commutativity of its transpose under $- \otimes B \dashv - \parr {^*B} $:
+		\begin{center}
+			\begin{tikzcd}
+				\bot \parr A
+					\arrow[r, "\id \parr \eta^R " ]
+					\arrow[d, "\lambda_\parr " ]
+				&
+				\bot \parr ((A \otimes B) \parr {^*B})
+					\arrow[r, "\alpha_\parr^{-1} " ]
+					\arrow[d, "\lambda_\parr " ]
+				&
+				(\bot \parr (A \otimes B)) \parr {^*B}
+					\arrow[d, "\lambda_\parr \parr \id " ]
+				\\
+				A
+					\arrow[r, "\eta^R " ]
+				&
+				(A \otimes B) \parr {^*B}
+					\arrow[r, equal]
+				&
+				(A \otimes B) \parr {^*B}
+			\end{tikzcd}
+		\end{center}
+		
+		Coherence with the associator $\alpha_\otimes$
+		\begin{center}
+			\begin{tikzcd}
+				(A \parr B) \otimes (C \otimes D)
+					\arrow[r, "\partial_R " ]
+					\arrow[d, "\alpha_\otimes " ]
+				&
+				A \par (B \otimes (C \otimes D))
+					\arrow[dd, "\id \parr \alpha_\parr " ]
+				\\
+				((A \parr B) \otimes C) \otimes D
+					\arrow[d, "\partial_R \otimes \id " ]
+				&
+				\\
+				(A \parr (B \otimes C)) \otimes D
+					\arrow[r, "\partial_R " ]
+				&
+				A \parr ((B\otimes C) \otimes D)
+			\end{tikzcd}
+		\end{center}
+		
+		also follows from its transpose:
+		\begin{center}
+			\begin{tikzcd}
+					{^*A} \otimes ((A \parr B) \otimes (C \otimes D))
+						\arrow[r, "\alpha_\otimes " ]
+						\arrow[dd, "\id \otimes \alpha_\otimes " ]
+					&
+					({^*A} \otimes (A \parr B)) \otimes (C \otimes D)
+						\arrow[r, "\epsilon^L \otimes \id " ]
+						\arrow[d, "\alpha_\otimes " ]
+					&
+					B \otimes (C \otimes D)
+						\arrow[d, "\alpha_\otimes " ]
+				\\
+					&
+					(({^*A} \otimes (A \parr B)) \otimes C) \otimes D
+						\arrow[r, "(\epsilon^L \otimes \id) \otimes \id " ]
+					&
+					(B \otimes C) \otimes D
+						\arrow[dd, equal]
+				\\
+					{^*A} \otimes (((A \parr B) \otimes C) \otimes D)
+						\arrow[r, "\alpha " ]
+						\arrow[d, "\id \otimes (\partial_R \otimes \id) " ]
+					&
+					( {^*A} \otimes ( (A \parr B) \otimes C ) ) \otimes D
+						\arrow[d, " (\id \otimes \partial_R) \otimes \id " ]
+						\arrow[u, "\alpha \otimes \id " ]
+				\\
+					{^*A} \otimes ((A \parr (B \otimes C)) \otimes D)
+						\arrow[r, "\alpha " ]
+					&
+					({^*A} \otimes (A \parr (B \otimes C))) \otimes D
+						\arrow[r, "\epsilon^L \otimes \id " ]
+					&
+					(B \otimes C) \otimes D
+			\end{tikzcd}
+		\end{center}
+		
+		The bottom-right square is the transposed of the following diagram (before application of the functor $-\otimes D$):
+		\begin{center}
+			\begin{tikzcd}
+				(A \parr B) \otimes C
+					\arrow[r, "\partial_R " ]
+					\arrow[d, "\partial_R " ]
+				&
+				A \parr (B \otimes C)
+					\arrow[d, equal, "\id_A \parr \id_{B \otimes C} " ]
+				\\
+				A \parr (B \otimes C)
+					\arrow[r, equal, "\id_{A \parr (B \otimes C)} " ]
+				&
+				A \parr (B \otimes C)
+			\end{tikzcd}
+		\end{center}
+		
+		The remaining coherence conditions between the distributors and the associators or unitors are shown in the same way.
+		
+		Coherence between $\partial_L$ and $\partial_R$ requires more work as we have to deal with two adjunctions at once. 
+		We notate $F:= A \otimes - \dashv A^* \parr - =: G$ and $F':= -\otimes D \dashv -\parr {^*D}$ as well as $FF' \cong F'F$ and $G'G \cong GG'$, again.
+		First, note that the transpose of
+		\begin{equation*}
+			FF'a \overset{Ff}{\longrightarrow} Fb \overset{h}{\longrightarrow} d
+		\end{equation*}
+		
+		along the adjunction $(\tilde{\eta}, \tilde{\varepsilon}): FF' \dashv G'G $ is given by
+		\begin{center}
+			\begin{tikzcd}
+					&
+					a
+						\arrow[dl, "\tilde{\eta}" ]
+						\arrow[d, "\eta' " ]
+						\arrow[dd, bend left=50, "\check{f}"]
+				\\
+					G'G FF' a
+						\arrow[d, "G'GF f" ]
+					&
+					G' F' a
+						\arrow[l, "G'\eta F' " ]
+						\arrow[d, "G' f " ]
+				\\
+					G'G F b
+						\arrow[d, "G'G h " ]
+					&
+					G' b
+						\arrow[l, " G' \eta " ]
+						\arrow[dl, " G' \hat{h} " ]
+				\\
+					G'G d
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		Here, $\check{f}$ denotes the transpose of $f$ along the adjunction $F' \dashv G'$, while $\hat{h}$ is the transpose of $h$ along $F \dashv G$.
+		On the other hand, the transpose of 
+		\begin{equation*}
+			F'Fa \overset{F'g}{\longrightarrow} F'c \overset{k}{\longrightarrow} d
+		\end{equation*}
+		
+		along the adjunction $(\bar{\eta}, \bar{\varepsilon}): F'F \dashv GG'$ is given by
+		\begin{center}
+			\begin{tikzcd}
+					a
+						\arrow[d, "\eta" ]
+						\arrow[dr, "\bar{\eta} " ]
+						\arrow[dd, bend right=50 , "\hat{g} "' ]
+					&
+				\\
+					GF a
+						\arrow[r, " G \eta' F" ]
+						\arrow[d, " G g " ]
+					&
+					GG' F'F a
+						\arrow[d, " GG' F g " ]
+				\\
+					G c
+						\arrow[r, " G \eta' " ]
+						\arrow[dr, " G \check{k} " ]
+					&
+					GG' F' c
+						\arrow[d, "GG' k " ]
+				\\
+					&
+					GG' d
+			\end{tikzcd}
+		\end{center}
+		Again, $\check{k}$ denotes the transpose of $k$ along the adjunction $F' \dashv G'$, while $\hat{g}$ is the transpose of $g$ along $F \dashv G$.
+		
+		Furthermore, the following diagram commutes, with the right-hand path being the transpose along $FF'\dashv G'G$:
+		\begin{center}
+			\begin{tikzcd}
+					a
+						\arrow[d, "\bar{\eta} " ]
+						\arrow[dr, "\tilde{\alpha}_\otimes = \alpha_\otimes \circ \tilde{\eta} " ]
+					&
+				\\
+					GG' F'F a
+						\arrow[r, "\sim ", "\alpha_\parr "' ]
+						\arrow[d, "GG' F' g " ]
+					&
+					G'G F'F a
+						\arrow[d, "G'G F' g " ]
+				\\
+					GG' F' c
+						\arrow[r, "\sim " ]
+						\arrow[d, "GG' k " ]
+					&
+					G'G F' c
+						\arrow[d, " G'G k " ]
+				\\
+					GG' d
+						\arrow[r, "\sim" ]
+					&
+					G'G d
+			\end{tikzcd}
+		\end{center}
+		
+		Thus, when checking whether the following diagram commutes
+		\begin{center}
+			\begin{tikzcd}
+					FF' a
+						\arrow[r, "Ff"] 
+						\arrow[d, "\sim" {above, rotate=90, xshift=2pt, yshift=-1pt}]
+					&
+					F b
+						\arrow[dd, "h"]
+				\\
+					F'F a
+						\arrow[d, "F'g"']
+					&
+				\\
+					F' c
+						\arrow[r, "k"]
+					&
+					d
+			\end{tikzcd}
+		\end{center}
+		
+		it is sufficient to check the following diagram:
+		\begin{center}
+			\begin{tikzcd}
+					&
+					a
+						\arrow[dl, " \hat{g} "' ]
+						\arrow[dr, " \check{f} " ]
+					&
+				\\
+					G c
+						\arrow[d, "G \check{k} "' ]
+					&&
+					G' b
+						\arrow[d, "G' \hat{h} " ]
+				\\
+					GG' d
+						\arrow[rr, "\sim " ]
+					&&
+					G'G d
+			\end{tikzcd}
+		\end{center}
+		
+		Translating this back into our original situation gives us the following commuting diagram (recall the transposes of $\partial_L$ and $\partial_R$ under $A \otimes - \dashv A^* \parr - $ and $ -\otimes D \dashv -\parr {^*D} $ resp.):
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}[row sep=large]
+						&
+						B \parr C
+							\arrow[dl, " \eta^L \parr \id "' ]
+							\arrow[dr, " \id \parr \eta^R " ]
+						&
+					\\
+						(A^* \parr (A \otimes B)) \parr C
+							\arrow[r, "\id \parr \eta^R "' ]
+							\arrow[d, "\alpha_\parr^{-1} "' ]
+						&
+						(A^* \parr (A \otimes B)) \parr ((C \otimes D) \parr {^*D})
+							\arrow[ddl, bend left=10, "\alpha_\parr^{-1} " ]
+							\arrow[ddr, bend right=10, "\alpha_\parr "' ]
+						&
+						B \parr ((C \otimes D) \parr {^*D})
+							\arrow[l,  " \eta^L \parr \id " ]
+							\arrow[d, "\alpha_\parr" ]
+					\\
+						A^* \parr ((A \otimes B) \parr C)
+							\arrow[d, "\id \parr (\id \parr \eta^L) "' ]
+						&&
+						( B \parr (C \otimes D) ) \parr {^*D}
+							\arrow[d, " (\eta^L \parr \id) \parr \id " ]
+					\\
+						A^* \parr ( (A \otimes B) \parr ( (C \otimes D) \parr {^*D} ) )
+							\arrow[d, "\id \parr \alpha_\parr "' ]
+						&&
+						( ( A^* \parr (A \otimes B) ) \parr (C \otimes D) ) \parr {^*D}
+							\arrow[d, "\alpha_\parr^{-1} \parr \id " ]
+					\\
+						A^* \parr ( ((A \otimes B) \parr (C \otimes D)) \parr {^*D} )
+							\arrow[rr, "\alpha_\parr " ]
+						&&
+						(  A^* \parr ((A \otimes B)  \parr (C \otimes D)) ) \parr {^*D}
+				\end{tikzcd}
+			\end{sideways}
+		\end{center}
+		
+		Thus, we obtain the following coherence diagram:
+		\begin{center}
+			\begin{tikzcd}
+				&
+				A \otimes ((B \parr C) \otimes D)
+				\arrow[ld, "\alpha_\otimes " ]
+				\arrow[rd, "\id \otimes \partial_R " ]
+				&
+				\\
+				(A \otimes (B \parr C)) \otimes D
+				\arrow[d, "\partial_L \otimes \id " ]
+				&
+				&
+				A \otimes (B \parr (C \otimes D))
+				\arrow[d, "\partial_L " ]
+				\\
+				((A \otimes B) \parr C) \otimes D
+				\arrow[rr, "\partial_R " ]
+				&
+				&
+				(A \otimes B) \parr (C \otimes D)
+			\end{tikzcd}
+		\end{center}
+		
+		The other $\partial_L$-$\partial_R$-coherence is shown in the same way.
+		
+		The unit and co-unit of a dual object are the transpose of the unitors:
+		\begin{equation*}
+			\begin{array}{rcccl}
+					\Hom(A \otimes 1 ,A) 
+					&\cong& 
+					\Hom(1, A^* \parr A) 
+					&\cong&
+					\Hom(1 \otimes A^*, A^*)
+				\\
+					\lambda_\otimes
+					&\mapsto&
+					\tau_A 
+					= (\id_{A^*} \otimes \lambda_\otimes)\eta^L_{A, 1}
+					&\mapsfrom&
+					\rho_\otimes
+				\\
+				&&
+				= (\rho_\otimes \otimes \id_{A})\eta^R_{1, A^*}
+				&&
+				\\
+					\Hom(A^*, A^* \parr \bot)
+					&\cong &
+					\Hom(A \otimes A^*, \bot)
+					&\cong&
+					\Hom(A, \bot \parr A)
+				\\
+					\rho_\parr^{-1}
+					&\mapsto&
+					\gamma_A
+					&\mapsfrom&
+					\lambda_\parr^{-1}
+			\end{array}
+		\end{equation*}
+		
+		Well-definedness and the defining diagrams are shown by above methods.
+	\end{proof}
 	
 	
-	\begin{definition}[*-autonomous categories (Barr \cite{barr95}, A)]
+	%cut content......................................................................................................................................................
+	\iffalse
+	\begin{definition}[*-autonomous categories (\cite{barr95}, A)]
 		\label{def: autoCatBarrA}
-		\notimportantnote{find a way to make letter part of definition numbering?}
 		A *-autonomous category is a biclosed monoidal category $\category{C} $ with a closed functor $(-)^*: \category{C} \rightarrow \category{C}^\opp $, which is a strong equivalence of categories.     
 	\end{definition}
 	%Barr, 95
@@ -1176,7 +2698,7 @@
 	\begin{definition}[Dualizing object]
 		\label{def: dualizingObj}
 		Let $\category{C} $ be a biclosed monoidal category. 
-		\todo{details (Barr, 99)}
+		%\todo{details (Barr, 99)}
 		An object $\bot $ is called a dualizing object if for every $A \in \Obj(\category{C}) $ the natural map $A \rightarrow \bot \multimapinv (A \multimap \bot) $ gotten by transposing $\id: A \multimap \bot \rightarrow A\multimap \bot $ twice is an isomorphism. 
 	\end{definition}
 	
@@ -1184,344 +2706,2556 @@
 		\label{def: autoCatBarrB}
 		A *-autonomous category is a biclosed category with a dualizing object.
 	\end{definition}
-	\notimportantnote{main definition, Barr}
 	
-	
-	\begin{definition}[*-autonomous categories (Barr, C)]
-		\label{def: autoCatBarrC}
-		A *-autonomous category is a monoidal category $\category{C} $ equipped with an equivalence $(-)^* : \category{C} \rightarrow \category{C}^\opp $ such that there is a natural isomorphism 
-		\begin{align*}
-			\Hom(A, B^*) \rightarrow \Hom(1, (A \oplus B)^*)
-		\end{align*}
-	\end{definition}
-	
-	
-	\begin{definition}[*-autonomous categories (Barr, D)]
-		\label{def: autoCatBarrD}
-		A *-autonomous category is a closed category $\category{C} $ in the sense of 
-		\todo{nachschauen}
-		Eilenberg and Kelly (1966) together with an equivalence $(-)^* : \category{C}^\opp \rightarrow \category{C} $ such that 
-		\begin{align*}
-			A \multimap (B \multimapinv C) \cong (A \multimap B) \multimapinv C
-		\end{align*}
-		where $A \multimapinv B := A^* \multimap B^* $.
-	\end{definition}
-	\questionnote[inline]{unnötig? C impliziert offensichtlich D, von D nach C sind drei Zeilen.}
+	\fi 
 
+
+
+%__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+	
+	\section{Linear Logic Preliminaries}
+	\label{sec: LinLogPre}
+	
+	We now delve into propositional linear logic, first defining a Gentzen-style sequent calculus and proving some basic properties.
+	We then show that the Cut-rule is admissible in the multiplicative fragment of linear logic (MLL), meaning that any sequent that can be derived using the Cut-rule can be derived without it. 
+	For that proof, we develop a cut-elimination procedure that will form the basis for the categorical model of MLL.
+	That procedure can be extended to general linear logic \cite{brauner} and forms the basis for further categorical models of different fragments for linear logic \cite{mellies}.
+	
+	%=============================================================================================================================
+	\subsection{Syntax}
+%	\urgentnote[inline]{Quellen, Quellen, Quellen!!!}
+%	\todo[inline]{main source: IntroLinLog}
+	%comments..............................................................................................
+	
+	
+	\begin{definition}[Atomic formula]
+		Let $\mathcal{A}$ be a countable set of symbols. We call its elements \emph{atoms} or \emph{atomic formulas}. 
+	\end{definition}
+	
+	\begin{definition}[Formula]
+		Formulas are defined inductively from atomic formulas and four constants $1$, $\bot$, $\top$ and $0$ with logical  connectives the following way:
+		\begin{itemize}
+			\item Every constant is a formula.
+			\item Every atomic formula is a formula.
+			\item If $A$ is a formula, so are $A^\bot$,  $\oc A$ and $\wn A$.
+			\item If $A$ and $B$ are formulas, so are $A \otimes B$, $A \parr B$, $A \with B$ and $A \oplus B$.
+		\end{itemize}
+		Note that the connective $(-)^\bot$ is the linear negation and not to be confused with the constant $\bot$, the multiplicative falsehood. 
+		%It is customary in linear logic to call $p^\bot$ atomic, for an atom $p$.
+	\end{definition}
+	
+	\begin{convention}
+		Let $\Gamma $, $\Delta$ etc. be arbitrary, finite (possibly empty) lists of formulas (e.g.: $\Gamma = p_1, ..., p_n$), and $A$, $B$ etc. formulas.
+	\end{convention}
+	
+	As we will later consider fragments of linear logic without negation, we shall define it with a two-sided calculus. 
+	
+	\begin{definition}[Sequent]
+		A \emph{sequent} $\Gamma \vdash \Delta $ consists of two Lists $\Gamma$ and $\Delta$ of formulae combined by a turnstile $\vdash$. 
+		Either $\Gamma$ or $\Delta$ may be empty. 
+		
+		For a sequent $\Gamma_1, A, \Gamma_2 \vdash \Delta_1, B, \Delta_2$ we call $\Gamma_i$ and $\Delta_i$ \emph{context} (of $A$ (resp. $B$)).
+	\end{definition}
+	
+	\begin{remark}
+		While the turnstile serves a purely syntactic purpose, we will later see that it is correctly interpreted as an implication.
+		$1$ and $\top$ are the multiplicative and additive truths, $\bot$ and $0$ the resp. falsities.
+	\end{remark}
+	
+	\begin{definition}[Proof (tree)]
+		A \emph{proof tree} (often just \emph{proof}) is a rooted tree with sequents as \emph{edges} and the sequent rules defined on the following pages as \emph{vertices} (except for the root).
+	\end{definition}
+	
+	\begin{remark}
+		Normally, proof trees are not written in a very “graph-like” way, which might obfuscate their nature as trees. The proof tree
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$A, B \vdash A \otimes B$}
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+		\end{center}
+		can be displayed more graph-like as
+		\begin{center}
+			\begin{tikzpicture}
+				\begin{scope}[every node/.style={circle,draw}]
+					\node (id1) at (0,0) {id};
+					\node (id2) at (4,0) {id};
+					\node (otimesR) at (2,-2) { $\otimes_R$ };
+					\node (otimesL) at (2,-4) {$\otimes_L $};
+					\node (root) at (2,-6) {$\surd$};
+				\end{scope}
+				\begin{scope}
+					\path [-] (id1) edge node[left] {$A \vdash A $} (otimesR);
+					\path [-] (id2) edge node[right] {$B \vdash B $} (otimesR);
+					\path [-] (otimesR) edge node[right] {$A, B \vdash A \otimes B$} (otimesL);
+					\path [-] (otimesL) edge node[right] {$A \otimes B \vdash A \otimes B$} (root);
+				\end{scope}
+			\end{tikzpicture}
+		\end{center}
+		with $\surd$ marking the root. The nodes $\id$, $\otimes_R$ and $\otimes_L$ are sequent rules defined below. The graphs are to be read from the leaves to the root. As this form is neither efficient nor pretty, we will stick with the traditional display.
+	\end{remark}
+	
+	
+	\paragraph{Structural rules}
+	We only have the exchange rule as a structural rule, missing the (general) weakening and contraction rules known from classical logic:
+	
+	\begin{center}
+		\AxiomC{$\Gamma, A, B, \Gamma' \vdash \Delta$}
+		\RightLabel{ex.L}
+		\UnaryInfC{$\Gamma, B, A, \Gamma' \vdash \Delta$}
+		\DisplayProof
+		\quad
+		\AxiomC{$\Gamma \vdash \Delta , A, B, \Delta'$}
+		\RightLabel{ex.R}
+		\UnaryInfC{$\Gamma \vdash \Delta , B, A, \Delta' $}
+		\DisplayProof
+	\end{center}
+	
+	
+	\paragraph{Identity rules}
+	We have the identity and negation rules:
+	
+	\begin{center}
+		\AxiomC{\strut} %temporäre Lösung (auch an anderen Stellen verwendet!)
+		\RightLabel{id}
+		\UnaryInfC{$A \vdash A$}
+		\DisplayProof
+		, \quad
+		\AxiomC{$\Gamma_1 \vdash \Delta_1 , A ,  \Delta'_1$}
+		\AxiomC{$\Gamma_2 , A , \Gamma'_2 \vdash \Delta_2 $}
+		\RightLabel{Cut}
+		\BinaryInfC{$\Gamma_2 , \Gamma_1 , \Gamma'_2 \vdash \Delta_1 , \Delta_2 , \Delta'_1 $}
+		\DisplayProof
+		
+		\AxiomC{$\Gamma \vdash A, \Delta $}
+		\RightLabel{neg.L}
+		\UnaryInfC{$\Gamma, A^\bot \vdash \Delta $}
+		\DisplayProof
+		, \quad
+		\AxiomC{$\Gamma, A \vdash \Delta $}
+		\RightLabel{neg.R}
+		\UnaryInfC{$\Gamma \vdash A^\bot, \Delta $}
+		\DisplayProof
+	\end{center}
+	
+	
+	
+	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ as well as their respective units split into two respectively. 
+	These can be classified as multiplicative and additive connectives (analogous to the classically equivalent ways to define $\wedge$ and $\vee$). 
+	Using the exponential connectives, one can then encode intuitionistic and classical logic inside of linear logic, again \cite[Chapter 5]{girard87}.
+	
+	\paragraph{Multiplicatives }
+	The calculus rules for the \emph{multiplicative} conjunction $\otimes$, disjunction $\parr$ (“par”) and their units $1$ and $\bot$ (“bottom”) are as follows:
+	
+	\begin{center}
+		\AxiomC{$\Gamma , A, B, \Gamma' \vdash \Delta$}
+		\RightLabel{$\otimes_L$}
+		\UnaryInfC{$\Gamma, A\otimes B, \Gamma' \vdash \Delta $}
+		\DisplayProof
+		, \quad
+		\AxiomC{$\Gamma \vdash \Delta , A$}
+		\AxiomC{$\Gamma' \vdash B, \Delta'$}
+		\RightLabel{$\otimes_R$}
+		\BinaryInfC{$\Gamma, \Gamma' \vdash \Delta , A\otimes B, \Delta'$}
+		\DisplayProof
+		
+		
+		\AxiomC{$\Gamma , A \vdash \Delta $}
+		\AxiomC{$B , \Gamma' \vdash \Delta' $}
+		\RightLabel{$\parr_L$}
+		\BinaryInfC{$\Gamma, A\parr B, \Gamma' \vdash \Delta, \Delta'$}
+		\DisplayProof
+		, \quad
+		\AxiomC{$\Gamma \vdash \Delta , A, B,  \Delta'$}
+		\RightLabel{$\parr_R$}
+		\UnaryInfC{$\Gamma \vdash \Delta , A \parr B, \Delta' $}
+		\DisplayProof
+		
+		\AxiomC{$\Gamma \vdash \Delta $}
+		\RightLabel{$1_L$}
+		\UnaryInfC{$\Gamma_1, 1, \Gamma_2 \vdash \Delta $}
+		\DisplayProof
+		, \quad
+		\AxiomC{\vphantom{$\frac{a}{b}$ } }
+		\RightLabel{$1_R $}
+		\UnaryInfC{$\vdash 1$}
+		\DisplayProof
+		
+		\AxiomC{\vphantom{$\frac{a}{b}$}}
+		\RightLabel{$\bot_L$}
+		\UnaryInfC{$\bot \vdash $}
+		\DisplayProof
+		, \quad
+		\AxiomC{$\Gamma \vdash \Delta $ }
+		\RightLabel{$\bot_R $}
+		\UnaryInfC{$\Gamma \vdash \Delta_1, \bot , \Delta_2 $}
+		\DisplayProof
+	\end{center}
+	Note that $\Gamma = \Gamma_1 \Vert \Gamma_2 $ and $\Delta = \Delta_1 \Vert \Delta_2$ for $1_L$ and $\bot_R$ (with $\Vert$ being the concatenation operator, just to differentiate from any “or” reading). 
+	
+	
+	\begin{proposition}
+		The rules $\otimes_L$ and $\parr_R$ imply, that the commas are to be read as $\otimes$ on the left-hand side and as $\parr$ on the right-hand side. That means $A, B \vdash C, D$ is provable iff $A \otimes B \vdash C \parr D$ is provable. 
+	\end{proposition}
+	
+	\begin{proof}
+		We only have to show that $A , B \vdash C , D $ follows from $A\otimes B \vdash C \parr D$ as the other direction is just our introduction rule:
+		
+		\begin{center}
+			\AxiomC{}
+			\RightLabel{id}
+			\UnaryInfC{$A \vdash A $}
+			\AxiomC{}
+			\RightLabel{id}
+			\UnaryInfC{$B \vdash B $}
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A , B \vdash A \otimes B $}
+			
+			\AxiomC{$A \otimes B \vdash C \parr D $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$A , B \vdash C \parr D $}
+			
+			\AxiomC{}
+			\UnaryInfC{$C \vdash C $}
+			\AxiomC{}
+			\UnaryInfC{$D \vdash D $}
+			\RightLabel{$\parr_L $}
+			\BinaryInfC{$C \parr D \vdash C , D $}
+			\BinaryInfC{$A  , B \vdash C , D$}
+			\DisplayProof
+		\end{center}
+		
+		\phantom{blabla}
+	\end{proof}
+	
+	\paragraph{Additives}
+	The calculus rules for the \emph{additive} conjunction $\with$ and disjunction $\oplus$ (“plus”) are as follows:
+	
+	\begin{center}
+		\AxiomC{$\Gamma , A \vdash \Delta $}
+		\RightLabel{$\with_{L1}$}
+		\UnaryInfC{$\Gamma , A \with B \vdash \Delta $}
+		\DisplayProof
+		, \quad
+		\AxiomC{$\Gamma , B \vdash \Delta $}
+		\RightLabel{$\with_{L2}$}
+		\UnaryInfC{$\Gamma , A \with B \vdash \Delta $}
+		\DisplayProof
+	\end{center}
+	
+	\begin{center} 
+		\AxiomC{$\Gamma \vdash \Delta , A $}
+		\AxiomC{$\Gamma \vdash \Delta , B $}
+		\RightLabel{$\with_R$}
+		\BinaryInfC{$\Gamma \vdash \Delta , A \with B $}
+		\DisplayProof
+	\end{center}
+	
+	\begin{center}
+		\AxiomC{$\Gamma , A \vdash \Delta $}
+		\AxiomC{$ \Gamma , B \vdash \Delta $}
+		\RightLabel{$\oplus_L$}
+		\BinaryInfC{$\Gamma , A\oplus B \vdash \Delta$}
+		\DisplayProof
+	\end{center}
+	
+	\begin{center}
+		\AxiomC{$\Gamma \vdash A , \Delta $}
+		\RightLabel{$\oplus_{R1}$}
+		\UnaryInfC{$\Gamma \vdash A \oplus B , \Delta $}
+		\DisplayProof
+		,\quad
+		\AxiomC{$\Gamma \vdash B , \Delta $}
+		\RightLabel{$\oplus_{R2}$}
+		\UnaryInfC{$\Gamma \vdash A \oplus B ,  \Delta $}
+		\DisplayProof
+		
+		\AxiomC{\vphantom{$\frac{a}{b}$}}
+		\RightLabel{$0_L$ }
+		\UnaryInfC{$\Gamma, 0 \vdash \Delta $}
+		\DisplayProof
+		, \quad
+		\AxiomC{\vphantom{$\frac{a}{b}$}}
+		\RightLabel{$\top_R$ }
+		\UnaryInfC{$\Gamma \vdash \top , \Delta $}
+		\DisplayProof
+	\end{center}
+	
+	Notice the difference between $\with_R$ and $\otimes_R$ (and dually between $\oplus_L$ and $\parr_L$): while for $\otimes_R$ the contexts $\Gamma$ etc. are arbitrary and get combined in the conclusion, $\with_R$ requires the contexts to be equal. In classical logic these rules can be shown to be equivalent using its additional structural rules.
+	
+	Furthermore, note that the unit introduction rules also introduce arbitrary contexts, and that each unit only has one introduction rule as opposed to the multiplicative units.
+	
+	
+	
+	\begin{proposition}
+		Similarly to the multiplicative connectives above, the additive connectives have a invertibility statement: $\Gamma \vdash A \with B $ is provable iff $\Gamma \vdash A$ and $\Gamma \vdash B$ are provable. Dually, $A \oplus B \vdash \Delta $ iff $A \vdash \Delta $ and $B \vdash \Delta $.
+		
+	\end{proposition}
+	
+	\begin{proof}
+		As with the multiplicative statement, one direction suffices:
+		\begin{center}
+			\AxiomC{$\Gamma \vdash A \with B$}
+			
+			\AxiomC{}
+			\UnaryInfC{$A \vdash A$}
+			\UnaryInfC{$A \with B \vdash A$}
+			\BinaryInfC{$\Gamma \vdash A$}
+			\DisplayProof
+		\end{center}
+		
+		$\Gamma \vdash B$ follows the same way.
+	\end{proof}
+	
+	
+	
+	\begin{definition}
+		We call two formulas $A$ and $B $ \emph{(linearly) equivalent} iff $A \vdash B$ and $B \vdash A $ are provable, and write $A \equiv B$.
+	\end{definition}
+	
+	\begin{proposition}
+		The names “multiplicative” and “additive” are motivated by the following relations:
+		
+		\begin{align*}
+			A \otimes (B \oplus C) 
+			& \equiv (A \otimes B) \oplus (A \otimes C)
+			\\
+			A \parr (B \with C ) 
+			& \equiv (A \parr B) \with (A \parr C )
+		\end{align*}
+		
+		The similarities to basic arithmetic don't end there:
+		\begin{align*}
+			A \otimes 0 \equiv 0 ,
+			\quad 
+			A \parr \top \equiv \top
+		\end{align*}
+	\end{proposition}
+	
+	
+	\begin{proof}
+		We only show $A \otimes (B \oplus C) \equiv (A \otimes B) \oplus (A \otimes C)$% and $A \otimes 0 \equiv 0$
+		.
+		\begin{itemize}
+			\item $A \otimes (B \oplus C) \vdash (A \otimes B) \oplus (A \otimes C)$:
+			\begin{center}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\AxiomC{}
+				\UnaryInfC{$B \vdash B $}
+				\BinaryInfC{$A, B 
+					\vdash A \otimes B $}
+				\UnaryInfC{$A , B 
+					\vdash (A \otimes B) \oplus (A \otimes C ) $}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\AxiomC{}
+				\UnaryInfC{$C \vdash C$}
+				\BinaryInfC{$A, C 
+					\vdash A \otimes C $}
+				\UnaryInfC{$A , C 
+					\vdash (A \otimes B) \oplus (A \otimes C ) $}
+				\BinaryInfC{$A, B \oplus C 
+					\vdash (A \otimes B) \oplus (A \otimes C ) $}
+				\UnaryInfC{$A \otimes (B \oplus C) 
+					\vdash (A \otimes B) \oplus (A \otimes C ) $}
+				\DisplayProof
+			\end{center}
+			
+			\item $(A \otimes B) \oplus (A \otimes C) \vdash A \otimes (B \oplus C) $:
+			\begin{center}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\AxiomC{}
+				\UnaryInfC{$B \vdash B $}
+				\UnaryInfC{$B \vdash B \oplus C$}
+				\BinaryInfC{$A, B 
+					\vdash A \otimes (B \oplus C ) $}
+				\UnaryInfC{$A \otimes B \vdash A \otimes (B \oplus C ) $}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\AxiomC{}
+				\UnaryInfC{$C \vdash C $}
+				\UnaryInfC{$C \vdash B \oplus C$}
+				\BinaryInfC{$A, C 
+					\vdash A \otimes (B \oplus C ) $}
+				\UnaryInfC{$A \otimes C \vdash A \otimes (B \oplus C ) $}
+				\BinaryInfC{$(A \otimes B) \oplus (A \otimes C) \vdash A \otimes (B \oplus C) $}
+				\DisplayProof
+			\end{center}
+			
+			%			\item $A \otimes 0 \vdash 0$:
+			%			\begin{center}
+				%				\AxiomC{}
+				%				\RightLabel{$0_L$}
+				%				\UnaryInfC{$A, 0 \vdash 0$}
+				%				\UnaryInfC{$A \otimes 0 \vdash 0$}
+				%				\DisplayProof
+				%			\end{center}
+			%			
+			%			\item $0 \vdash A \otimes 0$
+			%			\begin{center}
+				%				\AxiomC{}
+				%				\UnaryInfC{$0 \vdash 0 \otimes A$}
+				%				\DisplayProof
+				%			\end{center}
+		\end{itemize}
+		The proof for $A \parr (B \with C ) \equiv (A \parr B) \with (A \parr C )$ is similar, the proof for the equations of the constants a trivial application of their introduction rules.
+	\end{proof}
+	
 	
 	\begin{theorem}
-		\label{thrm: BarrEqui}
-		Barr's definitions are equivalent.
+		We have the following equivalencies for the linear negation:
+		\begin{itemize}
+			\item For the constants: 
+			\begin{align*}
+				1^\bot \equiv \bot \quad 
+				& 
+				\bot^\bot \equiv 1 
+				\\
+				\top^\bot \equiv 0 \quad 
+				& 
+				0^\bot \equiv \top
+			\end{align*}
+			\item The negation is involutory: 
+			$(A^\bot)^\bot \equiv A $
+			\item The De Morgan equations hold:
+			\begin{align*}
+				\left(A \otimes B\right)^\bot 
+				&\equiv A^\bot \parr B^\bot 
+				&
+				\left(A \parr B\right)^\bot 
+				&\equiv A^\bot \otimes B^\bot 
+				\\
+				\left(A \with B\right)^\bot 
+				&\equiv A^\bot \oplus B^\bot 
+				&
+				\left(A \oplus B\right)^\bot 
+				&\equiv A^\bot \with B^\bot 
+			\end{align*}
+		\end{itemize}
 	\end{theorem}
 	
 	\begin{proof}
-%		\formatnote{define useful control sequence}
-%		\implication{Barr A}{Barr B}
-		\todo[inline]{to be added (\cite{barr95})}
+		We shall only prove parts.
+		
+		\begin{itemize}
+			\item $1^\bot \vdash \bot $: 
+			\begin{center}
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1 $}
+				\RightLabel{$\bot_R$}
+				\UnaryInfC{$\vdash 1, \bot $}
+				\RightLabel{neg.L}
+				\UnaryInfC{$1^\bot \vdash \bot $}
+				\DisplayProof
+			\end{center}
+			\item $(A^\bot)^\bot \vdash A $:
+			\begin{center}
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				\UnaryInfC{$\vdash A^\bot, A $}
+				\UnaryInfC{$(A^\bot)^\bot \vdash A $}
+				\DisplayProof
+			\end{center}
+			\item $\left(A \otimes B\right)^\bot \vdash A^\bot \parr B^\bot $:
+			\begin{center}
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				\UnaryInfC{$\vdash A^\bot, A $}
+				\AxiomC{\strut}
+				\UnaryInfC{$B \vdash B $}
+				\UnaryInfC{$\vdash B^\bot, B $}
+				\BinaryInfC{$\vdash A \otimes B, A^\bot, B^\bot $}
+				\UnaryInfC{$\left(A \otimes B\right)^\bot \vdash A^\bot, B^\bot $}
+				\UnaryInfC{$\left(A \otimes B\right)^\bot \vdash A^\bot \parr B^\bot $}
+				\DisplayProof
+			\end{center}
+		\end{itemize}
+		The rest is shown similarly.
 	\end{proof}
 	
-	\begin{theorem}
-		Srinivasan's definition is equivalent to Barr's definitions.
+	With the negation, our calculus rules become quite redundant and we can restrict them on the rules for the right-hand side by translating any two-sided sequent 
+	$A_1, ..., A_n \vdash B_1, ..., B_n$ 
+	into a one-sided sequent 
+	$\vdash A_1^\bot, ... A_n^\bot, B_1, ... B_n$. 
+	However, these redundancies are necessary when dealing with a negation-free fragment of LL as we will later do.
+	
+	
+	\begin{definition}[Syntactical implication and equivalence]
+		We define linear implication with the par-operator:
+		\begin{align*}
+			A \multimap B := A^\bot \parr B
+		\end{align*}
+		
+		We further define (syntactical) linear equivalence:
+		\begin{align*}
+			A \multimapboth B := (A \multimap B) \with (B \multimap A)
+		\end{align*}
+		It is easily seen that $\vdash A\multimap B$ iff $A \vdash B$ and that $\vdash A \multimapboth B$ iff $A \equiv B$. 
+	\end{definition}
+	
+	\paragraph{Exponentials }
+	The modality connectives reintroduce stable truths and with them the weakening and contraction rules known from classical logic:
+	
+	\begin{center}
+		\AxiomC{$\Gamma \vdash \Delta$}
+		\RightLabel{$\oc_W$ (weakening)}
+		\UnaryInfC{$\Gamma , \oc A \vdash \Delta $}
+		\DisplayProof
+		\quad
+		\AxiomC{$\Gamma, A \vdash \Delta $}
+		\RightLabel{$\oc_D$ (dereliction)}
+		\UnaryInfC{$\Gamma, \oc A \vdash \Delta $}
+		\DisplayProof
+		
+		\AxiomC{$\Gamma , \oc A, \oc A \vdash \Delta $}
+		\RightLabel{$\oc_C$ (contraction)}
+		\UnaryInfC{$\Gamma , \oc A \vdash \Delta $}
+		\DisplayProof
+		\quad
+		\AxiomC{$\oc\Gamma \vdash \wn\Delta , A$}
+		\RightLabel{$\oc_R$}
+		\UnaryInfC{$\oc\Gamma \vdash \wn\Delta , \oc A$}
+		\DisplayProof
+		
+		
+		\AxiomC{$\Gamma \vdash \Delta $}
+		\RightLabel{$\wn_W$ (weakening)}
+		\UnaryInfC{$\Gamma \vdash \Delta , \wn A$}
+		\DisplayProof
+		\quad
+		\AxiomC{$\Gamma \vdash \Delta , A$}
+		\RightLabel{$\wn_D$ (dereliction)}
+		\UnaryInfC{$\Gamma \vdash \Delta , \wn A$}\
+		\DisplayProof
+		
+		\AxiomC{$\Gamma \vdash \Delta , \wn A , \wn A $}
+		\RightLabel{$\wn_C$ (contraction)}
+		\UnaryInfC{$\Gamma \vdash \Delta , \wn A$}
+		\DisplayProof
+		\quad
+		\AxiomC{$\oc \Gamma, A \vdash \wn \Delta $}
+		\RightLabel{$\wn_L$}
+		\UnaryInfC{$\oc \Gamma , \wn A \vdash \wn \Delta $}
+		\DisplayProof
+		
+		\begin{align*}
+			\left(\oc A \right) ^\bot \equiv \wn \left( A^\bot \right) 
+			\quad 
+			\left(\wn A \right) ^\bot \equiv \oc \left( A^\bot \right) 
+		\end{align*}
+	\end{center}
+	Here, the context $\oc \Gamma $ is given by applying the $\oc $-modality to every formula of $\Gamma $, i.e. $\oc \Gamma = \oc q, \oc p, \ldots $ for $\Gamma = q, p \ldots $; same for $\wn \Delta$.
+	
+	
+	\begin{lemma}
+		These modalities are called exponentials because of the	following relation:
+		\begin{align*}
+			\oc\left(A \with B\right) \equiv \oc A \otimes \oc B ,
+			\quad 
+			\wn \left(A \oplus B \right) \equiv \wn A \parr \wn B
+		\end{align*}
+	\end{lemma}
+	
+	\begin{proof}
+		We will only prove the second equivalence.
+		\begin{itemize}
+			\item 
+			$\wn A \parr \wn B \vdash \wn (A \oplus B )$:
+			\begin{center}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\RightLabel{$\oplus_R $}
+				\UnaryInfC{$A \vdash A\oplus B$}
+				\RightLabel{$\wn_D $}
+				\UnaryInfC{$A \vdash \wn (A\oplus B) $}
+				\RightLabel{$\wn_L $}
+				\UnaryInfC{$\wn A \vdash \wn (A\oplus B) $}
+				
+				\AxiomC{}
+				\UnaryInfC{$B \vdash B$}
+				\RightLabel{$\oplus_R $}
+				\UnaryInfC{$B \vdash A\oplus B$}
+				\RightLabel{$\wn_D $}
+				\UnaryInfC{$B \vdash, \wn (A\oplus B) $}
+				\RightLabel{$\wn_L $}
+				\UnaryInfC{$\wn B \vdash \wn (A\oplus B) $}
+				
+				\RightLabel{$\parr $}
+				\BinaryInfC{$(\wn A) \parr (\wn B) \vdash \wn (A\oplus B) , \wn (A\oplus B) $}
+				\RightLabel{$\wn_D $}
+				\UnaryInfC{$\wn A \parr \wn B \vdash \wn (A \oplus B)$}
+				\DisplayProof
+			\end{center}
+			
+			\item 
+			$\wn (A \oplus B) \vdash \wn A \parr \wn B $:
+			\begin{center}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A$}
+				\RightLabel{$\wn_D$}
+				\UnaryInfC{$A \vdash \wn A$}
+				\RightLabel{$\wn_W$}
+				\UnaryInfC{$A \vdash \wn A, \wn B $}
+				
+				\AxiomC{}
+				\UnaryInfC{$B \vdash B$}
+				\UnaryInfC{$B \vdash \wn B$}
+				\RightLabel{$\wn_W$}
+				\UnaryInfC{$B \vdash \wn B , \wn A $}
+				
+				\RightLabel{$\oplus_L $}
+				\BinaryInfC{$ A \oplus B \vdash \wn A , \wn B $}
+				\RightLabel{$\wn_L $}
+				\UnaryInfC{$\wn (A \oplus B) \vdash \wn A, \wn B $}
+				\RightLabel{$\parr_R$}
+				\UnaryInfC{$\wn (A \oplus B) \vdash \wn A \parr \wn B $}
+				\DisplayProof
+			\end{center}
+		\end{itemize}
+		$\oc\left(A \with B\right) \equiv \oc A \otimes \oc B $ is acquired the same way.
+	\end{proof}
+	
+%	\formatnote{proofsymbol なんで？ :( }
+	
+	
+	
+	%================================================================================================================================================
+	\subsection{Cut-elimination }
+	\label{cut-elimination}
+	
+	As is the case with most, if not all, logical systems, the Cut rule of our calculus is admissible. 
+	That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can construct a \emph{cut-free} proof $\pi'$ of that same sequent.  
+	We will prove this for the multiplicative fragment by simplifying the proof due to Braüner \cite[Appendix B]{brauner}. 
+	The transformations used in this construction will later form the basis for the categorical semantics of this fragment. 
+	Braüner's proof includes the exponentials which require additional care because of the contraction rule. 
+	As we are strictly restricted to multiplicative linear logic, the procedure becomes streamlined.
+	
+	The general strategy consists of either, moving a cut upwards in a proof or replacing it with cuts of simpler formulas. 
+	To do this, we need two definitions:
+	
+	%	As is the case with most, if not all, logical system, the Cut rule of our calculus is admissible. That means for any proof $\pi$ of a sequent $\Gamma \vdash \Delta $ we can find a \emph{cut-free} proof $\pi'$ of that same sequent. We will prove this for the multiplicative fragment by adapting the cut-elimination procedure for intuitionistic linear logic by 
+	%	\urgentnote{add literature} 
+	%	Melliès to (multiplicative) classical linear logic and expanding a little bit on the proof given by Braüner \cite{brauner}.
+	
+	
+	\begin{remark}
+		We write 
+		\AxiomC{$\pi$}
+		\RightLabel{$r$}
+		\UnaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		and 
+		\AxiomC{$\pi$}
+		\AxiomC{$\pi'$}
+		\RightLabel{$r$}
+		\BinaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		for the proof that we get when applying the rule $r$ on the last sequent(s) of the proof(s) $\pi$ (and $\pi'$).
+		Furthermore, for the proof $\tau$ that ends in the sequent $\Gamma \vdash \Delta$, we write
+		\AxiomC{$\tau$} 
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$\Gamma \vdash \Delta$}
+		\DisplayProof
+		. 
+	\end{remark}
+	
+	\begin{definition}[Height]
+		The \emph{height} $h(\pi)$ of a proof $\pi$ is just its height as a rooted tree: 
+		\begin{itemize}
+			\item $h(\pi) = 1$ when $\pi$ is an instance of a rule with zero premises, i.e. an axiom.
+			\item $h(\pi) = h(\tau) +1$, for $\pi = \AxiomC{$\tau$} \UnaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
+			\item $h(\pi) = \max\{h(\tau), h(\tau')\} + 1$, for $\pi = \AxiomC{$\tau$} \AxiomC{$\tau'$} \BinaryInfC{$\Gamma \vdash \Delta$} \DisplayProof$
+		\end{itemize}
+	\end{definition}
+	
+	
+	\begin{definition}[Degree]
+		The \emph{degree} $\partial(A)$ of a formula $A$ is defined inductively:
+		\begin{itemize}
+			\item $\partial(A) = 1$, for $A$ atomic or constant
+			\item $\partial \left(A^\bot\right) = \partial(A)$ 
+			\item $\partial(A \otimes B) = \partial(A \parr B) = \max\{\partial(A), \partial(B)\} + 1$
+			\item $\partial(\oc A ) = \partial(\wn A) = \partial(A) + 1$
+		\end{itemize} 
+		The degree of a cut is the degree of the cut formula. The cut formula is called \emph{principal formula}. The degree $\partial(\pi)$ of a proof $\pi$ is the supremum of the degrees of the cuts in the proof. 
+	\end{definition}
+	
+	
+	With these, we can now eliminate cuts in a proof:
+	
+	\begin{lemma}
+		\label{key-cases}
+		Let $\tau$ be a proof consisting of two subproofs $\tau_1$ and $\tau_2$ of strictly lower degree, i.e.: 
+		\begin{center}
+			$\tau = $ 
+			\AxiomC{$\tau_1$} 
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $} 
+			\AxiomC{$\tau_2$} 
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2 $} 
+			\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_1, \Delta_2, \Delta'_1 $}
+			\DisplayProof
+		\end{center}
+		
+		Then, we can find a proof $\tau'$ of that same sequent 
+		$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_1, \Delta_2, \Delta'_1 $ 
+		with 
+		$\partial(\tau') < \partial(\tau) $.
+	\end{lemma}
+	
+	\begin{proof}
+		Induction on $h(\tau_1) + h(\tau_2)$. The immediate subproofs of $\tau_i$ are denoted by $\pi_j$.
+		We perform transformations case by case:
+		
+		
+		\begin{itemize}
+			\item If one of the subproofs is an axiom, we just take the remaining one, resulting in a proof with a lower degree:
+			
+			\begin{tabularx}{\textwidth}{x c x}
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A $}
+				
+				\AxiomC{$\tau_2$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A, \Gamma \vdash \Delta $}
+				
+				\BinaryInfC{$A, \Gamma \vdash \Delta $}
+				\DisplayProof
+				&
+				$\overset{(\id , -)}{\rightsquigarrow}$
+				&
+				\AxiomC{$\tau_2$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A, \Gamma \vdash \Delta $}
+				\DisplayProof
+				
+				\\
+				%......................................
+				
+				\AxiomC{$\tau_1$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma \vdash \Delta, A $}
+				
+				\AxiomC{}
+				\UnaryInfC{$A \vdash A $}
+				
+				\BinaryInfC{$\Gamma \vdash \Delta, A $}
+				\DisplayProof
+				&
+				$\overset{(-, \id)}{\rightsquigarrow}$
+				&
+				\AxiomC{$\tau_1$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma \vdash \Delta, A $}
+				\DisplayProof
+			\end{tabularx}
+			
+			\item $\tau_1$ does not introduce the principal formula in its last rule. Depending on the subcase, we perform one of the following transformations, pushing $\tau_2$ upwards, and use the induction hypothesis on the resulting subproof.
+			
+			
+			
+			\begin{tabularx}{\textwidth}{x c x}
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, C, \Delta'_1, A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_1,\Gamma_2 \vdash \Delta_1, C, \Delta'_1, A \otimes B, \Delta_2 $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1, A \otimes B, \Delta_2$}
+					\DisplayProof
+				}
+				&
+				$\overset{(\downarrow \otimes_R, -)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, C, \Delta'_1, A $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3,\Gamma_1, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1, A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma'_3, \Gamma_2 \vdash \Delta_1, \Delta_3, \Delta'_1, A \otimes B, \Delta_2 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1, A \otimes B, \Delta_2 $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2, C, \Delta'_2, $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_1,\Gamma_2 \vdash \Delta_1, A \otimes B, \Delta_2, C, \Delta_2' $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, A \otimes B, \Delta_2, \Delta_3, \Delta_2' $}
+					\DisplayProof
+				}
+				&
+				$\overset{(\downarrow \otimes_R, -)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2, C, \Delta_2' $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3,\Gamma_2, \Gamma'_3 \vdash B, \Delta_2, \Delta_3, \Delta_2' $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_1, \Gamma_3, \Gamma_2, \Gamma'_3 \vdash \Delta_1, A\otimes B, \Delta_2, \Delta_3, \Delta_2' $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, A \otimes B, \Delta_2, \Delta_3, \Delta_2' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1, A \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_2 \vdash \Delta_2 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_1, A \parr B, \Gamma_2 \vdash \Delta_1, C, \Delta'_1, \Delta_2 $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 \Delta_2$}
+					\DisplayProof
+				}
+				&
+				$\overset{(\downarrow \parr_L, -)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1, A \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3,\Gamma_1, A , \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3,\Gamma_1, \Gamma'_3, A \vdash \Delta_1, \Delta_3, \Delta'_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_2 \vdash \Delta_2 $}
+					
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma'_3, A \parr B, \Gamma_2 \vdash \Delta_1, \Delta_3, \Delta'_1 \Delta_2 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 \Delta_2 $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1, A \vdash \Delta_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_2 \vdash \Delta_2, C, \Delta'_2 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_1, A \parr B, \Gamma_2 \vdash \Delta_1, \Delta_2, C, \Delta'_2 $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2 $}
+					\DisplayProof
+				}
+				&
+				$\overset{(\downarrow \parr_L, -)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_1, A \vdash \Delta_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_2 \vdash \Delta_2, C, \Delta'_2 $}
+					
+					\AxiomC{$\tau_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, B, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$B, \Gamma_3, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+					
+					\BinaryInfC{$\Gamma_1, A \parr B, \Gamma_3, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2 $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, A \parr B, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2 $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\AxiomC{$\pi$}
+				\UnaryInfC{$\Psi_1 \vdash \Psi_2, A, \Psi'_2 $}
+				\RightLabel{$r$}
+				\UnaryInfC{$\Phi_1 \vdash \Phi_2, A, \Phi'_2 $}
+				
+				\AxiomC{$\tau_2$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma, A, \Gamma' \vdash \Delta $}
+				
+				\BinaryInfC{$\Gamma, \Phi_1, \Gamma' \vdash \Phi_2, \Delta, \Phi'_2 $}
+				\DisplayProof
+				&
+				$\overset{(\downarrow r, -)}{\rightsquigarrow}$
+				&
+				\AxiomC{$\pi$}
+				\UnaryInfC{$\Psi_1 \vdash \Psi_2, A, \Psi'_2 $}
+				
+				\AxiomC{$\tau_2$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma, A, \Gamma' \vdash \Delta $}
+				
+				\BinaryInfC{$\Gamma, \Psi_1, \Gamma' \vdash \Psi_2, \Delta, \Psi'_2 $}
+				
+				\doubleLine
+				\RightLabel{$r$}
+				\UnaryInfC{$\Gamma, \Phi_1, \Gamma' \vdash \Phi_2, \Delta, \Phi'_2$}
+				\DisplayProof
+			\end{tabularx}
+			
+			Here, $r$ is one of the following rules: $\otimes_L, \parr_R, 1_L, \bot_R$, ex.R or ex.L. Note that the exchange rule might be performed on $A$ and a neighboring formula $B$, thus possibly requiring multiple applications of the exchange rule in the transformed proof. This is denoted by the double line.
+			
+			\item $\tau_2$ does not introduce  the principal formula in its last rule. Dually to the case above, we perform one of the following transformations, pushing $\tau_1$ upwards, and use the induction hypothesis on the resulting subproof.
+			
+			\begin{tabularx}{\textwidth}{x c x}
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, C, \Gamma_2', A \vdash \Delta_2$}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_3\vdash \Delta_3 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, C, \Gamma_2', A \parr B, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2',  A \parr B, \Gamma_3  \vdash \Delta_1, \Delta_2, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				&
+				$\overset{(-, \downarrow \parr_L)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, C, \Gamma_2', A \vdash \Delta_2$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', A \vdash \Delta_1, \Delta_2, \Delta_1' $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', A \parr B, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_1', \Delta_3 $}
+					
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', A\parr B, \Gamma_3  \vdash \Delta_1, \Delta_2, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_3, C, \Gamma_3' \vdash \Delta_3 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3, C, \Gamma_3' \vdash \Delta_2, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3, \Gamma_1, \Gamma_3'  \vdash \Delta_1, \Delta_2, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				&
+				$\overset{(-, \downarrow \parr_L)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
+					
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$B, \Gamma_3, C, \Gamma_3' \vdash \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$B, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, \Delta_3, \Delta_1' $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, \Delta_2, \Delta_1', \Delta_3 $}
+					
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, A \parr B, \Gamma_3, \Gamma_1, \Gamma_3'  \vdash \Delta_1, \Delta_2, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, C, \Gamma_2' \vdash \Delta_2, A$}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_3\vdash B, \Delta_3 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_2, C, \Gamma_2', \Gamma_3 \vdash \Delta_2, A \otimes B, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', \Gamma_3  \vdash \Delta_1, \Delta_2, A \otimes B, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				&
+				$\overset{(-, \downarrow \otimes_R)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, C, \Gamma_2' \vdash \Delta_2, A$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2' \vdash \Delta_1, \Delta_2, A, \Delta_1' $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2' \vdash \Delta_1, \Delta_2, \Delta_1', A $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_3\vdash B, \Delta_3 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_1',A \otimes B, \Delta_3 $}
+					
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, \Gamma_1, \Gamma_2', \Gamma_3  \vdash \Delta_1, \Delta_2, A \otimes B, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				\scalebox{0.6}{
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2 \vdash \Delta_2, A$}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_3 , C, \Gamma_3' \vdash B, \Delta_3 $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_2, \Gamma_3, C, \Gamma_3' \vdash \Delta_2, A \otimes B, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, \Delta_2, A \otimes B, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				&
+				$\overset{(-, \downarrow \otimes_R)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\UnaryInfC{$\Gamma_2, \vdash \Delta_2, A$}
+					
+					\AxiomC{$\tau_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1, \vdash \Delta_1, C, \Delta'_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\UnaryInfC{$\Gamma_3, C, \Gamma_3'  \vdash B, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, B, \Delta_3, \Delta_1' $}
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_3, \Gamma_1, \Gamma_3' \vdash B, \Delta_1, \Delta_3, \Delta_1' $}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_2, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_2, A \otimes B, \Delta_1, \Delta_3, \Delta_1' $}
+					
+					\doubleLine
+					\RightLabel{ex.}
+					\UnaryInfC{$\Gamma_2, \Gamma_3, \Gamma_1, \Gamma_3' \vdash \Delta_1, \Delta_2, A \otimes B, \Delta_3, \Delta_1' $}
+					\DisplayProof
+				}
+				
+				\\
+				%...................................
+				
+				
+				\AxiomC{$\tau_1$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma \vdash \Delta, A, \Delta' $}
+				
+				\AxiomC{$\pi$}
+				\UnaryInfC{$\Psi_1, A, \Psi'_1 \vdash \Psi_2 $}
+				\RightLabel{$r$}
+				\UnaryInfC{$\Phi_1, A, \Phi'_1 \vdash \Phi_2 $}
+				
+				\BinaryInfC{$\Phi_1, \Gamma, \Phi'_1 \vdash \Delta, \Phi_2, \Delta' $}
+				\DisplayProof
+				&
+				$\overset{(-, \downarrow r)}{\rightsquigarrow}$
+				&
+				\AxiomC{$\tau_1$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma \vdash \Delta, A, \Delta' $}
+				
+				\AxiomC{$\pi$}
+				\UnaryInfC{$\Psi_1, A, \Psi'_1 \vdash \Psi_2 $}
+				
+				\BinaryInfC{$\Gamma, \Psi_1, \Gamma' \vdash \Psi_2, \Delta, \Psi'_2 $}
+				
+				\doubleLine
+				\RightLabel{$r$}
+				\UnaryInfC{$\Phi_1, \Gamma, \Phi'_1 \vdash \Delta, \Phi_2, \Delta' $}
+				\DisplayProof
+			\end{tabularx}
+			
+			Again, $r$ is one of the following rules: $\otimes_L, \parr_R, 1_L, \bot_R$, ex.R or ex.L.
+			
+			\item Finally, if both $\tau_1$ and $\tau_2$ introduce the principle formula with their last rule, we perform one of the following transformations resulting in a proof of lower degree:
+			
+			\begin{tabularx}{\textwidth}{x c x}
+				%cut otimes intro vs otimes intro
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A$}
+					
+					\AxiomC{$\pi_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2$}
+					
+					\RightLabel{$\otimes_R$}
+					\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, A\otimes B, \Delta_2 $}
+					
+					\AxiomC{$\pi_3$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3$}
+					\RightLabel{$\otimes_L$}
+					\UnaryInfC{$\Gamma_3, A \otimes B, \Gamma'_3 \vdash \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta_2 $}
+					\DisplayProof
+				}
+				&
+				$\overset{(\otimes_L, \otimes_R)}{\rightsquigarrow}$
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A$}
+					
+					\AxiomC{$\pi_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_2 \vdash B, \Delta_2$}
+					
+					\AxiomC{$\pi_3$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, A, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta_2 $}
+					\DisplayProof
+				}
+				
+				\\
+				%.............................................
+				
+				%cut par intro vs par intro
+				\scalebox{0.6}{			
+					\AxiomC{$\pi_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, B, \Delta'_1 $}
+					\RightLabel{$\parr_R$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A \parr B, \Delta'_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
+					
+					\AxiomC{$\pi_3$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+					
+					\RightLabel{$\parr_L$}
+					\BinaryInfC{$\Gamma_2, A \parr B, \Gamma_3 \vdash \Delta_2, \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_1 $}
+					\DisplayProof
+				}
+				&
+				$\overset{(\parr_R, \parr_L)}{\rightsquigarrow} $
+				&
+				\scalebox{0.6}{
+					\AxiomC{$\pi_1$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, B, \Delta'_1 $}
+					
+					\AxiomC{$\pi_2$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$\Gamma_2, A \vdash \Delta_2$}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_1, \Gamma_2 \vdash \Delta_1, \Delta_2, B, \Delta'_1 $}
+					
+					\AxiomC{$\pi_3$}
+					\noLine
+					\UnaryInfC{$\svdots$}
+					\UnaryInfC{$B, \Gamma_3 \vdash \Delta_3 $}
+					
+					\RightLabel{Cut}
+					\BinaryInfC{$\Gamma_1, \Gamma_2, \Gamma_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_1 $}
+					\DisplayProof
+				}
+				
+				\\
+				%................................
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{$\pi$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma \vdash \Delta $}
+				\UnaryInfC{$\Gamma, 1 \vdash \Delta$}
+				
+				\BinaryInfC{$\Gamma \vdash \Delta$}
+				\DisplayProof
+				&
+				$\overset{(1_R, 1_L)}{\rightsquigarrow}$
+				&
+				\AxiomC{$\pi$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma \vdash \Delta $}
+				\DisplayProof
+				
+				\\
+				%..............................
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$\bot \vdash $}
+				
+				\AxiomC{$\pi$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma \vdash \Delta $}
+				\UnaryInfC{$\Gamma \vdash \bot, \Delta$}
+				
+				\BinaryInfC{$\Gamma \vdash \Delta$}
+				\DisplayProof
+				&
+				$\overset{(\bot_L, \bot_R)}{\rightsquigarrow}$
+				&
+				
+				\AxiomC{$\pi$}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma \vdash \Delta $}
+				\DisplayProof
+			\end{tabularx}
+			
+		\end{itemize}
+		
+		\phantom{bla}
+%		\formatnote[]{proofsymbol} testing for proofsymbol
+	\end{proof}	
+	
+	
+	\begin{lemma}
+		\label{cut-reduction}
+		Let $\tau$ be a proof of the sequent $\Gamma \vdash \Delta $ of degree $\partial(\pi)>0$. Then we can construct a proof $\tau'$ with $\partial(\tau')<\partial(\tau)$.
+	\end{lemma}
+	
+	\begin{proof}
+		Induction on $h(\tau)$.\\ 
+		If the last rule of $\tau$ is not a cut of degree equal $\partial(\tau)$, we gain our proof by applying the induction hypothesis on the immediate subproofs of $\tau$.\\
+		If the last rule of $\tau$ is a cut of degree equal to $\partial(\tau)$, we apply the induction hypothesis on the immediate subproofs of $\tau$ and obtain a proof of the following form
+		\begin{center}
+			\begin{center}
+				$\tau = $ 
+				\AxiomC{$\tau_1$} 
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $} 
+				\AxiomC{$\tau_2$} 
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2 $} 
+				\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_1, \Delta_2, \Delta'_1 $}
+				\DisplayProof
+			\end{center}
+		\end{center}
+		with $\partial(\tau_1), \partial(\tau_2) < \partial(A)$. Note that $\Gamma = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$ and $\Delta = \Gamma_2\Vert \Gamma_1\Vert \Gamma'_2$.
+%		\notimportantnote{just use commata instead of conc.?}
+		We then apply Lemma \ref{key-cases} to the proof tree.
+	\end{proof}
+	
+	With this, we now obtain Gentzen's Hauptsatz:
+	
+	\begin{theorem}[Cut-elimination]
+		\label{cut-elimination-theorem}
+		Given any proof of a sequent we can construct a cut-free proof of that same sequent.
 	\end{theorem}
 	
-	
-\urgentnote[inline]{Weihnachtsbaustelle:}
 	\begin{proof}
-		Let $\category{A} $ be a symmetric LDC satisfying definition \ref{def: autoCatSrinivasan}.\\
-		The mapping $A \mapsto A^* $ is an isomorphism $\Obj(\category{A}) \rightarrow \Obj(\category{A}^\opp) $ between objects and defines a Functor by extending it to morphisms 
-		with the following diagram:
-		\todo[inline]{change definition to diagram?}
-		
-		\begin{align*}
-			\Hom_\category{A}(A, B) \ni f \mapsto f^* \in \Hom_{\category{A}^\opp }(A^*, B^*)= \Hom_{\category{A} }(B^*, A^*)
-		\end{align*}
-		\begin{align*}
-			f^*:
-			B^*
-			& 
-			\xrightarrow{\lambda_\otimes^{-1}} 
-			1\otimes B^* 
-			\xrightarrow{\eta_A \otimes \id} 
-			(A^* \parr A ) \otimes B^* 
-			\xrightarrow{(\id \parr f) \otimes \id}
-			(A^* \parr B) \otimes B^*
-			\\
-			&
-			\xrightarrow{\partial_R}  
-			A^* \parr (B \otimes B^*)
-			\xrightarrow{\id \parr \varepsilon_B}
-			A^* \parr \bot
-			\xrightarrow{\rho_\parr}
-			A^* 
-		\end{align*}
-		This mapping of morphisms is also a bijection:
-		
-		\begin{align*} 
-			f 
-			= 
-			&
-			\lambda_{\parr, B} 
-			\circ (\varepsilon_A \parr \id_B)
-			\circ ((\id_A \otimes f^*) \parr \id_B )
-			\circ \partial_L 
-			\circ (\id_A \otimes \eta_B)
-			\circ \rho_{\otimes, A}^{-1}
-			\\
-			=
-			&
-			\lambda_{\parr, B} 
-			\circ (\varepsilon_A \parr \id_B)
-			\\
-			&
-			\circ 
-			\left(\left(\id_A( 
-			\otimes 
-				\rho_{\parr, A}
-				\circ (\id_{A^*} \parr \varepsilon_B)
-				\circ (\id_{A^*} \parr (f \otimes \id_{B^*} ))
-				\circ \partial_R
-				\circ (\eta_A \otimes \id)
-				\circ \lambda_{\otimes, B}^{-1}
-			)
-			\right) \parr 
-			\id_{B^*} 
-			\right)
-			\\
-			&
-			\circ \partial_L 
-			\circ (\id_A \otimes \eta_B)
-			\circ \rho_{\otimes, A}^{-1}
-		\end{align*}
-		
-		
-		\todo[inline, color=lightgray]{(maybe suppress brackets for stuff like $A \otimes 1 \otimes 1$ )}
-		\begin{tikzcd}
-			A
-				\arrow[r, "(\id \otimes \eta_B) \circ \rho_\otimes^{-1}" ]
-				\arrow[d, "\rho_\otimes^{-1} \circ \rho_\otimes^{-1} "]
-				\arrow[ddddr, bend left=40, "f" ]
-			&
-			A \otimes (B^* \otimes B)
-				\arrow[
-					rr, 
-					"
-					\id \otimes 
-					((\eta_A \otimes \id) 
-					\parr \id) 
-					"
-					]
-			&
-			&
-			A \otimes 
-			\left(\left(
-			(A^* \parr A) 
-			\otimes 
-			B^* 
-			\right) 
-			\parr 
-			B 
-			\right)
-				\arrow[d, "\id \otimes 
-					\left(\left(
-					(\id \parr f ) 
-					\otimes 
-					\id 
-					\right)
-					\parr
-					\id
-					\right)
-					"'
-					]
-			\\
-			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-			(A \otimes 1) \otimes 1
-				\arrow[
-					d,
-					"
-					\id 
-					\otimes 
-					\eta_A 
-					\otimes 
-					\eta_B
-					"]
-			&
-			&
-			&
-			A 
-			\otimes 
-			\left(
-			\left(
-			(A^*\parr B)
-			\otimes 
-			B^*
-			\right)
-			\parr
-			B
-			\right)
-				\arrow[
-					d, 
-					"
-					\id 
-					\otimes
-					\left( 
-					\partial_R
-					\parr 
-					\id
-					\right)
-					"']
-			\\
-			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-			\left(
-			A 
-			\otimes
-			(A^* \parr A)
-			\right)
-			\otimes
-			(B^* \parr B)
-				\arrow[
-					d, 
-					"
-					\partial_L
-					\otimes
-					\id
-					"]
-			&
-			&
-			&
-			A 
-			\otimes 
-			\left(
-			\left(
-			A^*
-			\parr 
-			(B \otimes B^*)
-			\right)
-			\parr B
-			\right)
-				\arrow[
-					d,
-					"
-					\id
-					\otimes 
-					(\partial_R \parr \id)
-					"']
-			\\
-			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-			\left(
-			(A \otimes A^*)
-			\parr
-			A
-			\right)
-			\otimes 
-			(B^* \parr B)
-				\arrow[
-					d,
-					"
-					(\lambda_\parr \otimes \id)
-					\circ
-					\left(
-					(\varepsilon_A \parr f)
-					\otimes
-					\id
-					\right)
-					"]
-			&
-			&
-			&
-			A 
-			\otimes
-			\left(
-			\left(
-			A^*
-			\parr
-			(B \otimes B^*)
-			\right)
-			\parr
-			B
-			\right)
-				\arrow[
-					d,
-					"
-					\id
-					\otimes
-					\left(
-					\rho_\parr
-					\circ
-					(\id 
-					\parr
-					\varepsilon_B
-					\parr
-					\id)
-					\right)
-					"']
-			\\
-			%\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-			B 
-			\otimes 
-			(B^* \parr B)
-				\arrow[
-				r,
-				"
-				\lambda_\parr
-				\circ
-				\varepsilon_B 
-				\circ
-				\partial_L
-				"']
-			&
-			B
-			&
-			&
-			A 
-			\otimes 
-			(A^* \parr B)
-				\arrow[
-				ll,
-				"
-				\lambda_\parr
-				\circ
-				\varepsilon_B 
-				\circ
-				\partial_L
-				"]
-		\end{tikzcd}
-		\todo[inline, color=lightgray]{does this commute?}
-		
-		
-		\begin{align*}
-			A
-			&
-			\xrightarrow{\rho_\otimes^{-1}}
-			A \otimes 1
-			\xrightarrow{\id \otimes \eta_B}
-			A \otimes (B^* \parr B)
-			\xrightarrow{\partial_L}
-			(A \otimes B^*) \parr B
-			\\
-			&
-			\xrightarrow{(\id \otimes f^*) \parr \id }
-			(A \otimes A^*) \parr B
-			\xrightarrow{\varepsilon_A \parr \id}
-			\bot \parr B
-			\xrightarrow{\lambda_\parr}
-			B
-		\end{align*}
-		\todo[inline, color=lightgray]{is this really f?}
-
+		For any proof $\pi$ with $\del(\pi)>0$ we can construct a proof $\pi'$ with $\del(\pi')=0$ by a finitely iterated application of Lemma \ref{cut-reduction}. 
+		For $\del(\pi)=0$ there is nothing to show.
 	\end{proof}
-	\notimportantnote[inline]{non-symmetric case to be added (should already be in there, never used symmetry)}
-	
-	\questionnote[inline]{what did I need Barr's definition for, again?}
 	
 	
-	\todo[inline]{Cats as LinLog semantics and LinLog syntax as cat}
+	
+	%___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+	
+	\section{Categorical Semantics of Linear Logic}
 	%Cats as LinLog semantics
-
-	\todo[inline]{add refs}
+	\label{sec: CatSem}
 	
-	\printbibliography
+	In this section, we will see that proof invariants form linearly distributive categories, by first expanding the cut-elimination procedure and then defining said invariants and their necessary properties. 
+	
+	
+	
+%	\subsection{Proof invariants}
+		
+	\begin{definition}[$\eta$-expansion]
+		We call the following proof transformations \emph{$\eta$-expansions}: 
+		\begin{tabularx}{\textwidth}{x c x}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$A, B \vdash A \otimes B$}
+			
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+			\\
+			%..........................................
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \parr B \vdash A \parr B $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			
+			\RightLabel{$\parr_L $}
+			\BinaryInfC{$A \parr B \vdash A, B$}
+			
+			\RightLabel{$\parr_R $}
+			\UnaryInfC{$A \parr B \vdash A \parr B $}
+			\DisplayProof
+			\\
+			%.....................................
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$1 \vdash 1 $}
+			\DisplayProof
+			
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{\strut}
+			\RightLabel{$1_R $}
+			\UnaryInfC{$\vdash 1 $}
+			\RightLabel{$1_L $}
+			\UnaryInfC{$1 \vdash 1 $}
+			\DisplayProof
+			\\
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$\bot \vdash \bot $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{\strut}
+			\RightLabel{$\bot_L $}
+			\UnaryInfC{$\bot \vdash $}
+			\RightLabel{$\bot_R $}
+			\UnaryInfC{$\bot \vdash \bot $}
+			\DisplayProof
+		\end{tabularx}
+	\end{definition}
+	
+	\begin{definition}
+		From now on, when talking about “cut-elimination procedure” or “modulo cut-elimination”, we mean the above-mentioned transformations, the proof transformations from Lemma \ref{key-cases} as well as the following commuting cuts:
+			
+		\begin{tabularx}{\textwidth}{X c X}
+			\scalebox{.6}{
+				\AxiomC{$\pi_1 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+				
+				\AxiomC{$\pi_2 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\AxiomC{$\pi_3 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_2, A, \Gamma'_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+				\DisplayProof
+			}
+			&
+			$\leftrightsquigarrow$
+			&
+			\scalebox{.6}{
+				\AxiomC{$\pi_1 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+				
+				\AxiomC{$\pi_2 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2, A, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_2, \Gamma_1, \Gamma'_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\AxiomC{$\pi_3 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_2, \Gamma_1, \Gamma'_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+				\DisplayProof
+			}
+			
+			\\
+			%..............................................................
+			
+			\scalebox{.6}{
+				\AxiomC{$\pi_1 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+				
+				\AxiomC{$\pi_2 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\AxiomC{$\pi_3 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, A, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_3, \Delta'_2 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_1, \Delta_2, \Delta_3, \Delta'_2, \Delta'_1 $}
+				\DisplayProof
+			}
+			&
+			$\leftrightsquigarrow$
+			&
+			\scalebox{.6}{		
+				\AxiomC{$\pi_2 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_2 \vdash \Delta_2, B, \Delta'_2 $}
+				
+				\AxiomC{$\pi_1 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_1 \vdash \Delta_1, A, \Delta'_1 $}
+				
+				\AxiomC{$\pi_3 $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$\Gamma_3, A, B, \Gamma'_3 \vdash \Delta_3 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_1, B, \Gamma'_3 \vdash \Delta_1, \Delta_3, \Delta'_1 $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$\Gamma_3, \Gamma_1, \Gamma_2, \Gamma'_3 \vdash \Delta_2, \Delta_1, \Delta_3, \Delta'_1, \Delta'_2 $}
+				\DisplayProof
+			}
+			
+			\\
+			%..............................................................
+			
+		\end{tabularx}
+		
+		
+%		\urgentnote[inline]{think about the deltas...: aufteilen in zwei Regeln mit einseitigen Deltas für A und B oder allgemein halten und viele exchanges drunter klatschen (was es asymmetrisch macht und damit)?}
+		
+	\end{definition}
+	
+	We will now define proof invariants as outlined by Melliès \cite{mellies}.
+	
+	\begin{definition}[Proof invariant]
+		\label{def: invariant}
+		Let $\pi$ be a proof tree ending in a sequent of the form $A \vdash B$, i.e. with a single formula on either side of the turnstile. We call any function
+		\begin{align*}
+			\pi \mapsto [\pi]
+		\end{align*}
+		that remains constant under cut-elimination \emph{proof invariant}. The entity $[\pi]$ is called \emph{denotation} of the proof $\pi$.
+	\end{definition}
+	
+	
+	\begin{definition}[Modularity]
+		We call a proof invariant \emph{modular} iff there exists a binary operation $\circ$ such that for any two proofs
+		\begin{center}
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash B$} 
+			\DisplayProof
+			\quad
+			and
+			\quad
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B \vdash C$} 
+			\DisplayProof
+		\end{center}
+		the denotation of the proof
+		\begin{center}
+			$\pi$ = 
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash B$} 
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B \vdash C$} 
+			\RightLabel{Cut}
+			\BinaryInfC{$A \vdash C$}
+			\DisplayProof
+		\end{center}
+		is given by $[\pi] = [\pi_2] \circ [\pi_1]$. As the symbol suggests, we call this operation \emph{composition}.
+	\end{definition}
+	
+	
+	\begin{proposition}
+		A modular invariant of proofs forms a category with the formulae as objects and the proof denotations as morphisms.
+	\end{proposition}
+	
+	\begin{proof}
+		Associativity is given by commuting cuts. The identity morphisms are given by the axiom rule. 
+	\end{proof}
+	
+	
+	\begin{definition}[Tensoriality]
+		A proof invariant is called \emph{tensorial} iff there is a binary operation $\otimes$ such that for any two proofs
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$A \vdash C$} 
+		\DisplayProof
+		and
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$B \vdash D$} 
+		\DisplayProof
+		the denotation of the proof
+%		\urgentnote{what about the proof without $\otimes_L$?}
+%comment.................................................................................................................................
+		\begin{center}
+			$\pi$ = 
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash C$} 
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B \vdash D$} 
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A, B \vdash C \otimes D$}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A \otimes B \vdash C \otimes D$}
+			\DisplayProof
+		\end{center}
+		is given by $[\pi] = [\pi_1] \otimes [\pi_2]$.
+	\end{definition}
+	
+	
+	\begin{definition}[Cotensoriality]
+		A proof invariant is called \emph{cotensorial} iff there is a binary operation $\parr$ such that for any two proofs
+		\AxiomC{$\pi_1 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$A \vdash C$} 
+		\DisplayProof
+		and
+		\AxiomC{$\pi_2 $}
+		\noLine
+		\UnaryInfC{$\svdots$}
+		\UnaryInfC{$B \vdash D$} 
+		\DisplayProof
+		the denotation of the proof
+%		\urgentnote{what about the proof without $\parr_R$?}
+%comment................................................................................................................................................
+		\begin{center}
+			$\pi$ = 
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash C$} 
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B \vdash D$} 
+			\RightLabel{$\parr_L$}
+			\BinaryInfC{$A \parr B \vdash C, D$}
+			\RightLabel{$\parr_R$}
+			\UnaryInfC{$A \parr B \vdash C \parr D$}
+			\DisplayProof
+		\end{center}
+		is given by $[\pi] = [\pi_1] \parr [\pi_2]$.
+	\end{definition}
+	
+	
+	\begin{lemma}
+		Any (co-)tensorial, modular proof invariant forms a symmetric monoidal category with (denotations of) formulas as objects and denotations of proofs as morphisms.
+	\end{lemma}
+	
+	\begin{proof}
+		We focus on tensorial proof invariants as the proof trees for the cotensorial case are geometrically the same. From now on we abuse our notation and write $\pi$ for the denotation $[\pi]$ of the proof $\pi$.
+		
+		It is easy to see that $\otimes$ forms a bifunctor:
+		By $\eta$-expansion the two proofs 
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+			\quad
+			and 
+			\quad
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$A, B \vdash A \otimes B$}
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes B \vdash A \otimes B $}
+			\DisplayProof
+		\end{center}
+		have the same denotation $\id_{A \otimes B} = \id_A \otimes \id_B$.
+		
+		Given four proofs
+		\begin{center}
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_1 \vdash A_2 $}
+			\DisplayProof
+			, \quad
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_1 \vdash B_2$}
+			\DisplayProof
+			, \quad
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_2 \vdash A_3$}
+			\DisplayProof
+			\quad
+			and 
+			\quad
+			\AxiomC{$\pi_4 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_2 \vdash B_3$}
+			\DisplayProof
+		\end{center}
+		
+		the proof tree
+		\begin{center}
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_1 \vdash A_2 $}
+			
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_1 \vdash B_2$}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A_1, B_1 \vdash A_2, B_2 $}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A_1 \otimes B_1 \vdash A_2, B_2 $}
+			
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_2 \vdash A_3$}
+			
+			\AxiomC{$\pi_4 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_2 \vdash B_3$}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A_2, B_2 \vdash A_3 \otimes B_3 $}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A_2 \otimes B_2 \vdash A_3 \otimes B_3 $}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$A_1 \otimes B_1 \vdash A_3 \otimes B_3 $}
+			
+			\DisplayProof
+		\end{center}
+		
+		with denotation $(\pi_3 \otimes \pi_4) \circ (\pi_1 \otimes \pi_2)$
+		is transformed via cut-elimination into the proof
+		\begin{center}
+			\AxiomC{$\pi_1 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_1 \vdash A_2 $}
+			
+			\AxiomC{$\pi_3 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A_2 \vdash A_3$}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$A_1 \vdash A_3 $}
+			
+			\AxiomC{$\pi_2 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_1 \vdash B_2$}
+			
+			\AxiomC{$\pi_4 $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$B_2 \vdash B_3$}
+			
+			\RightLabel{Cut}
+			\BinaryInfC{$B_1 \vdash B_3 $}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A_1, B_1 \vdash A_3 \otimes B_3 $}
+			
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A_1 \otimes B_1 \vdash A_3 \otimes B_3 $}
+			
+			\DisplayProof
+		\end{center}
+		
+		with denotation $(\pi_3\circ \pi_1) \otimes (\pi_4 \circ \pi_2)$ which gives us the following equation
+		\begin{align*}
+			(\pi_3 \otimes \pi_4) \circ (\pi_1 \otimes \pi_2)
+			= (\pi_3\circ \pi_1) \otimes (\pi_4 \circ \pi_2)
+		\end{align*}
+		
+		The associator $\alpha$ is given by the denotation of the proof
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$C \vdash C $}
+			
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$B, C \vdash B \otimes C$}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A, B, C \vdash A \otimes (B \otimes C )$}
+			
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes B, C \vdash A \otimes (B \otimes C )$}
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$(A \otimes B) \otimes C \vdash A \otimes (B \otimes C) $}
+			\DisplayProof
+		\end{center}
+		
+		while the unitors $\lambda$ and $\rho$ are given by
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\RightLabel{$1_L$}
+			\UnaryInfC{$1, A\vdash A$}
+			\UnaryInfC{$1 \otimes A \vdash A$}
+			\DisplayProof
+			\quad
+			and
+			\quad
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\RightLabel{$1_L$}
+			\UnaryInfC{$A, 1\vdash A$}
+			\UnaryInfC{$A \otimes 1\vdash A$}
+			\DisplayProof
+		\end{center}
+		
+		Finally, we have the symmetry isomorphism $\sigma$:
+		
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B$}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A$}
+			
+			\BinaryInfC{$B, A \vdash B \otimes A $}
+			\RightLabel{ex.}
+			\UnaryInfC{$A, B \vdash B \otimes A$}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$A \otimes B \vdash B \otimes A$}
+			
+			\DisplayProof
+		\end{center}
+		
+		We have to show isomorphy as well as the naturality and coherence conditions.
+		The inverse morphisms are given by 
+		
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$B \vdash B $}
+			
+			\RightLabel{$\otimes_R $}
+			\BinaryInfC{$A, B \vdash A \otimes B$}
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$C \vdash C $}
+			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A, B, C \vdash (A \otimes B) \otimes C $}
+			
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A , B \otimes C \vdash  (A \otimes B) \otimes C $}
+			\RightLabel{$\otimes_L $}
+			\UnaryInfC{$A \otimes (B \otimes C) \vdash  (A \otimes B) \otimes C  $}
+			\DisplayProof
+		\end{center}
+		
+		as well as		
+		\begin{center}
+			\AxiomC{\strut}
+			\RightLabel{$1_R$}
+			\UnaryInfC{$\vdash 1$}
+%			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+%
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A \vdash 1 \otimes A$}
+			\DisplayProof
+			\quad 
+			and 
+			\quad
+%
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+%			
+			\AxiomC{\strut}
+			\RightLabel{$1_R$}
+			\UnaryInfC{$\vdash 1$}
+%
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A \vdash A \otimes 1$}
+			\DisplayProof
+		\end{center}
+		
+		The equation $\lambda\circ\lambda^{-1} = \id_A $ is easily shown:
+		
+		\begin{tabularx}{\textwidth}{c x c x}
+			
+			&
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$A \vdash 1 \otimes A$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash A$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$A \vdash A $}
+				\DisplayProof
+			}
+			&
+			$\overset{(\otimes_R, \otimes_L)}{\rightsquigarrow}$
+			&
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, A \vdash A $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$A \vdash A $}
+				\DisplayProof
+			}
+			%......................................
+			\\
+			
+			
+			$\overset{(-, \id)}{\rightsquigarrow}$
+			&
+			
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$A \vdash A $}
+				\DisplayProof
+			}
+			
+			&
+			$\overset{(1_R, 1_L)}{\rightsquigarrow}$
+			&
+			
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\DisplayProof
+			
+		\end{tabularx}
+		
+		The equation $\lambda^{-1} \circ \lambda = \id_{1 \otimes A} $ requires additional steps. First, we eliminate the cut in $\lambda^{-1} \circ \lambda$:
+		
+		\begin{tabularx}{\textwidth}{x c x}
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash A$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$A \vdash 1 \otimes A$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				\DisplayProof
+			}
+			&
+			$\overset{\downarrow \otimes_L, \downarrow \otimes_R, (-, \id) }{\rightsquigarrow}$
+			&
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash A$}
+				
+				\DisplayProof
+			}
+						
+		\end{tabularx}
+		
+		Then, cut $\lambda^{-1} \circ \lambda$ against the $\eta$-expansion of $\id_{1 \otimes A}$:
+		
+		\begin{tabularx}{\textwidth}{x c x}
+			
+			\scalebox{.65}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash A$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				
+				\BinaryInfC{$1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\DisplayProof
+			}
+			&
+			$\overset{(\downarrow \otimes_L, -) , (\otimes_R, \otimes_L)}{\rightsquigarrow}$
+			&
+			\scalebox{.7}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+					\AxiomC{\strut}
+					\UnaryInfC{$A \vdash A $}
+					\RightLabel{$1_L$}
+					\UnaryInfC{$1, A\vdash A$}
+					
+							\AxiomC{\strut}
+							\UnaryInfC{$1 \vdash 1$}
+							
+							\AxiomC{\strut}
+							\UnaryInfC{$A \vdash A $}
+							
+						\RightLabel{$\otimes_R$}
+						\BinaryInfC{$1, A \vdash 1 \otimes A $}
+						
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, 1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1 , A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\DisplayProof
+			}
+			
+		\end{tabularx}
+		
+		%tabularx wollte nicht passend formatieren
+		
+		\begin{tabularx}{\textwidth}{c x c x}
+			
+			$\overset{(-, \downarrow \otimes_R) , (-, \id)}{\rightsquigarrow}$
+			&
+			
+			\scalebox{.7}{
+				\AxiomC{\strut}
+				\RightLabel{$1_R$}
+				\UnaryInfC{$\vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash A$}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, 1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, A \vdash A$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\DisplayProof
+			}
+			
+			&
+			$\overset{(-, \downarrow \otimes_R) , (1_R, 1_L)}{\rightsquigarrow}$
+			&
+			\scalebox{.7}{
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				
+				\AxiomC{\strut}
+				\UnaryInfC{$A \vdash A $}
+				
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, 1, A \vdash 1 \otimes A $}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes A $}
+				
+				\DisplayProof
+			}
+			
+		\end{tabularx}
+		
+		Thus, we have 
+		$\id_{1 \otimes A} \circ (\lambda^{-1} \circ \lambda) = \id_{1 \otimes A}$ 
+		and by modularity 
+		$\lambda^{-1} \circ \lambda = \id_{1 \otimes A}$.
+		
+		Naturality for $\lambda$ means that for any $\pi: A \rightarrow B $ the equation $\lambda_B \circ (\id_1 \otimes \pi) = \pi \circ \lambda_A $ holds.
+		Cut-elimination on $\lambda_B \circ (\id_1 \otimes \pi)$ gives us:
+		
+		\begin{tabularx}{\textwidth}{x c x}			
+			\scalebox{.8}{
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				\AxiomC{$\pi $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A \vdash B$} 
+				\RightLabel{$\otimes_R$}
+				\BinaryInfC{$1, A \vdash 1 \otimes B$}
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash 1 \otimes B$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$B \vdash B $}
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, B\vdash B$}
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes B \vdash B$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1 \otimes A \vdash B$}
+				
+				\DisplayProof
+			}
+			&
+			$\overset{(\downarrow \otimes_L, -) , (\otimes_R, \otimes_L)}{\rightsquigarrow}$
+			&
+			\scalebox{1}{
+				\AxiomC{\strut}
+				\UnaryInfC{$1 \vdash 1$}
+				
+				\AxiomC{$\pi $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A \vdash B$}
+				
+				\AxiomC{\strut}
+				\RightLabel{$\id$}
+				\UnaryInfC{$B \vdash B $}
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, B\vdash B$}
+				 
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, A\vdash B$}
+				
+				\RightLabel{Cut}
+				\BinaryInfC{$1, A\vdash B$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash B$}
+				
+				\DisplayProof
+			}
+		\end{tabularx}
+		
+		\begin{tabularx}{\textwidth}{x x x}
+			
+			$\underset{ (-, \id) }{\overset{(-, \downarrow 1_L)(\id, -)}{\rightsquigarrow}} $
+			&
+			
+			\scalebox{}{
+				\AxiomC{$\pi $}
+				\noLine
+				\UnaryInfC{$\svdots$}
+				\UnaryInfC{$A \vdash B$} 
+				
+				\RightLabel{$1_L$}
+				\UnaryInfC{$1, A\vdash B$}
+				
+				\RightLabel{$\otimes_L$}
+				\UnaryInfC{$1 \otimes A \vdash B$}
+				
+				\DisplayProof
+			}
+			&
+		\end{tabularx}
+		
+		Which is the same result as cut-elimination on $\pi \circ \lambda_A$:
+		
+		\begin{tabularx}{\textwidth}{x c x}	
+			\AxiomC{\strut}
+			\RightLabel{$\id$}
+			\UnaryInfC{$A \vdash A $}
+			\RightLabel{$1_L$}
+			\UnaryInfC{$1, A\vdash A$}
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$1 \otimes A \vdash A$}
+			
+			\AxiomC{$\pi $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash B$}
+			
+			\BinaryInfC{$1 \otimes A \vdash B $}
+			\DisplayProof
+			&
+			$\rightsquigarrow$
+			&
+			\AxiomC{$\pi $}
+			\noLine
+			\UnaryInfC{$\svdots$}
+			\UnaryInfC{$A \vdash B$} 
+			
+			\RightLabel{$1_L$}
+			\UnaryInfC{$1, A\vdash B$}
+			
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$1 \otimes A \vdash B$}
+			
+			\DisplayProof
+			
+		\end{tabularx}
+		
+		Naturality and isomorphy of $\alpha$, $\rho$ and $\sigma$ as well as the coherence conditions are shown in the same way.
+		
+	\end{proof}	
+	
+	
+	\begin{theorem}
+		Any proof invariant that is modular, tensorial and cotensorial forms a linearly distributive category.
+	\end{theorem}
+	
+	\begin{proof}
+		The distributors $\partial_L$ and $\partial_R$ are given by:
+		
+		\begin{center}
+			\AxiomC{\strut}
+			\UnaryInfC{$A \vdash A$}
+%			
+			\AxiomC{\strut}
+			\UnaryInfC{$B \vdash B$}
+%			
+			\AxiomC{\strut}
+			\UnaryInfC{$C \vdash C $}
+%			
+			\RightLabel{$ \parr_L$}
+			\BinaryInfC{$B \parr C \vdash B, C $}
+%			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A , B \parr C \vdash A \otimes B, C $}
+%			
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$ A \otimes (B \parr C ) \vdash A \otimes B , C$}
+			\RightLabel{$\parr_R $}
+			\UnaryInfC{$ A \otimes (B \parr C ) \vdash (A \otimes B ) \parr C $}
+			\DisplayProof
+%			
+			\quad
+			and
+			\quad
+%			
+			\AxiomC{\strut}
+			\UnaryInfC{$A \vdash A$}
+			%			
+			\AxiomC{\strut}
+			\UnaryInfC{$B \vdash B$}
+			%
+			\RightLabel{$ \parr_L$}
+			\BinaryInfC{$A \parr B \vdash A, B $}
+%						
+			\AxiomC{\strut}
+			\UnaryInfC{$C \vdash C $}
+%			
+			\RightLabel{$\otimes_R$}
+			\BinaryInfC{$A \parr B , C \vdash A, B \otimes C $}
+%			
+			\RightLabel{$\otimes_L$}
+			\UnaryInfC{$ (A \parr B) \parr C \vdash A , B \otimes C$}
+			\RightLabel{$\parr_R $}
+			\UnaryInfC{$ (A \parr B) \parr C  \vdash A \parr (B \otimes C) $}
+			\DisplayProof
+		\end{center}
+		
+		Coherence and naturality are shown in the same way as for the associator and unitors above.
+	\end{proof}
+	
+	
+	\begin{remark}
+		As noted in Definition \ref{def: invariant}, we have been only dealing with sequents of the form $A \vdash B $. For arbitrary sequents of the form $\Gamma \vdash \Delta $ with $\Gamma = A_1, ... , A_n $ and $\Delta = B_1, ..., B_m $, a natural model are two-tensor-poly-categories as defined by Cockett and Seely \cite{cockett&seely97}. These are (2-categorically) equivalent to linearly distributive categories by identifying $\Gamma$ with $\bigotimes\Gamma = A_1 \otimes \cdots \otimes A_n $ and $\Delta$ with $\bigparr \Delta = B_1 \parr \cdots \parr B_m $ \cite[Theorem 2.1]{cockett&seely97}.
+	\end{remark}
+	
+	
+	\begin{remark}
+		Modifying the cut-elimination in such a way  that it can handle the negation rule, we obtain a symmetrical *-autonomous category as in Definition \ref{def: autoCatSrinivasan}. 
+		On the other hand, when starting with intuitionistic multiplicative linear logic (see Melliès for a short list of its calculus rules \cite[p43, fig. 2]{mellies}), which forms a (bi-)closed monoidal category, we obtain a *-autonomous category as defined by Barr \cite{barr95, barr91} when we adopt a classical negation, thus giving additional motivation to Theorem \ref{equivalenceAutoCats}.
+		
+		Accordingly, when we give up on the exchange rule, we need to introduce a second negation ${^\bot A}$ corresponding to the non-symmetric defintions in Section \ref{sec: catPrel}.
+	\end{remark}
+	
+	%---------------------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	%\todo[inline]{add refs}
+	%comment..............................................................................
+ 	\printbibliography
 	
 	\newpage
-	\listoftodos
+	 
+	\includepdf[pages={-}]{statement.pdf}
+%	\listoftodos
 	
 \end{document}
