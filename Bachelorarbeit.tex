@@ -39,6 +39,8 @@
 \usepackage{multicol} %??
 \usepackage{float}
 \usepackage[hidelinks]{hyperref}
+
+\usepackage{pdfpages}
 %\usepackage[table]{xcolor} %Übernommen aus Protokollen letzten Jahres, Nutzen unbekannt:
 %\usepackage[margin=10pt,font=small,labelfont=bf]{caption}
 \usepackage{textgreek}
@@ -46,6 +48,7 @@
 
 %LinLog (par and with, etc.)
 \usepackage{cmll}
+
 
 %Logic
 \usepackage{bussproofs}
@@ -503,12 +506,21 @@
 	
 	\begin{lemma}
 		\label{lemma: isoAdjunctions}
-		If $F\dashv G$ and $F' \dashv G$, then $F$ and $F'$ as well as the (co-)units are uniquely isomorphic. The same follows for $G$ and $G'$ if $F \dashv G$ and $F \dashv G'$ \cite[Prop. 4.4.1]{riehl_context}.
+		\cite[Prop. 4.4.1]{riehl_context}
+		If $F\dashv G$ and $F' \dashv G$, then $F$ and $F'$ as well as the (co-)units are uniquely isomorphic. The same follows for $G$ and $G'$ if $F \dashv G$ and $F \dashv G'$.
 	\end{lemma}
 	
 	\begin{lemma}
 		\label{lemma: compAdjunction}
-		Adjunctions compose: Given $F: \category{C} \rightarrow \category{D}$ and $F': \category{D} \rightarrow \category{E}$ with $F\dashv G$ and $F' \dashv G'$, then $F'F \dashv GG'$ \cite[Prop. 4.4.4]{riehl_context}.
+		 \cite[Prop. 4.4.4]{riehl_context} 
+		Adjunctions compose: Given $F: \category{C} \rightarrow \category{D}$ and $F': \category{D} \rightarrow \category{E}$ with $F\dashv G$ and $F' \dashv G'$, then $F'F \dashv GG'$.
+		The unit and co-unit are given by:
+		\begin{align*}
+			\tilde{\eta}: & \id_{\category{C}} \overset{\eta}{\longrightarrow} GF \overset{G \eta' F}{\longrightarrow} GG' F'F
+			\\
+			\tilde{\varepsilon}: & FF' G'G \overset{F '\varepsilon' F}{\longrightarrow} FG \overset{\varepsilon}{\longrightarrow} \id_{\category{E}}
+		\end{align*}
+		with $\eta F := \eta_{F(-)} $ etc.
 	\end{lemma}
 	
 	Many useful categories have additional structures to their objects and morphisms and allow for the translation of these structures between similar categories. One such example is the category of vector spaces over a fixed field leading to the definition of monoidal or tensorial categories. That definition will form the basis for our categorical model of linear logic.
@@ -610,7 +622,7 @@
 			\item 
 				the inverse law: $\sigma_{A, B}^{-1} = \sigma_{B, A} $
 			\item 
-				the unit law: $\lambda = \rho s$
+				the unit law: $\lambda = \rho \sigma$
 				\begin{center}
 					\begin{tikzcd}
 						\Unit \otimes A 
@@ -1027,7 +1039,7 @@
 	\subsection{*-autonomous Categories}
 	\label{subsec: autoCats}
 	
-	While linearly distributive categories are enough to  model multiplicative linear logic; if we want to include negation in our model, we need additional structures. Those structures are given by *-autonomous categories, which can defined in various ways.
+	While linearly distributive categories are enough to  model multiplicative linear logic, if we want to include negation in our model, we need additional structures. Those structures are given by *-autonomous categories, which can defined in various ways.
 	
 	\begin{definition}[Dual object]
 		\label{def: dualObj}
@@ -1539,7 +1551,7 @@
 		\begin{center}
 			\begin{sideways}
 				\begin{tikzcd}[every label/.append style = {font = \tiny}, 
-					cells={nodes={font=\small}}]
+					cells={nodes={font=\small}}, row sep=large]
 						A \otimes B
 							\arrow[d, equal ]
 							\arrow[r, "\id \otimes \rho_\otimes^{-1} " ]
@@ -1903,7 +1915,7 @@
 		
 		\begin{center}
 			\begin{sideways}
-				\begin{tikzcd}[]
+				\begin{tikzcd}[row sep=large ]
 						(A \otimes B^*) \parr B
 							\arrow[d, "( \id \otimes (\tau_A \otimes \id)\lambda_\otimes^{-1} ) \parr \id "']
 							\arrow[dr, " \id \otimes ( (\tau_A \otimes \id)\rho_\otimes^{-1}  \parr \id ) "]
@@ -1935,7 +1947,7 @@
 							\arrow[d, "( \id \otimes ( \id \parr (f \otimes \id) ) ) \parr \id "' ]
 						&
 						( (A \otimes A^*) \parr (A \otimes B^*) ) \parr B
-							\arrow[r, " (\gamma_A \parr \id) \otimes \id " ]
+							\arrow[r, " (\gamma_A \parr \id) \otimes \id " {yshift=4pt} ]
 							\arrow[d, "(\id \parr (f \otimes \id)) \parr \id "{name=funTen1} ]
 						&
 						( \bot \parr (A \otimes B^*) ) \parr B
@@ -1949,7 +1961,7 @@
 							\arrow[d, "( \id \otimes ( \id \parr \gamma_B ) ) \parr \id "' ]
 						&
 						( (A \otimes A^*) \parr (B \otimes B^*) ) \parr B
-							\arrow[r, "(\gamma_A \parr \id) \parr \id " ]
+							\arrow[r, "(\gamma_A \parr \id) \parr \id " {yshift=4pt} ]
 							\arrow[d, "(\id \parr \gamma_B) \parr \id " ]
 						&
 						( \bot \parr (B \otimes B^*) ) \parr B
@@ -2261,11 +2273,11 @@
 		\end{center}
 		
 		The paths on the top and left are the two definitions of $\partial_L$, the paths on the right and bottom are the identity on $G'F$ by the triangle identity of Proposition \ref{prop.: triangleIdentity}. The small squares commute by naturality of the (co-)units, the big square does so by Lemmas \ref{lemma: isoAdjunctions} and \ref{lemma: compAdjunction}.
-		Switching $FG'$ for $F'G$ and the appropriate morphisms gives us the same diagram for $\partial_R$.
+		Switching $F$ for $F'$, $G'$ for $G$, and the appropriate morphisms gives us the same diagram for $\partial_R$.
 		
 		Thus we can show the coherence conditions by transposing the diagram along either adjunction:
 		
-		Commutativity of the diagram 
+		The commutativity of the diagram 
 		\begin{center}
 			\begin{tikzcd}
 				(A \parr B) \otimes 1
@@ -2282,7 +2294,7 @@
 			\end{tikzcd}
 		\end{center}
 		
-		follows from commutativity of its transpose under ${^*A} \otimes - \dashv A \parr - $:
+		follows from the commutativity of its transpose under ${^*A} \otimes - \dashv A \parr - $:
 		\begin{center}
 			\begin{tikzcd}
 				{^*A} \otimes ((A \parr B) \otimes 1)
@@ -2426,7 +2438,215 @@
 		
 		The remaining coherence conditions between the distributors and the associators or unitors are shown in the same way.
 		
-		\todo[inline]{joa...}
+		Coherence between $\partial_L$ and $\partial_R$ requires more work as we have to deal with two adjunctions at once. 
+		We notate $F:= A \otimes - \dashv A^* \parr - =: G$ and $F':= -\otimes D \dashv -\parr {^*D}$ as well as $FF' \cong F'F$ and $G'G \cong GG'$, again.
+		First, note that the transpose of
+		\begin{equation*}
+			FF'a \overset{Ff}{\longrightarrow} Fb \overset{h}{\longrightarrow} d
+		\end{equation*}
+		
+		along the adjunction $(\tilde{\eta}, \tilde{\varepsilon}): FF' \dashv G'G $ is given by
+		\begin{center}
+			\begin{tikzcd}
+					&
+					a
+						\arrow[dl, "\tilde{\eta}" ]
+						\arrow[d, "\eta' " ]
+						\arrow[dd, bend left=50, "\check{f}"]
+				\\
+					G'G FF' a
+						\arrow[d, "G'GF f" ]
+					&
+					G' F' a
+						\arrow[l, "G'\eta F' " ]
+						\arrow[d, "G' f " ]
+				\\
+					G'G F b
+						\arrow[d, "G'G h " ]
+					&
+					G' b
+						\arrow[l, " G' \eta " ]
+						\arrow[dl, " G' \hat{h} " ]
+				\\
+					G'G d
+					&
+			\end{tikzcd}
+		\end{center}
+		
+		Here, $\check{f}$ denotes the transpose of $f$ along the adjunction $F' \dashv G'$, while $\hat{h}$ is the transpose of $h$ along $F \dashv G$.
+		On the other hand, the transpose of 
+		\begin{equation*}
+			F'Fa \overset{F'g}{\longrightarrow} F'c \overset{k}{\longrightarrow} d
+		\end{equation*}
+		
+		along the adjunction $(\bar{\eta}, \bar{\varepsilon}): F'F \dashv GG'$ is given by
+		\begin{center}
+			\begin{tikzcd}
+					a
+						\arrow[d, "\eta" ]
+						\arrow[dr, "\bar{\eta} " ]
+						\arrow[dd, bend right=50 , "\hat{g} "' ]
+					&
+				\\
+					GF a
+						\arrow[r, " G \eta' F" ]
+						\arrow[d, " G g " ]
+					&
+					GG' F'F a
+						\arrow[d, " GG' F g " ]
+				\\
+					G c
+						\arrow[r, " G \eta' " ]
+						\arrow[dr, " G \check{k} " ]
+					&
+					GG' F' c
+						\arrow[d, "GG' k " ]
+				\\
+					&
+					GG' d
+			\end{tikzcd}
+		\end{center}
+		Again, $\check{k}$ denotes the transpose of $k$ along the adjunction $F' \dashv G'$, while $\hat{g}$ is the transpose of $g$ along $F \dashv G$.
+		
+		Furthermore, the following diagram commutes, with the right-hand path being the transpose along $FF'\dashv G'G$:
+		\begin{center}
+			\begin{tikzcd}
+					a
+						\arrow[d, "\bar{\eta} " ]
+						\arrow[dr, "\tilde{\alpha}_\otimes = \alpha_\otimes \circ \tilde{\eta} " ]
+					&
+				\\
+					GG' F'F a
+						\arrow[r, "\sim ", "\alpha_\parr "' ]
+						\arrow[d, "GG' F' g " ]
+					&
+					G'G F'F a
+						\arrow[d, "G'G F' g " ]
+				\\
+					GG' F' c
+						\arrow[r, "\sim " ]
+						\arrow[d, "GG' k " ]
+					&
+					G'G F' c
+						\arrow[d, " G'G k " ]
+				\\
+					GG' d
+						\arrow[r, "\sim" ]
+					&
+					G'G d
+			\end{tikzcd}
+		\end{center}
+		
+		Thus, when checking whether the following diagram commutes
+		\begin{center}
+			\begin{tikzcd}
+					FF' a
+						\arrow[r, "Ff"] 
+						\arrow[d, "\sim" {above, rotate=90, xshift=2pt, yshift=-1pt}]
+					&
+					F b
+						\arrow[dd, "h"]
+				\\
+					F'F a
+						\arrow[d, "F'g"']
+					&
+				\\
+					F' c
+						\arrow[r, "k"]
+					&
+					d
+			\end{tikzcd}
+		\end{center}
+		
+		it is sufficient to check the following diagram:
+		\begin{center}
+			\begin{tikzcd}
+					&
+					a
+						\arrow[dl, " \hat{g} "' ]
+						\arrow[dr, " \check{f} " ]
+					&
+				\\
+					G c
+						\arrow[d, "G \check{k} "' ]
+					&&
+					G' b
+						\arrow[d, "G' \hat{h} " ]
+				\\
+					GG' d
+						\arrow[rr, "\sim " ]
+					&&
+					G'G d
+			\end{tikzcd}
+		\end{center}
+		
+		Translating this back into our original situation gives us the following commuting diagram (recall the transposes of $\partial_L$ and $\partial_R$ under $A \otimes - \dashv A^* \parr - $ and $ -\otimes D \dashv -\parr {^*D} $ resp.):
+		\begin{center}
+			\begin{sideways}
+				\begin{tikzcd}[row sep=large]
+						&
+						B \parr C
+							\arrow[dl, " \eta^L \parr \id "' ]
+							\arrow[dr, " \id \parr \eta^R " ]
+						&
+					\\
+						(A^* \parr (A \otimes B)) \parr C
+							\arrow[r, "\id \parr \eta^R "' ]
+							\arrow[d, "\alpha_\parr^{-1} "' ]
+						&
+						(A^* \parr (A \otimes B)) \parr ((C \otimes D) \parr {^*D})
+							\arrow[ddl, bend left=10, "\alpha_\parr^{-1} " ]
+							\arrow[ddr, bend right=10, "\alpha_\parr "' ]
+						&
+						B \parr ((C \otimes D) \parr {^*D})
+							\arrow[l,  " \eta^L \parr \id " ]
+							\arrow[d, "\alpha_\parr" ]
+					\\
+						A^* \parr ((A \otimes B) \parr C)
+							\arrow[d, "\id \parr (\id \parr \eta^L) "' ]
+						&&
+						( B \parr (C \otimes D) ) \parr {^*D}
+							\arrow[d, " (\eta^L \parr \id) \parr \id " ]
+					\\
+						A^* \parr ( (A \otimes B) \parr ( (C \otimes D) \parr {^*D} ) )
+							\arrow[d, "\id \parr \alpha_\parr "' ]
+						&&
+						( ( A^* \parr (A \otimes B) ) \parr (C \otimes D) ) \parr {^*D}
+							\arrow[d, "\alpha_\parr^{-1} \parr \id " ]
+					\\
+						A^* \parr ( ((A \otimes B) \parr (C \otimes D)) \parr {^*D} )
+							\arrow[rr, "\alpha_\parr " ]
+						&&
+						(  A^* \parr ((A \otimes B)  \parr (C \otimes D)) ) \parr {^*D}
+				\end{tikzcd}
+			\end{sideways}
+		\end{center}
+		
+		Thus, we obtain the following coherence diagram:
+		\begin{center}
+			\begin{tikzcd}
+				&
+				A \otimes ((B \parr C) \otimes D)
+				\arrow[ld, "\alpha_\otimes " ]
+				\arrow[rd, "\id \otimes \partial_R " ]
+				&
+				\\
+				(A \otimes (B \parr C)) \otimes D
+				\arrow[d, "\partial_L \otimes \id " ]
+				&
+				&
+				A \otimes (B \parr (C \otimes D))
+				\arrow[d, "\partial_L " ]
+				\\
+				((A \otimes B) \parr C) \otimes D
+				\arrow[rr, "\partial_R " ]
+				&
+				&
+				(A \otimes B) \parr (C \otimes D)
+			\end{tikzcd}
+		\end{center}
+		
+		The other $\partial_L$-$\partial_R$-coherence is shown in the same way.
 		
 		The unit and co-unit of a dual object are the transpose of the unitors:
 		\begin{equation*}
@@ -2462,9 +2682,7 @@
 			\end{array}
 		\end{equation*}
 		
-		This is well-defined because of the coherence between $\lambda$ and $\rho$.
-		Their defining diagrams also follow by the methods above.
-		\todo[inline]{noch malen?}
+		Well-definedness and the defining diagrams are shown by above methods.
 	\end{proof}
 	
 	
@@ -2522,6 +2740,7 @@
 			\item If $A$ is a formula, so are $A^\bot$,  $\oc A$ and $\wn A$.
 			\item If $A$ and $B$ are formulas, so are $A \otimes B$, $A \parr B$, $A \with B$ and $A \oplus B$.
 		\end{itemize}
+		Note that the connective $(-)^\bot$ is the linear negation and not to be confused with the constant $\bot$, the multiplicative falsehood. 
 		%It is customary in linear logic to call $p^\bot$ atomic, for an atom $p$.
 	\end{definition}
 	
@@ -2534,10 +2753,14 @@
 	\begin{definition}[Sequent]
 		A \emph{sequent} $\Gamma \vdash \Delta $ consists of two Lists $\Gamma$ and $\Delta$ of formulae combined by a turnstile $\vdash$. 
 		Either $\Gamma$ or $\Delta$ may be empty. 
-		While that turnstile serves a purely syntactic purpose, we will later see that it is correctly interpreted as an implication.
 		
 		For a sequent $\Gamma_1, A, \Gamma_2 \vdash \Delta_1, B, \Delta_2$ we call $\Gamma_i$ and $\Delta_i$ \emph{context} (of $A$ (resp. $B$)).
 	\end{definition}
+	
+	\begin{remark}
+		While the turnstile serves a purely syntactic purpose, we will later see that it is correctly interpreted as an implication.
+		$1$ and $\top$ are the multiplicative and additive truths, $\bot$ and $0$ the resp. falsities.
+	\end{remark}
 	
 	\begin{definition}[Proof (tree)]
 		A \emph{proof tree} (often just \emph{proof}) is a rooted tree with sequents as \emph{edges} and the sequent rules defined on the following pages as \emph{vertices} (except for the root).
@@ -2604,7 +2827,7 @@
 		\RightLabel{id}
 		\UnaryInfC{$A \vdash A$}
 		\DisplayProof
-		\quad
+		, \quad
 		\AxiomC{$\Gamma_1 \vdash \Delta_1 , A ,  \Delta'_1$}
 		\AxiomC{$\Gamma_2 , A , \Gamma'_2 \vdash \Delta_2 $}
 		\RightLabel{Cut}
@@ -2615,7 +2838,7 @@
 		\RightLabel{neg.L}
 		\UnaryInfC{$\Gamma, A^\bot \vdash \Delta $}
 		\DisplayProof
-		\quad
+		, \quad
 		\AxiomC{$\Gamma, A \vdash \Delta $}
 		\RightLabel{neg.R}
 		\UnaryInfC{$\Gamma \vdash A^\bot, \Delta $}
@@ -2624,7 +2847,9 @@
 	
 	
 	
-	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ as well as their respective units split into two respectively. These can be classified as multiplicative and additive connectives. 
+	As already mentioned, the classical conjunction $\wedge$ and disjunction $\vee$ as well as their respective units split into two respectively. 
+	These can be classified as multiplicative and additive connectives (analogous to the classically equivalent ways to define $\wedge$ and $\vee$). 
+	Using the exponential connectives, one can then encode intuitionistic and classical logic inside of linear logic, again \cite[Chapter 5]{girard87}.
 	
 	\paragraph{Multiplicatives }
 	The calculus rules for the \emph{multiplicative} conjunction $\otimes$, disjunction $\parr$ (“par”) and their units $1$ and $\bot$ (“bottom”) are as follows:
@@ -2634,7 +2859,7 @@
 		\RightLabel{$\otimes_L$}
 		\UnaryInfC{$\Gamma, A\otimes B, \Gamma' \vdash \Delta $}
 		\DisplayProof
-		\quad
+		, \quad
 		\AxiomC{$\Gamma \vdash \Delta , A$}
 		\AxiomC{$\Gamma' \vdash B, \Delta'$}
 		\RightLabel{$\otimes_R$}
@@ -2647,7 +2872,7 @@
 		\RightLabel{$\parr_L$}
 		\BinaryInfC{$\Gamma, A\parr B, \Gamma' \vdash \Delta, \Delta'$}
 		\DisplayProof
-		\quad
+		, \quad
 		\AxiomC{$\Gamma \vdash \Delta , A, B,  \Delta'$}
 		\RightLabel{$\parr_R$}
 		\UnaryInfC{$\Gamma \vdash \Delta , A \parr B, \Delta' $}
@@ -2657,7 +2882,7 @@
 		\RightLabel{$1_L$}
 		\UnaryInfC{$\Gamma_1, 1, \Gamma_2 \vdash \Delta $}
 		\DisplayProof
-		\quad
+		, \quad
 		\AxiomC{\vphantom{$\frac{a}{b}$ } }
 		\RightLabel{$1_R $}
 		\UnaryInfC{$\vdash 1$}
@@ -2667,7 +2892,7 @@
 		\RightLabel{$\bot_L$}
 		\UnaryInfC{$\bot \vdash $}
 		\DisplayProof
-		\quad
+		, \quad
 		\AxiomC{$\Gamma \vdash \Delta $ }
 		\RightLabel{$\bot_R $}
 		\UnaryInfC{$\Gamma \vdash \Delta_1, \bot , \Delta_2 $}
@@ -2719,12 +2944,14 @@
 		\RightLabel{$\with_{L1}$}
 		\UnaryInfC{$\Gamma , A \with B \vdash \Delta $}
 		\DisplayProof
-		\quad
+		, \quad
 		\AxiomC{$\Gamma , B \vdash \Delta $}
 		\RightLabel{$\with_{L2}$}
 		\UnaryInfC{$\Gamma , A \with B \vdash \Delta $}
 		\DisplayProof
-		
+	\end{center}
+	
+	\begin{center} 
 		\AxiomC{$\Gamma \vdash \Delta , A $}
 		\AxiomC{$\Gamma \vdash \Delta , B $}
 		\RightLabel{$\with_R$}
@@ -2738,12 +2965,14 @@
 		\RightLabel{$\oplus_L$}
 		\BinaryInfC{$\Gamma , A\oplus B \vdash \Delta$}
 		\DisplayProof
-		
+	\end{center}
+	
+	\begin{center}
 		\AxiomC{$\Gamma \vdash A , \Delta $}
 		\RightLabel{$\oplus_{R1}$}
 		\UnaryInfC{$\Gamma \vdash A \oplus B , \Delta $}
 		\DisplayProof
-		\quad
+		,\quad
 		\AxiomC{$\Gamma \vdash B , \Delta $}
 		\RightLabel{$\oplus_{R2}$}
 		\UnaryInfC{$\Gamma \vdash A \oplus B ,  \Delta $}
@@ -2753,7 +2982,7 @@
 		\RightLabel{$0_L$ }
 		\UnaryInfC{$\Gamma, 0 \vdash \Delta $}
 		\DisplayProof
-		\quad
+		, \quad
 		\AxiomC{\vphantom{$\frac{a}{b}$}}
 		\RightLabel{$\top_R$ }
 		\UnaryInfC{$\Gamma \vdash \top , \Delta $}
@@ -2900,15 +3129,17 @@
 			$(A^\bot)^\bot \equiv A $
 			\item The De Morgan equations hold:
 			\begin{align*}
-				\left(A \otimes B\right)^\bot \equiv A^\bot \parr B^\bot 
-				\quad
+				\left(A \otimes B\right)^\bot 
+				&\equiv A^\bot \parr B^\bot 
 				&
-				\left(A \parr B\right)^\bot \equiv A^\bot \otimes B^\bot 
+				\left(A \parr B\right)^\bot 
+				&\equiv A^\bot \otimes B^\bot 
 				\\
-				\left(A \with B\right)^\bot \equiv A^\bot \oplus B^\bot 
-				\quad
+				\left(A \with B\right)^\bot 
+				&\equiv A^\bot \oplus B^\bot 
 				&
-				\left(A \oplus B\right)^\bot \equiv A^\bot \with B^\bot 
+				\left(A \oplus B\right)^\bot 
+				&\equiv A^\bot \with B^\bot 
 			\end{align*}
 		\end{itemize}
 	\end{theorem}
@@ -5022,7 +5253,9 @@
 	%comment..............................................................................
  	\printbibliography
 	
-%	\newpage
-%1	\listoftodos
+	\newpage
+	 
+	\includepdf[pages={-}]{statement.pdf}
+%	\listoftodos
 	
 \end{document}
